@@ -1,0 +1,12 @@
+# Mid-size mechanics test on synthetic data (speed, memory, constraint behaviour). Not for design decisions.
+name: scale_test
+paths: {raw: /tmp/mltok_scale/raw, clean: /tmp/mltok_scale/clean, runs: /tmp/mltok_scale/runs}
+sources:
+  - {type: synthetic, id: synthetic, n_docs: 40000, n_word_types: 150000}
+filters: [{type: length, min_chars: 20}, {type: ml_ratio, min_ratio: 0.3}]
+split: {eval_permille: 20, shard_mb: 16}
+components: {normalizer: ml, pretokenizer: word, algorithm: mlbpe, vocab: 8000}
+resources: {workers: 1, threads: 1, spm_max_mb: 30}
+search: {eval_docs: 1500, combine: false, factors: {algorithm: [mlbpe_plain, hf_bpe, spm_unigram]}}
+proxy: {enabled: false}
+baselines: []

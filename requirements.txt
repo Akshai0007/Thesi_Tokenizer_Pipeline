@@ -1,0 +1,10 @@
+tokenizers>=0.20
+sentencepiece>=0.2
+regex
+pyyaml
+numpy
+tqdm
+# datasets          # only for `mltok download`
+# transformers      # optional: compatibility checks and Hub baselines
+# torch             # preinstalled on Kaggle / DGX
+pytest

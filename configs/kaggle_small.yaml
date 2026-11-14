@@ -1,0 +1,50 @@
+# Kaggle selection run: find the best design on a few hundred MB, cheaply.
+# Needs: GPU T4 x2 (proxy stage) and Internet ON. Dataset ids were taken from public documentation but
+# could not be verified from my sandbox - the dry run (kaggle_dryrun.yaml) checks them first.
+name: kaggle_small
+paths: {raw: /kaggle/working/data/raw, clean: /kaggle/working/data/clean, runs: /kaggle/working/runs}
+# plugins_dir: [/kaggle/working/my_plugins]     # <- your own plugin files; a same-named file REPLACES a built-in
+
+# ============ DATA (swap datasets here, or add a new `source` plugin) ============
+sources:
+  - {type: hf_stream, id: fineweb2, hf: HuggingFaceFW/fineweb-2, name: mal_Mlym, split: train, text: text, max_docs: 250000}
+  - {type: hf_stream, id: wikipedia, hf: wikimedia/wikipedia, name: 20231101.ml, split: train, text: text}
+  - {type: hf_stream, id: sangraha, hf: ai4bharat/sangraha, data_dir: verified/mal, split: train, text: text, max_docs: 150000}
+filters:
+  - {type: length, min_chars: 80, max_chars: 200000}
+  - {type: ml_ratio, min_ratio: 0.5}
+  - {type: line_repetition}
+split: {eval_permille: 5, shard_mb: 48, max_train_mb: 700}
+
+# ============ PIPELINE COMPONENTS (each is a plugin; swap by name) ============
+components: {normalizer: ml, pretokenizer: word, algorithm: mlbpe, vocab: 16000}
+resources:
+  workers: 4
+  threads: 4
+  max_word_types: 400000     # RAM guard (Kaggle ~13-16 GB); the long tail beyond this adds little
+  spm_max_mb: 150
+search:
+  eval_docs: 20000
+  combine: true
+  factors:
+    normalizer: [none, nfc, ml, {type: ml, zw: drop}]
+    pretokenizer: [ws, word]
+    algorithm: [mlbpe, mlbpe_plain, hf_bpe, spm_unigram, spm_bpe]
+metrics: [basic, structure, roundtrip, stress]
+selector: {type: default, max_mark_start: null}     # null = no pre-filter; the proxy LM arbitrates
+proxy:
+  enabled: true
+  top_k: 3
+  model: {type: gpt, size: tiny}                    # ~11M non-embedding params
+  seq_len: 512
+  batch: 32
+  micro_batch: 16             # T4 has 16 GB; accumulate to the effective batch
+  gpus: auto                  # Kaggle 'GPU T4 x2' -> proxy runs fan out, one worker per GPU
+  train_mb: 120
+  eval_mb: 10
+  epochs: 1
+  seeds: [0]                  # [0,1,2] -> mean +/- std per variant (noise control)
+  lr: 0.001
+  vocab_sweep: [16000, 32000, 48000]
+gpu: {guard: false}
+baselines: [sarvamai/sarvam-1, Qwen/Qwen2.5-0.5B, mistralai/Mistral-7B-v0.1, google/muril-base-cased, FacebookAI/xlm-roberta-base, openai-community/gpt2]

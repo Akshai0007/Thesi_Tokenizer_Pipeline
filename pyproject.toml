@@ -1,0 +1,16 @@
+[project]
+name = "mltok"
+version = "0.1.0"
+description = "Malayalam tokenizer research + training pipeline"
+requires-python = ">=3.9"
+dependencies = ["tokenizers>=0.20", "sentencepiece>=0.2", "regex", "pyyaml", "numpy", "tqdm"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["mltok*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
