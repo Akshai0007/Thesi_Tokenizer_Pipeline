@@ -42,8 +42,26 @@ class _SPM(Algorithm):
             num_threads=int(ctx.resources.get("threads", 8)),
             input_sentence_size=self.input_sentence_size, shuffle_input_sentence=True, minloglevel=2,
         )
+        info = {"note": "SentencePiece"}
+        if self.model_type == "unigram":  # also ship a Hugging Face tokenizer.json (parity-checked against SentencePiece)
+            from mltok.lib.spm_export import export_hf
+
+            sample = []
+            with open(corpus, encoding="utf-8") as f:
+                for ln in f:
+                    sample.append(ln.rstrip("\n"))
+                    if len(sample) >= 500:
+                        break
+            try:
+                rep = export_hf(prefix + ".model", out, ctx.normalizer, sample)
+                info["hf_export"] = {k: rep[k] for k in ("ok", "texts", "identical", "ties", "real_mismatches")}
+                if not rep["ok"]:
+                    ctx.log(f"  WARNING: HF export of {self.name} has real mismatches vs SentencePiece: {rep['examples'][:2]}")
+            except Exception as e:  # noqa: BLE001 - the .model is still a valid artifact
+                info["hf_export"] = {"ok": False, "error": f"{type(e).__name__}: {str(e)[:120]}"}
+                ctx.log(f"  WARNING: HF export failed for {self.name}: {info['hf_export']['error']}")
         corpus.unlink(missing_ok=True)
-        return SPMBackend(prefix + ".model", ctx.normalizer, self.name), {"note": "SentencePiece"}
+        return SPMBackend(prefix + ".model", ctx.normalizer, self.name), info
 
     def load(self, out_dir, normalizer):
         return SPMBackend(Path(out_dir) / "spm.model", normalizer, self.name)

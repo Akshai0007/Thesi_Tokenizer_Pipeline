@@ -10,7 +10,9 @@ low-fertility tokenizer, and bigger vocabularies add embedding parameters (n_non
 from __future__ import annotations
 
 import math
+import os
 import time
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -54,8 +56,14 @@ def train_proxy(
     seed=0,
     device=None,
     micro_batch=0,
+    ckpt_path=None,
+    ckpt_every=0,
+    ckpt_key="",
+    on_ckpt=None,
     log=print,
 ) -> dict:
+    """ckpt_path/ckpt_every: save model+optimizer+RNG every N steps and RESUME from it after a crash
+    (a checkpoint is only used if its `ckpt_key` and step count match). on_ckpt(path) is called after each save."""
     t0 = time.time()
     torch.manual_seed(seed)
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
@@ -94,9 +102,24 @@ def train_proxy(
     n_micro = math.ceil(batch / mb)
     rng = np.random.default_rng(seed)
     hi = len(tr) - seq_len - 1
+    start = 0
+    if ckpt_path and Path(ckpt_path).exists():
+        try:
+            ck = torch.load(ckpt_path, map_location=device, weights_only=False)  # our own file
+            if ck.get("key") == ckpt_key and ck.get("steps") == steps:
+                model.load_state_dict(ck["model"])
+                opt.load_state_dict(ck["opt"])
+                scaler.load_state_dict(ck["scaler"])
+                rng.bit_generator.state = ck["rng"]
+                start = int(ck["step"])
+                log(f"    [{backend.name}] resuming from checkpoint at step {start}/{steps}")
+            else:
+                log(f"    [{backend.name}] checkpoint does not match this run (config/data changed) - ignoring it")
+        except Exception as e:  # noqa: BLE001 - a corrupt checkpoint must not block training
+            log(f"    [{backend.name}] could not load checkpoint ({type(e).__name__}); training from scratch")
     model.train()
     last = float("nan")
-    for i in range(steps):
+    for i in range(start, steps):
         for g in opt.param_groups:
             g["lr"] = lr_at(i)
         st = rng.integers(0, hi, size=batch)
@@ -118,6 +141,14 @@ def train_proxy(
         last = loss.item() if (i % 50 == 0 or i == steps - 1) else last
         if i % max(1, steps // 10) == 0:
             log(f"    [{backend.name}] step {i}/{steps} loss {last:.3f}")
+        if ckpt_path and ckpt_every and (i + 1) % ckpt_every == 0 and (i + 1) < steps:
+            tmp = str(ckpt_path) + ".tmp"
+            torch.save({"key": ckpt_key, "steps": steps, "step": i + 1, "model": model.state_dict(),
+                        "opt": opt.state_dict(), "scaler": scaler.state_dict(),
+                        "rng": rng.bit_generator.state}, tmp)
+            os.replace(tmp, ckpt_path)
+            if on_ckpt:
+                on_ckpt(ckpt_path)
 
     model.eval()
     n_win = (len(ev) - 1) // seq_len
@@ -133,6 +164,8 @@ def train_proxy(
                     logits = model(xb[:, :-1])
                 nll += F.cross_entropy(logits.float().reshape(-1, V), xb[:, 1:].reshape(-1), reduction="sum").item()
                 scored += xb[:, 1:].numel()
+    if ckpt_path:
+        Path(ckpt_path).unlink(missing_ok=True)  # finished: the result file supersedes the checkpoint
     bytes_scored = ev_bytes * scored / len(ev)
     bpb = nll / math.log(2) / bytes_scored
     return {

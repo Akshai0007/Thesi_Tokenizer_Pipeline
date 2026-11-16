@@ -214,3 +214,62 @@ def test_unknown_plugin_name_gives_helpful_error():
     with pytest.raises(KeyError) as e:
         registry.make("normalizer", "does_not_exist")
     assert "Available" in str(e.value) and "ml" in str(e.value)
+
+
+def _write_raw(path, src, n, size=400):
+    import gzip
+
+    with gzip.open(path, "wt", encoding="utf-8") as f:
+        for i in range(n):
+            f.write(json.dumps({"text": f"{src} ദസ്തേ " + ("മലയാളം " * (size // 8)) + f" #{src}{i}", "src": src}, ensure_ascii=False) + "\n")
+
+
+def test_capped_training_set_mixes_all_sources_not_just_the_first(tmp_path):
+    """Regression for the real Kaggle run: a 700 MB cap was filled by the first source alone (100% web)."""
+    from mltok.ingest import clean_corpus
+    from mltok.lib.io import list_shards
+
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    _write_raw(raw / "a_web.jsonl.gz", "a_web", 4000)        # big, and first in read order
+    _write_raw(raw / "b_wiki.jsonl.gz", "b_wiki", 800)
+    _write_raw(raw / "c_curated.jsonl.gz", "c_curated", 1200)
+
+    flt = [{"type": "length", "min_chars": 20}]
+    cap_mb = 0.9
+    old = clean_corpus(list_shards(raw), tmp_path / "old", flt, max_train_mb=cap_mb, balance=False, eval_permille=0, log=quiet)
+    assert set(old["train_share"]) == {"a_web"}              # the old behaviour: first source only
+
+    new = clean_corpus(list_shards(raw), tmp_path / "new", flt, max_train_mb=cap_mb, eval_permille=0, log=quiet)
+    assert set(new["train_share"]) == {"a_web", "b_wiki", "c_curated"}
+    assert all(0.25 < v < 0.42 for v in new["train_share"].values()), new["train_share"]   # ~ equal thirds
+
+    w = clean_corpus(list_shards(raw), tmp_path / "w", flt, max_train_mb=cap_mb, eval_permille=0,
+                     weights={"a_web": 0.5, "b_wiki": 0.2, "c_curated": 0.3}, log=quiet)
+    sh = w["train_share"]
+    assert sh["a_web"] > sh["c_curated"] > sh["b_wiki"] and abs(sh["a_web"] - 0.5) < 0.08, sh
+
+
+def test_exhausted_source_does_not_block_the_cap_from_filling(tmp_path):
+    from mltok.ingest import clean_corpus
+    from mltok.lib.io import list_shards
+
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    _write_raw(raw / "big.jsonl.gz", "big", 3000)
+    _write_raw(raw / "tiny.jsonl.gz", "tiny", 20)          # exhausted almost immediately
+    st = clean_corpus(list_shards(raw), tmp_path / "o", [{"type": "length", "min_chars": 20}], max_train_mb=0.8, eval_permille=0, log=quiet)
+    assert st["train_bytes_big"] > 5 * st["train_bytes_tiny"] and st["train_bytes_tiny"] > 0
+    assert st["train_bytes_big"] + st["train_bytes_tiny"] >= 0.8e6 * 0.95        # cap still reached
+
+
+def test_eval_split_covers_all_sources_even_after_cap(tmp_path):
+    from mltok.ingest import clean_corpus
+    from mltok.lib.io import list_shards
+
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    for s, n in (("a", 3000), ("b", 3000), ("c", 3000)):
+        _write_raw(raw / f"{s}.jsonl.gz", s, n)
+    st = clean_corpus(list_shards(raw), tmp_path / "o", [{"type": "length", "min_chars": 20}], max_train_mb=0.5, eval_permille=60, log=quiet)
+    assert all(st.get(f"eval_docs_{s}", 0) > 0 for s in "abc"), st

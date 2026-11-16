@@ -20,6 +20,11 @@ search:
   factors:
     normalizer: [none, ml]
     algorithm: [mlbpe, mlbpe_plain, hf_bpe, spm_unigram]
+# ---- checkpoints: every finished unit (word table, tokenizer, metrics, proxy seed, report) is pushed to the store;
+# a fresh session restores it. The notebook sets `store` from HF_REPO; on the DGX set it here or via --set.
+store: none            # e.g. {type: hf_hub, repo: Akzhai/mltok-malayalam-runs, private: true, prefix: kaggle}  (token: env HF_TOKEN)
+sync: {enabled: true, min_interval_s: 120, ckpt_push_interval_s: 900, restore: true, include_cache: true, include_checkpoints: true, include_data: false}
+
 proxy: {enabled: true, top_k: 2, model: {type: gpt, size: tiny}, seq_len: 512, batch: 32, micro_batch: 16, gpus: auto,
-        train_mb: 15, eval_mb: 3, epochs: 1, seeds: [0], lr: 0.001, vocab_sweep: [8000]}
+        train_mb: 15, eval_mb: 3, epochs: 1, checkpoint_every_steps: 0, seeds: [0], lr: 0.001, vocab_sweep: [8000]}
 baselines: [sarvamai/sarvam-1, openai-community/gpt2]

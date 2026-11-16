@@ -36,11 +36,17 @@ def verify_dir(path: str, normalizer="ml", log=print) -> bool:
         ok &= bool(cond)
         log(f"  [{'PASS' if cond else 'FAIL'}] {name} {detail}")
 
+    if not (d / "tokenizer.json").exists():
+        hint = ("this directory only has spm.model: run  python -m mltok export-hf --spm %s/spm.model --normalizer <name>"
+                % d) if (d / "spm.model").exists() else "no tokenizer.json found"
+        log(f"  [FAIL] {hint}")
+        return False
     tok = Tokenizer.from_file(str(d / "tokenizer.json"))
     log(f"tokenizer.json: vocab={tok.get_vocab_size()}")
     for t in ("<pad>", "<s>", "</s>", "<unk>"):
         check(f"special token {t} present", tok.token_to_id(t) is not None)
-    check("vocab size multiple of 64", tok.get_vocab_size() % 64 == 0)
+    mult = tok.get_vocab_size() % 64 == 0          # efficiency recommendation, not a correctness requirement
+    log(f"  [{'PASS' if mult else 'WARN'}] vocab size multiple of 64 (GPU efficiency) {'' if mult else '- consider padding/choosing a multiple of 64'}")
 
     bad = []
     for c in CASES:

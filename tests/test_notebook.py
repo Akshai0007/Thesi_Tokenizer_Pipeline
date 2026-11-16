@@ -42,3 +42,27 @@ def test_rounds_are_gated_and_default_is_safe():
     assert re.search(r"^ROUND = 1\b", first, re.M)          # Run All does the cheap round only
     assert "RUN_VARIATIONS = []" in first                   # no accidental long variations
     assert "MIN_GPUS = 2" in first
+
+
+def test_notebook_checkpoint_settings_and_token_safety():
+    first = CODE[0]
+    for setting in ("SYNC = True", "HF_REPO =", "HF_SECRET_NAMES", "SYNC_DATA = False", "CKPT_PUSH_S"):
+        assert setting in first, setting
+    text = "\n".join(CODE)
+    cli = (ROOT / "mltok" / "cli.py").read_text()
+    for cmd in ("store-check", "restore", "push"):
+        assert f'add("{cmd}"' in cli and cmd in text, cmd
+    token_cell = next(c for c in CODE if "UserSecretsClient" in c and "HF_FOUND" in c)
+    assert "_SECRETS.append(val)" in token_cell                       # masked in every log line
+    for line in token_cell.splitlines():
+        if "print(" in line:
+            assert "val" not in line.replace("HF_FOUND", "") and 'environ["HF_TOKEN"]' not in line, line   # never printed
+    assert "Akzhai" not in "".join(CODE[1:]), "no user-specific names outside the settings cell"
+
+
+def test_freeze_gates_are_honest():
+    text = "\n".join(CODE)
+    assert "export-hf" in text                                     # tells the user how to convert an old spm-only run
+    assert "has_json and mt(" in text                              # verify can no longer be silently skipped
+    assert "runner-up" in text and "train_share" in text and "eligible variant" in text           # winner-vs-runner-up gap + data-mix guard
+    assert "custom BPE did NOT win" in text                        # inconvenient results are printed, not hidden

@@ -65,9 +65,22 @@ def ingest_sources(sources: list, raw_dir, log=print) -> list[str]:
     return out_paths
 
 
-def clean_corpus(in_paths, out_dir, filters: list, *, eval_permille=5, shard_mb=64, max_train_mb=0, log=print) -> dict:
+def _source_key(path) -> str:
+    return Path(path).name.split(".")[0]  # raw files are named <source id>.jsonl.gz
+
+
+def clean_corpus(in_paths, out_dir, filters: list, *, eval_permille=5, shard_mb=64, max_train_mb=0,
+                 balance=True, weights=None, log=print) -> dict:
     """Filters (plugins) + exact dedup + deterministic hash split + sharding.
-    Text is NOT normalized here, so normalization remains an experimental factor."""
+    Text is NOT normalized here, so normalization remains an experimental factor.
+
+    Source mixing (matters only when `max_train_mb` caps the training set):
+      balance=True   sources are INTERLEAVED, always taking the next document from the source that is furthest
+                     below its target share (accepted train bytes / weight). `weights` maps source id -> weight
+                     (default: equal). A source that runs out simply stops contributing; the others fill the cap.
+      balance=False  files are read one after another, so a cap is filled by the FIRST source alone (this is
+                     what silently produced a 100%-web training set before; kept only for reproducing old runs).
+    """
     flt = [registry.make("filter", f) for f in filters]
     out_dir = Path(out_dir)
     for sub in ("train", "eval"):
@@ -77,6 +90,7 @@ def clean_corpus(in_paths, out_dir, filters: list, *, eval_permille=5, shard_mb=
     seen: set[bytes] = set()
     st: Counter = Counter()
     writers: dict[str, dict] = {}
+    cap = max_train_mb * 1_000_000
 
     def writer(split):
         w = writers.get(split)
@@ -89,36 +103,72 @@ def clean_corpus(in_paths, out_dir, filters: list, *, eval_permille=5, shard_mb=
         return w
 
     train_bytes = 0
-    for p in in_paths:
-        for text, src in iter_docs(p):
-            st["seen"] += 1
-            text = _CTRL.sub("", text.replace("\r\n", "\n").replace("\r", "\n")).strip()
-            rejected = next((f.name for f in flt if not f.keep(text)), None)
-            if rejected:
-                st["filtered"] += 1
-                st[f"filtered_by_{rejected}"] += 1
+
+    def process(text: str, src: str) -> int:
+        """Handle one raw document; returns the train bytes it added (0 if filtered/duplicate/eval/capped)."""
+        nonlocal train_bytes
+        st["seen"] += 1
+        text = _CTRL.sub("", text.replace("\r\n", "\n").replace("\r", "\n")).strip()
+        rejected = next((f.name for f in flt if not f.keep(text)), None)
+        if rejected:
+            st["filtered"] += 1
+            st[f"filtered_by_{rejected}"] += 1
+            return 0
+        h = hashlib.blake2b(text.encode("utf-8"), digest_size=12).digest()
+        if h in seen:
+            st["duplicate"] += 1
+            return 0
+        seen.add(h)
+        split = "eval" if int.from_bytes(h[:4], "big") % 1000 < eval_permille else "train"
+        if split == "train" and cap and train_bytes >= cap:
+            return 0
+        w = writer(split)
+        line = json.dumps({"text": text, "src": src}, ensure_ascii=False) + "\n"
+        w["f"].write(line)
+        nb = len(text.encode("utf-8"))
+        w["bytes"] += len(line.encode("utf-8"))
+        st[f"{split}_docs"] += 1
+        st[f"{split}_bytes"] += nb
+        st[f"{split}_docs_{src}"] += 1
+        if split == "train":
+            st[f"train_bytes_{src}"] += nb
+            train_bytes += nb
+            return nb
+        return 0
+
+    paths = list(in_paths)
+    if not balance or len(paths) == 1:
+        if cap and len(paths) > 1:
+            log("[clean] WARNING: balance=False with a training cap - the first source will fill the cap alone")
+        for p in paths:
+            for text, src in iter_docs(p):
+                process(text, src)
+    else:
+        keys = [_source_key(p) for p in paths]
+        w = {k: float((weights or {}).get(k, 1.0)) for k in keys}
+        if any(x <= 0 for x in w.values()):
+            raise ValueError("source weights must be > 0 (remove a source from `sources` to exclude it)")
+        its = {k: iter_docs(p) for k, p in zip(keys, paths)}
+        acc = {k: 0.0 for k in keys}       # accepted train bytes per source
+        consumed = {k: 0 for k in keys}    # raw docs consumed per source (keeps eval proportional after the cap)
+        active = list(keys)
+        while active:
+            if cap and train_bytes >= cap:  # training set full: keep reading only to fill the eval split evenly
+                k = min(active, key=lambda x: (consumed[x] / w[x], keys.index(x)))
+            else:
+                k = min(active, key=lambda x: (acc[x] / w[x], keys.index(x)))
+            try:
+                text, src = next(its[k])
+            except StopIteration:
+                active.remove(k)
                 continue
-            h = hashlib.blake2b(text.encode("utf-8"), digest_size=12).digest()
-            if h in seen:
-                st["duplicate"] += 1
-                continue
-            seen.add(h)
-            split = "eval" if int.from_bytes(h[:4], "big") % 1000 < eval_permille else "train"
-            if split == "train" and max_train_mb and train_bytes >= max_train_mb * 1_000_000:
-                continue
-            w = writer(split)
-            line = json.dumps({"text": text, "src": src}, ensure_ascii=False) + "\n"
-            w["f"].write(line)
-            nb = len(text.encode("utf-8"))
-            w["bytes"] += len(line.encode("utf-8"))
-            st[f"{split}_docs"] += 1
-            st[f"{split}_bytes"] += nb
-            st[f"{split}_docs_{src}"] += 1
-            if split == "train":
-                train_bytes += nb
-    for w in writers.values():
-        w["f"].close()
+            consumed[k] += 1
+            acc[k] += process(text, src)
+    for wr in writers.values():
+        wr["f"].close()
     stats = dict(st)
+    tot = sum(v for k, v in stats.items() if k.startswith("train_bytes_")) or 1
+    stats["train_share"] = {k[len("train_bytes_"):]: round(v / tot, 3) for k, v in stats.items() if k.startswith("train_bytes_")}
     (out_dir / "clean_stats.json").write_text(json.dumps(stats, indent=2))
     log(f"[clean] {stats}")
     return stats

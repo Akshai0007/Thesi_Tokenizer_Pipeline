@@ -17,7 +17,7 @@ from collections import Counter
 from pathlib import Path
 
 from . import registry
-from .contracts import Backend, Source, TrainContext
+from .contracts import Backend, Source, Store, TrainContext
 from .lib.io import iter_docs
 from .lib.marker import full_normalize, hf_full_normalizer, mark_words
 
@@ -248,7 +248,40 @@ def _check_selector(name, cls):
     return [R("PASS" if ok else "FAIL", "eligible()->bool, score()->float, proxy_score()->float")]
 
 
-_CHECKS = {"source": _check_source, "filter": _check_filter, "normalizer": _check_normalizer,
+def _check_store(name, cls):
+    out = []
+    if cls.push is Store.push or cls.pull is Store.pull:
+        return [R("FAIL", "push() and pull() must both be implemented")]
+    if not cls.enabled:
+        return [R("PASS", "no-op store (enabled = False): round-trip test not applicable")]
+    ex = getattr(cls, "example_params", None)
+    if ex is None:
+        return [R("SKIP", "needs parameters; set `example_params = {...}` on the class to enable the round-trip test")]
+    with tempfile.TemporaryDirectory() as d:
+        d = Path(d)
+        params = {k: (str(d / "remote") if v == "__TMP__" else v) for k, v in ex.items()}
+        st = _instantiate("store", name, extra=params)
+        src = d / "src"
+        (src / "sub").mkdir(parents=True)
+        (src / "a.txt").write_text("alpha")
+        (src / "sub" / "b.json").write_text('{"b": 2}')
+        st.push([(src / "a.txt", "runs/x/a.txt"), (src / "sub" / "b.json", "runs/x/sub/b.json")], "contract check")
+        got = d / "got"
+        n = st.pull("runs/x", got)
+        ok = n == 2 and (got / "a.txt").read_text() == "alpha" and (got / "sub" / "b.json").read_text() == '{"b": 2}'
+        out.append(R("PASS" if ok else "FAIL", f"push() then pull() restores the files byte-for-byte ({n} fetched)"))
+        (got / "a.txt").write_text("LOCAL EDIT")
+        n2 = st.pull("runs/x", got)
+        keep = (got / "a.txt").read_text() == "LOCAL EDIT" and n2 == 0
+        out.append(R("PASS" if keep else "FAIL", "pull() never overwrites existing local files"))
+        st.delete(["runs/x/a.txt"])
+        n3 = st.pull("runs/x", d / "after_delete")
+        out.append(R("PASS" if n3 in (1, 2) else "FAIL", f"delete() is safe to call ({n3} files remain)"))
+        out.append(R("PASS" if st.pull("runs/missing", d / "none") == 0 else "FAIL", "pull() of an unknown prefix returns 0 (no error)"))
+    return out
+
+
+_CHECKS = {"store": _check_store, "source": _check_source, "filter": _check_filter, "normalizer": _check_normalizer,
            "pretokenizer": _check_pretokenizer, "algorithm": _check_algorithm, "metric": _check_metric,
            "proxy_model": _check_proxy_model, "selector": _check_selector}
 

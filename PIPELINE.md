@@ -13,7 +13,7 @@ config (YAML) ──► ENGINE (never edited) ──► asks the registry for pl
   (plugin)  (plugin)      (engine)        (plugin)      (plugin)       (plugin)    (plugin)    (plugin)      (plugin)
 ```
 
-## 1. The eight swap points (plugins)
+## 1. The nine swap points (plugins)
 
 | # | Kind | You replace this when you want to… | Built-in files (`mltok/plugins/<kind>/`) | Config key |
 |---|---|---|---|---|
@@ -25,6 +25,7 @@ config (YAML) ──► ENGINE (never edited) ──► asks the registry for pl
 | 6 | **metric** | add/replace an **intrinsic measurement** | `basic.py`, `structure.py`, `roundtrip.py`, `stress.py` | `metrics:` |
 | 7 | **proxy_model** | change the **test language model** | `gpt.py` | `proxy.model` |
 | 8 | **selector** | change **how the winner is decided** | `default.py` | `selector:` |
+| 9 | **store** | change **where checkpoints are pushed / restored from** (Hugging Face, a directory, S3 ...) | `hf_hub.py`, `local_dir.py`, `none.py` | `store:` |
 
 Anything not in this table (engine, lib) is meant to stay as is.
 
@@ -36,6 +37,7 @@ Anything not in this table (engine, lib) is meant to stay as is.
 | `mltok/runner.py` | Orchestrates stages, one-factor-at-a-time search, caching/invalidation keys, per-GPU proxy workers, report. Knows no dataset, language or algorithm. |
 | `mltok/ingest.py` | Runs `source` plugins into raw shards; applies `filter` plugins, exact dedup, deterministic train/eval split, sharding. |
 | `mltok/proxy_train.py` | Trains/scores the proxy LM (data encoding, optimiser, mixed precision, micro-batching, bits-per-byte). Architecture comes from a `proxy_model` plugin. |
+| `mltok/sync.py` | Checkpoint manager: batches/throttles pushes to whatever `store` plugin is configured, never lets a store error stop a run, restores finished work in a fresh session. |
 | `mltok/registry.py` | `@register`, plugin discovery (built-in + your directories), source-code fingerprints. |
 | `mltok/contracts.py` | The interface each plugin kind must satisfy (this file *is* the contract). |
 | `mltok/contract_checks.py`, `mltok/templates.py` | `check` and `new-plugin` commands. |
@@ -116,6 +118,7 @@ Further efficiency built in: multi-process word counting (`resources.workers`), 
 | metric | `compute(backend, docs) -> dict` | flat, JSON-serialisable |
 | proxy_model | `build(vocab, seq_len)` → `nn.Module` | `forward(idx[B,T]) -> logits[B,T,V]`, finite |
 | selector | `eligible`, `score`, `proxy_score` | lower is better |
+| store | `push(files, message)`, `pull(prefix, dir)`, optional `delete(paths)` | push→pull restores bytes exactly; pull never overwrites local files; unknown prefix → 0, no error; writes only under its own prefix |
 
 Standard result keys other plugins may rely on: `fertility`, `bytes_per_token`, `roundtrip_ok`, `stress_roundtrip_ok`, `unk_rate`, `mark_start_rate`, `akshara_break_rate`, `bpb`. If you replace a metric and drop a key the selector needs, `selector` will raise a clear `KeyError` naming it; add the key or change the selector's `rank_by`.
 
@@ -125,3 +128,27 @@ Standard result keys other plugins may rely on: `fertility`, `bytes_per_token`, 
 * `lib` is a shared API. Changing it (rare) can affect several plugins — the test-suite exists to catch that.
 * Plugins that need extra Python packages (e.g. `pyarrow` for parquet) must have them installed; the registry reports import failures in `mltok plugins` instead of crashing the run.
 * The akshara-level constraint and seeds live in `plugins/algorithm/mlbpe.py` (Malayalam-specific by design). A different language needs its own algorithm/normalizer/filter files, not engine changes.
+
+## 8. Checkpoints and resume (`store` + `sync`)
+
+Config: `store: {type: hf_hub, repo: user/name, private: true, prefix: kaggle}` (default `none`) and
+`sync: {min_interval_s: 120, ckpt_push_interval_s: 900, restore: true, include_cache: true, include_checkpoints: true, include_data: false}`.
+The Hugging Face token is read **only from the environment** (`HF_TOKEN`); it cannot be put in a config file and is masked in notebook logs.
+
+| Level | What is saved | When | How a restart uses it |
+|---|---|---|---|
+| finished unit | word table, trained tokenizer, `metrics.json`, each `proxy_seed<N>.json`, report, `best/`, `freeze.json` | right after the unit finishes (batched, at most every `min_interval_s`; forced at stage end, on error and on exit) | `restore` pulls them; the content-addressed cache reuses every one whose key still matches |
+| inside a proxy-LM run | model + optimizer + scaler + RNG every `proxy.checkpoint_every_steps` steps | local at every interval; pushed at most every `ckpt_push_interval_s`; only the newest is kept remotely and it is deleted when the run finishes | training resumes from that step and reaches the same result as an uninterrupted run (tested) |
+| cleaned data | shards | only with `sync.include_data: true` (can be GBs) | otherwise re-ingest + re-clean; cleaning is deterministic, so cache keys still match |
+
+* A store failure (network, token, rate limit) is logged and the files stay queued; the run continues. It is retried at the next flush.
+* The `hf_hub` store writes only under its `prefix` folder and creates the repo private if missing; other files in the repo are never touched.
+* Not checkpointed (honest limits): **mid-way through one BPE training** and **mid-way through word counting of one shard** — those are minutes-scale units that are simply redone. Everything before and after them is saved.
+* Every checkpoint is a new LFS object in the repo history; for large DGX checkpoints consider `squash_every` (irreversible history squash) or a dedicated repo.
+
+## 9. Data mixing, SentencePiece export, known limits (added after the first real run — see RESULTS_LOG.md)
+
+* **Source mixing.** `split.balance: true` (default) interleaves raw sources by `split.weights` (default equal) so a `max_train_mb` cap is *shared*; `false` reads files one after another and the first source fills the cap alone. Per-source training bytes and `train_share` are written to `clean_stats.json`; the freeze checklist fails if one source exceeds 90 %. The eval split mirrors the raw pool (per-source fertility is reported, so out-of-domain effects are visible).
+* **`resources.max_word_types`** caps the word table used by `mlbpe` only; a warning prints if the kept types cover < 97 % of the text (algorithms that stream all text are then not comparable).
+* **SentencePiece Unigram -> Hugging Face.** `spm_unigram` writes `tokenizer.json` next to `spm.model` (rebuilt piece table, byte fallback, digit splitting, our normalizer). Each export is parity-checked against SentencePiece on sample text + built-in edge cases: *identical ids* or an *exact Viterbi score tie* are accepted, anything else rejects the export (`info.hf_export`). For an older run: `python -m mltok export-hf --spm <best>/spm.model --normalizer ml`. `spm_bpe` is not converted (HF BPE is a different model class).
+* **Known limitations.** Text containing special tokens does not round-trip exactly (marker added per segment); plain-text pretraining is unaffected. SentencePiece and the converted tokenizer can break an exact Viterbi tie differently (rare, equally probable, lossless).

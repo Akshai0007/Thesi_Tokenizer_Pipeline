@@ -12,7 +12,8 @@ filters:
   - {type: length, min_chars: 80, max_chars: 300000}
   - {type: ml_ratio, min_ratio: 0.5}
   - {type: line_repetition}
-split: {eval_permille: 3, shard_mb: 64, max_train_mb: 0}
+# max_train_mb: 0 = no cap -> sources are used in full (natural mix). If you set a cap, `balance`/`weights` interleave them.
+split: {eval_permille: 3, shard_mb: 64, max_train_mb: 0, balance: true}
 
 components: {normalizer: ml, pretokenizer: word, algorithm: mlbpe, vocab: 32000}
 resources: {workers: 32, threads: 32, max_word_types: 4000000, spm_max_mb: 3000}
@@ -23,6 +24,11 @@ search:
     algorithm: [mlbpe, mlbpe_plain, hf_bpe, spm_unigram]
 metrics: [basic, structure, roundtrip, stress]
 selector: {type: default}
+# ---- checkpoints: every finished unit (word table, tokenizer, metrics, proxy seed, report) is pushed to the store;
+# a fresh session restores it. The notebook sets `store` from HF_REPO; on the DGX set it here or via --set.
+store: none            # e.g. {type: hf_hub, repo: Akzhai/mltok-malayalam-runs, private: true, prefix: kaggle}  (token: env HF_TOKEN)
+sync: {enabled: true, min_interval_s: 120, ckpt_push_interval_s: 900, restore: true, include_cache: true, include_checkpoints: true, include_data: false}
+
 proxy:
   enabled: true
   top_k: 4
@@ -34,6 +40,7 @@ proxy:
   train_mb: 2500
   eval_mb: 50
   epochs: 1
+  checkpoint_every_steps: 1000      # mid-training proxy checkpoints (resume after a crash); 0 = off
   seeds: [0]                  # [0,1,2] -> mean +/- std per variant (noise control)
   lr: 0.0006
   vocab_sweep: [16000, 24000, 32000, 48000, 64000]

@@ -29,6 +29,7 @@ from .lib.backends import HubBackend
 from .lib.bpe_core import DEFAULT_SPECIALS
 from .lib.io import count_words, data_fingerprint, iter_docs, iter_texts, list_shards
 from .registry import fingerprint, keyhash, make, slug, spec_of
+from .sync import Sync
 
 DEFAULT_METRICS = ["basic", "structure", "roundtrip", "stress"]
 DEFAULT_COLUMNS = ["fertility", "bytes_per_token", "renyi_eff", "mark_start_rate", "akshara_break_rate", "unk_rate", "roundtrip_ok", "stress_roundtrip_ok"]
@@ -78,6 +79,7 @@ class Run:
         self._inst: dict = {}
         self.variants: dict[str, dict] = {}
         self.timings: dict[str, float] = {}
+        self.sync = Sync(cfg, self.root, Path(cfg["paths"]["clean"]), log=_log)
 
     # ---------------------------------------------------------------- components
     def algo_cls(self, v):
@@ -148,6 +150,8 @@ class Run:
                                   workers=self.res.get("workers", 1),
                                   max_docs_per_shard=self.res.get("max_docs_per_shard", 0), log=_log))
             f.write_bytes(pickle.dumps(wc, protocol=4))
+            self.sync.mark(f)
+            self.sync.flush(message=f"{self.root.name}: word table")
         self._wc[key] = wc
         _log(f"word table: {len(wc):,} types")
         return wc
@@ -168,8 +172,15 @@ class Run:
         t0 = time.time()
         be, info = algo.train(ctx)
         info = {**info, "train_seconds_total": round(time.time() - t0, 1)}
+        mass = info.get("word_mass_covered")
+        if mass is not None and mass < 0.97:
+            _log(f"   WARNING: {self.vname(v)} trained on word types covering only {mass:.1%} of the text "
+                 f"(resources.max_word_types caps the word table) - raise it, or this variant is handicapped against "
+                 f"algorithms that see all the data")
         (d / "variant.json").write_text(json.dumps(v))
         done.write_text(json.dumps(info))
+        self.sync.mark(d)
+        self.sync.flush(message=f"{self.root.name}: tokenizer {self.vname(v)}")
         return be, info
 
     # ---------------------------------------------------------------- stage: metrics
@@ -192,6 +203,8 @@ class Run:
             m.update(make("metric", ms).compute(be, docs))
         m.update(_key=key, name=self.vname(v), variant=v, train_info=info)
         mp.write_text(json.dumps(m, indent=2))
+        self.sync.mark(mp)
+        self.sync.flush(message=f"{self.root.name}: metrics {self.vname(v)}")
         _log("   " + self.vname(v) + ": " + " ".join(
             f"{k}={m[k]:.4g}" for k in ("fertility", "bytes_per_token", "mark_start_rate", "akshara_break_rate", "roundtrip_ok") if k in m))
         return m
@@ -233,11 +246,18 @@ class Run:
             make("proxy_model", pc.get("model", {"type": "gpt", "size": "tiny"})),
             seq_len=pc.get("seq_len", 512), batch=pc.get("batch", 64), train_mb=pc.get("train_mb", 100),
             eval_mb=pc.get("eval_mb", 10), epochs=pc.get("epochs", 1), lr=pc.get("lr", 1e-3),
-            seed=seed, micro_batch=pc.get("micro_batch", 0), log=_log,
+            seed=seed, micro_batch=pc.get("micro_batch", 0),
+            ckpt_path=str(self.vdir(v) / f"proxy_seed{seed}.ckpt"), ckpt_every=int(pc.get("checkpoint_every_steps", 0)),
+            ckpt_key=self.proxy_key(v, seed),
+            on_ckpt=lambda path: (self.sync.mark(path), self.sync.flush()),
+            log=_log,
         )
         r["_key"] = self.proxy_key(v, seed)
         r["seed"] = seed
         pp.write_text(json.dumps(r, indent=2))
+        self.sync.mark(pp)
+        self.sync.mark_delete(self.vdir(v) / f"proxy_seed{seed}.ckpt")
+        self.sync.flush(message=f"{self.root.name}: proxy {self.vname(v)} seed {seed}")
         _log(f"   {self.vname(v)} seed {seed}: BPB={r['bpb']:.4f} ({r['seconds']}s)")
         return r
 
@@ -329,6 +349,7 @@ class Run:
                 self.variants[n] = comb
                 results[n] = self.ensure_metrics(comb)
         self.timings["intrinsic_s"] = round(time.time() - t0, 1)
+        self.sync.flush(force=True, message=f"{self.root.name}: intrinsic stage done")
         return results
 
     def stage_proxy(self, results: dict[str, dict]) -> dict[str, dict]:
@@ -344,8 +365,9 @@ class Run:
                         key=lambda n: self.selector.score(results[n]))
         chosen = ranked[: pc.get("top_k", 3)]
         for n, v in self.variants.items():  # reference algorithms always get a proxy run
+            pre_ok = v["pretokenizer"]["type"] == "-" or v["pretokenizer"] == self.base["pretokenizer"]  # SentencePiece ignores it
             if (v["algorithm"]["type"] in pc.get("always_include", ["hf_bpe"]) and v["normalizer"] == self.base["normalizer"]
-                    and v["pretokenizer"] == self.base["pretokenizer"] and n not in chosen):
+                    and pre_ok and v["vocab"] == self.base["vocab"] and n not in chosen):
                 chosen.append(n)
         out = self.run_proxies(chosen)
 
@@ -364,6 +386,7 @@ class Run:
                 new.append(n2)
             out.update(self.run_proxies(new))
         self.timings["proxy_s"] = round(time.time() - t0, 1)
+        self.sync.flush(force=True, message=f"{self.root.name}: proxy stage done")
         return out
 
     def stage_baselines(self) -> dict[str, dict]:
@@ -465,13 +488,25 @@ class Run:
               "(low-fertility tokenizers see more text per window). Confirm the winner on the larger DGX proxy._"]
         (self.root / "report.md").write_text("\n".join(L))
         (self.root / "timings.json").write_text(json.dumps(self.timings))
+        for f in ("report.md", "results.csv", "timings.json"):
+            self.sync.mark(self.root / f)
+        self.sync.mark(best)
+        self.sync.flush(force=True, message=f"{self.root.name}: report + best ({win})")
         _log(f"report -> {self.root / 'report.md'}; best -> {best}")
         return win
 
 
 def run(cfg: dict, stage: str = "all") -> str:
+    registry.load_plugins(cfg.get("plugins_dir", []))
+    root = Path(cfg["paths"]["runs"]) / cfg["name"]
+    pre = Sync(cfg, root, Path(cfg["paths"]["clean"]), log=_log)
+    if pre.enabled and pre.restore_on_start:  # fresh session: pull finished work first
+        pre.restore("all" if pre.include_data else "run")
     r = Run(cfg)
-    results = r.stage_intrinsic()
-    proxy = r.stage_proxy(results) if stage in ("all", "proxy") else {}
-    baselines = r.stage_baselines() if stage in ("all", "baselines", "proxy") else {}
-    return r.finish(results, proxy, baselines)
+    try:
+        results = r.stage_intrinsic()
+        proxy = r.stage_proxy(results) if stage in ("all", "proxy") else {}
+        baselines = r.stage_baselines() if stage in ("all", "baselines", "proxy") else {}
+        return r.finish(results, proxy, baselines)
+    finally:  # crash, Ctrl-C or normal exit: never leave finished work un-pushed
+        r.sync.flush(force=True, message=f"{r.root.name}: final flush")

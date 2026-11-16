@@ -3,8 +3,8 @@
 Train, compare and select a **from-scratch Malayalam tokenizer** on Kaggle (cheap selection) and then the DGX (final run).
 Output: a plain Hugging Face `tokenizer.json` (byte-fallback BPE, loads with `transformers` — no custom code).
 
-**Everything swappable is one file.** Dataset, filters, normalizer, pre-tokenizer, training algorithm, metrics, proxy model and
-selection rule are *plugins* that depend only on a small fixed contract, never on each other. Replace one file (or one config entry)
+**Everything swappable is one file.** Dataset, filters, normalizer, pre-tokenizer, training algorithm, metrics, proxy model,
+selection rule and checkpoint store are *plugins* that depend only on a small fixed contract, never on each other. Replace one file (or one config entry)
 and the rest of the pipeline is untouched. **Read [`PIPELINE.md`](PIPELINE.md)** for the full file map, the contracts, the swap recipes
 and exactly what each change recomputes.
 
@@ -43,6 +43,13 @@ The notebook works in **gated rounds**. Set `ROUND` in the first cell and *Run A
 New session on a fresh machine? Keep `ROUND` and set `DONE_ROUNDS = [1, 2]` for gates that already passed: their runs are skipped (get-code + install always re-run) and attached previous output is restored.
 `proxy.seeds: [0,1,2]` reports mean ± std BPB per variant and flags a top-2 gap inside the seed spread as a **tie**.
 
+### Checkpoints to Hugging Face (so nothing is lost if a session dies)
+Every finished unit (word table, tokenizer, metrics, each proxy seed, report, `best/`) is pushed to a **new private** Hugging Face model repo, and the long proxy-LM training saves mid-run checkpoints that resume after a crash.
+1. Create a Kaggle Secret (Add-ons → Secrets) named `HF_TOKEN` with **write** access and attach it to the notebook.
+2. In the notebook settings set `HF_REPO = "<you>/<new-repo-name>"` — use a *new* name, not an existing model repo (the store only writes under its own `mltok/` folder, but a dedicated repo is cleaner).
+3. Gate 1 runs `store-check` (push → pull → delete a tiny file) so a bad token fails in seconds, not after hours.
+A fresh session restores automatically (`restore`) and the cache reuses everything still valid. Details and limits: PIPELINE.md §8.
+
 ### What uses CUDA
 * **Proxy language models: both GPUs.** One worker process per GPU (`CUDA_VISIBLE_DEVICES` pinned) takes a share of the tokenizer variants (`proxy.gpus: auto`). fp16+GradScaler on T4/P100, bf16 on A100 (chosen from compute capability; `is_bf16_supported` is true on T4 via slow emulation).
 * **Tokenizer training, word counting, encoding, metrics: CPU.** BPE training is sequential and hash-table bound; there is no practical GPU speed-up. They use all CPU cores (`resources.workers`).
@@ -59,8 +66,11 @@ The deciding number is **proxy-LM bits-per-byte (BPB)** — the same small GPT o
 The winner is picked among **eligible** variants only (lossless on eval docs *and* on a stress set of emoji / other scripts / ZWNJ / odd whitespace) — a tokenizer without byte fallback can score a good BPB and still be unusable.
 Confounds: fixed context holds more text for low-fertility tokenizers; bigger vocabularies add embedding parameters (`n_nonembed` is logged). Confirm the Kaggle winner on the DGX proxy before the final run.
 
+## First real run
+See `RESULTS_LOG.md`: SentencePiece Unigram beat our constrained BPE and stock BPE on proxy-LM bits-per-byte (the script-integrity diagnostics did not predict that), and the run exposed a data-mix bug that is now fixed.
+
 ## Verified vs not verified (honest status)
-Verified in the dev sandbox (CPU, synthetic data): **73 tests pass** (2 GPU tests skip without CUDA): Python and HF normalizers/pre-tokenizers agree;
+Verified in the dev sandbox (CPU, synthetic data): **97 tests pass** (2 GPU tests skip without CUDA): Python and HF normalizers/pre-tokenizers agree;
 exported tokenizer equals a slow reference BPE encoder; lossless round-trip incl. byte fallback and old-style chillu; loads in `transformers.AutoTokenizer` with chat template;
 every built-in plugin passes its contract check and the independence rule; every starter template is a valid plugin; a brand-new dataset works as one file; replacing a plugin
 invalidates exactly its dependents (and nothing else); resumable runner; multi-process counting equals single-process; per-GPU worker fan-out (with CPU workers).

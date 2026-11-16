@@ -197,3 +197,34 @@ class Selector(Plugin):
 
     def proxy_score(self, proxy: dict) -> float:
         raise NotImplementedError
+
+
+# --------------------------------------------------------------------------- store
+class Store(Plugin):
+    """WHERE CHECKPOINTS GO (and where a restart restores from).
+
+    push(files, message)            files = [(local_path, remote_relpath), ...] uploaded as ONE batch/commit
+    pull(remote_prefix, local_dir)  fetch every remote file under `remote_prefix` into `local_dir`
+                                    (relative layout preserved, existing local files are NOT overwritten);
+                                    returns the number of files fetched
+    delete(remote_paths)            optional clean-up of obsolete remote files (default: no-op)
+
+    `remote_relpath` is relative to the store's own root; the store adds its own prefix/bucket/repo.
+    Stores must be safe to call often and must never write outside their own prefix.
+    The engine treats every store error as non-fatal (logs it, keeps the files queued, retries later).
+    Config: ``store: {type: <name>, ...params}``  (default: ``none``).
+    """
+
+    #: False for the no-op store (the contract check then skips the round-trip test)
+    enabled = True
+    #: optional dict used by the contract check; "__TMP__" is replaced by a temp directory
+    example_params = None
+
+    def push(self, files: list, message: str = "") -> None:
+        raise NotImplementedError
+
+    def pull(self, remote_prefix: str, local_dir, skip_existing: bool = True) -> int:
+        raise NotImplementedError
+
+    def delete(self, remote_paths: list) -> None:
+        return None

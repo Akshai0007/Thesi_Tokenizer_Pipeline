@@ -38,6 +38,7 @@ KINDS = (
     "metric",  # intrinsic evaluation metrics
     "proxy_model",  # architecture of the proxy language model
     "selector",  # eligibility + ranking rules
+    "store",  # where checkpoints are pushed to / restored from
 )
 
 _REG: dict[str, dict[str, type]] = {k: {} for k in KINDS}

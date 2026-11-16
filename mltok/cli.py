@@ -61,6 +61,67 @@ def cmd_clean(a):
     if not paths:
         raise SystemExit(f"no raw files under {cfg['paths']['raw']} - run `mltok ingest` first")
     clean_corpus(paths, cfg["paths"]["clean"], cfg.get("filters", []), log=_log, **cfg.get("split", {}))
+    sy = _sync(cfg)
+    if sy.enabled and sy.include_data:
+        sy.push_tree(cfg["paths"]["clean"], message="cleaned data")
+
+
+def _sync(cfg):
+    from .sync import Sync
+
+    return Sync(cfg, Path(cfg["paths"]["runs"]) / cfg["name"], Path(cfg["paths"]["clean"]), log=_log)
+
+
+def cmd_restore(a):
+    cfg = load_config(a.config, _kv(a.set))
+    _plugins(cfg)
+    sy = _sync(cfg)
+    if not sy.enabled:
+        print("no store configured (store: none) - nothing to restore")
+        return
+    sy.restore(a.what)
+
+
+def cmd_push(a):
+    cfg = load_config(a.config, _kv(a.set))
+    _plugins(cfg)
+    sy = _sync(cfg)
+    if not sy.enabled:
+        print("no store configured (store: none) - nothing to push")
+        return
+    sy.push_tree(sy.root, message=f"{sy.name}: manual push")
+    if a.data and sy.clean_dir:
+        sy.include_data = True            # explicit request on the command line
+        sy.push_tree(sy.clean_dir, message="cleaned data")
+
+
+def cmd_store_check(a):
+    """Push a tiny file, read it back, delete it: proves the store (and its token) works BEFORE a long run."""
+    import tempfile
+    import time
+
+    cfg = load_config(a.config, _kv(a.set))
+    _plugins(cfg)
+    sy = _sync(cfg)
+    if not sy.enabled:
+        print("[FAIL] no store configured (store: none)")
+        sys.exit(1)
+    try:
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "ping.txt"
+            payload = f"mltok store check {time.time()}"
+            f.write_text(payload)
+            remote = f"healthcheck/{sy.name}/ping.txt"
+            sy.store.push([(f, remote)], "mltok store check")
+            got = Path(d) / "got"
+            n = sy.store.pull(f"healthcheck/{sy.name}", got)
+            ok = n == 1 and (got / "ping.txt").read_text() == payload
+            sy.store.delete([remote])
+    except Exception as e:  # noqa: BLE001 - print the type/message only, never credentials
+        print(f"[FAIL] store check failed: {type(e).__name__}: {str(e)[:200]}")
+        sys.exit(1)
+    print("[PASS] store push -> pull round trip works" if ok else "[FAIL] store round trip returned different data")
+    sys.exit(0 if ok else 1)
 
 
 def cmd_run(a):
@@ -103,6 +164,32 @@ def cmd_eval(a):
     print(json.dumps(out, indent=2, ensure_ascii=False))
 
 
+def cmd_export_hf(a):
+    """Convert an existing SentencePiece Unigram model (e.g. a previous run's best/spm.model) to tokenizer.json."""
+    from . import registry
+    from .lib.io import iter_docs, list_shards
+    from .lib.spm_export import export_hf
+
+    _plugins(None, a.plugins_dir)
+    norm = registry.make("normalizer", json.loads(a.normalizer) if a.normalizer.startswith("{") else a.normalizer)
+    texts = []
+    if a.data:
+        for p in list_shards(a.data):
+            for t, _ in iter_docs(p):
+                texts.append(t)
+                if len(texts) >= a.max_docs:
+                    break
+            if len(texts) >= a.max_docs:
+                break
+    out = a.out or str(Path(a.spm).parent)
+    rep = export_hf(a.spm, out, norm, texts)
+    print(json.dumps({k: v for k, v in rep.items() if k != "examples"}, indent=2))
+    for ex in rep["examples"]:
+        print("REAL MISMATCH:", ex)
+    print(f"wrote tokenizer.json etc. to {out}")
+    sys.exit(0 if rep["ok"] else 1)
+
+
 def cmd_verify(a):
     from .verify import verify_dir
 
@@ -124,6 +211,7 @@ def cmd_proxy_worker(a):
         v = json.loads((r.vroot / dname / "variant.json").read_text())
         r.variants[r.vname(v)] = v
         r.ensure_proxy(v, int(seed))
+    r.sync.flush(force=True, message="proxy worker: final flush")
 
 
 def cmd_selftest(a):
@@ -187,6 +275,11 @@ def main(argv=None):
     add("clean", cmd_clean)
     s = add("run", cmd_run)
     s.add_argument("--stage", default="all", choices=["intrinsic", "proxy", "baselines", "all"])
+    s = add("restore", cmd_restore)
+    s.add_argument("--what", default="run", choices=["run", "data", "all"])
+    add("store-check", cmd_store_check)
+    s = add("push", cmd_push)
+    s.add_argument("--data", action="store_true", help="also push the cleaned data shards")
     s = add("synth", cmd_synth, config=False)
     s.add_argument("--seed-file", default="data/seed_ml.txt")
     s.add_argument("--out", required=True)
@@ -199,6 +292,12 @@ def main(argv=None):
     s.add_argument("--max-docs", type=int, default=20000)
     s.add_argument("--normalizer", default="ml", help="plugin name or JSON spec")
     s.add_argument("--metrics", default="basic,structure,roundtrip")
+    s = add("export-hf", cmd_export_hf, config=False, plugdir=True)
+    s.add_argument("--spm", required=True, help="path to spm.model (SentencePiece UNIGRAM)")
+    s.add_argument("--out", help="output directory (default: next to the model)")
+    s.add_argument("--normalizer", default="ml", help="the normalizer the model was trained with (plugin name or JSON spec)")
+    s.add_argument("--data", help="optional cleaned shards to use as extra parity-check text")
+    s.add_argument("--max-docs", type=int, default=2000)
     s = add("verify", cmd_verify, config=False, plugdir=True)
     s.add_argument("--tokenizer", required=True)
     s.add_argument("--normalizer", default="ml")
