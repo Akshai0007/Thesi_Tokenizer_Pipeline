@@ -64,5 +64,19 @@ def test_freeze_gates_are_honest():
     text = "\n".join(CODE)
     assert "export-hf" in text                                     # tells the user how to convert an old spm-only run
     assert "has_json and mt(" in text                              # verify can no longer be silently skipped
-    assert "runner-up" in text and "train_share" in text and "eligible variant" in text           # winner-vs-runner-up gap + data-mix guard
+    assert "runner-up" in text and "train_share" in text and "eligible variant" in text and "standard error" in text           # winner-vs-runner-up gap + data-mix guard
     assert "custom BPE did NOT win" in text                        # inconvenient results are printed, not hidden
+
+
+def test_one_shot_mode_is_available_but_off_by_default():
+    first = CODE[0]
+    assert "ONE_SHOT = False" in first and "EXTRAS_START_BEFORE_H" in first and "T0 = time.time()" in first
+    assert "if ONE_SHOT:\n    ROUND = 5" in first                 # one Run All = rounds 1..5
+    text = "\n".join(CODE)
+    assert "session time used" in text                              # summary cell
+    assert "ONE_SHOT and used_h > EXTRAS_START_BEFORE_H" in text    # extras are skipped when time is short
+
+
+def test_dry_run_gpu_gate_only_judges_jobs_that_actually_ran():
+    text = "\n".join(CODE)
+    assert "os.path.getmtime(f) >= T0" in text and "restored from the store" in text

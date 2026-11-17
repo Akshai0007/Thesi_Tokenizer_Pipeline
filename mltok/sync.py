@@ -8,6 +8,8 @@ Policy
   stage ends, errors and exits flush immediately.
 * Mid-training proxy-LM checkpoints are big, so they have their own slower interval
   (`sync.ckpt_push_interval_s`, default 900 s) and only the newest one is kept remotely.
+* Pushes run in a BACKGROUND thread: training never waits for the network (a Hub outage cannot stall it).
+  Stage ends, errors and exits (`force=True`) wait for the push to finish.
 * A failing store NEVER stops the run: the error is logged, files stay queued, the next flush retries.
 * `restore()` pulls finished work (not overwriting local files) so a fresh session resumes where the
   last one stopped; the content-addressed cache then decides what is still valid.
@@ -19,7 +21,9 @@ Config:
 """
 from __future__ import annotations
 
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from . import registry
@@ -48,7 +52,10 @@ class Sync:
         self._ckpt: dict[Path, str] = {}
         self._to_delete: list[str] = []
         self._last = 0.0
-        self._last_ckpt = 0.0
+        self._last_ckpt = time.time()   # a checkpoint is pushed only after a FULL interval: short jobs never upload one
+        self._lock = threading.RLock()
+        self._pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="mltok-sync")
+        self._inflight = None
         self.pushes = 0
         self.failures = 0
 
@@ -74,6 +81,10 @@ class Sync:
             return
         p = Path(path)
         files = [f.resolve() for f in (p.rglob("*") if p.is_dir() else [p]) if f.is_file()]
+        with self._lock:
+            self._mark_files(files)
+
+    def _mark_files(self, files) -> None:
         for f in files:
             if f.name.endswith(_SKIP_SUFFIX):
                 continue
@@ -98,49 +109,77 @@ class Sync:
         if not self.enabled:
             return
         rel = self.remote_for(Path(path))
-        self._ckpt.pop(Path(path).resolve(), None)
-        if rel:
-            self._to_delete.append(rel)
+        with self._lock:
+            self._ckpt.pop(Path(path).resolve(), None)
+            if rel:
+                self._to_delete.append(rel)
 
     # ------------------------------------------------------------------ pushing
-    def flush(self, force: bool = False, message: str = "") -> bool:
-        """Upload queued files. Returns True if nothing is left queued."""
+    def wait(self) -> None:
+        """Block until any background push has finished."""
+        fut = self._inflight
+        if fut is not None:
+            fut.result()
+
+    def flush(self, force: bool = False, message: str = "", block: bool | None = None) -> bool:
+        """Upload queued files. `force` ignores the throttle and WAITS (stage end / error / exit); a normal flush
+        is throttled and runs in the background. Returns True if nothing is left queued."""
         if not self.enabled:
             return True
-        now = time.time()
-        batch = {}
-        if self._dirty and (force or now - self._last >= self.min_interval):
-            batch.update(self._dirty)
-        if self._ckpt and (force or now - self._last_ckpt >= self.ckpt_interval):
-            batch.update(self._ckpt)
-        if not batch and not (force and self._to_delete):
-            return not (self._dirty or self._ckpt)
-        files = [(f, r) for f, r in batch.items() if f.exists()]
+        block = force if block is None else block
+        if block:
+            self.wait()
+        with self._lock:
+            if self._inflight is not None and not self._inflight.done():
+                return False  # a push is running; files stay queued and go with the next flush
+            now = time.time()
+            batch = {}
+            if self._dirty and (force or now - self._last >= self.min_interval):
+                batch.update(self._dirty)
+            if self._ckpt and (force or now - self._last_ckpt >= self.ckpt_interval):
+                batch.update(self._ckpt)
+            deletes = list(self._to_delete) if (force or batch) else []
+            if not batch and not deletes:
+                return not (self._dirty or self._ckpt)
+            items = []
+            for f, r in batch.items():
+                if f.exists():
+                    st = f.stat()
+                    items.append((f, r, (st.st_mtime_ns, st.st_size)))
+            self._to_delete = [d for d in self._to_delete if d not in deletes]
+        if block:
+            return self._push_batch(items, message, deletes) and not self._dirty
+        self._inflight = self._pool.submit(self._push_batch, items, message, deletes)
+        return False
+
+    def _push_batch(self, items, message, deletes) -> bool:
         ok = True
         try:
-            for i in range(0, len(files), 100):  # chunk: keeps each commit small
-                chunk = files[i : i + 100]
-                self.store.push(chunk, message or f"{self.name}: {len(chunk)} file(s)")
-                for f, _ in chunk:
-                    self._dirty.pop(f, None)
-                    self._ckpt.pop(f, None)
-                    if f.exists():
-                        st = f.stat()
-                        self._pushed[f] = (st.st_mtime_ns, st.st_size)
-            if files:
-                self.pushes += 1
-                self._last = time.time()
-                if any(self._is_ckpt(f) for f, _ in files):
-                    self._last_ckpt = self._last
-                self.log(f"[sync] pushed {len(files)} file(s)")
-            if self._to_delete:
-                self.store.delete(self._to_delete)
-                self._to_delete = []
+            for i in range(0, len(items), 100):  # chunk: keeps each commit small
+                chunk = items[i : i + 100]
+                self.store.push([(f, r) for f, r, _ in chunk], message or f"{self.name}: {len(chunk)} file(s)")
+                with self._lock:
+                    for f, _, sig in chunk:
+                        if f.exists() and (f.stat().st_mtime_ns, f.stat().st_size) == sig:  # not modified while uploading
+                            self._dirty.pop(f, None)
+                            self._ckpt.pop(f, None)
+                            self._pushed[f] = sig
+            if items:
+                with self._lock:
+                    self.pushes += 1
+                    self._last = time.time()
+                    if any(self._is_ckpt(f) for f, _, _ in items):
+                        self._last_ckpt = self._last
+                self.log(f"[sync] pushed {len(items)} file(s)")
+            if deletes:
+                self.store.delete(deletes)
         except Exception as e:  # noqa: BLE001 - never kill the run because of the store
             ok = False
-            self.failures += 1
+            with self._lock:
+                self.failures += 1
+                self._to_delete.extend(deletes)
             self.log(f"[sync] push failed ({type(e).__name__}: {str(e)[:160]}); files stay queued, will retry")
-        return ok and not (self._dirty and force)
+        return ok
 
     # ------------------------------------------------------------------ restoring
     def restore(self, what: str = "run") -> int:

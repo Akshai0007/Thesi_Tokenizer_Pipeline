@@ -108,3 +108,23 @@ def test_multi_seed_proxy_reports_mean_and_spread(workspace):
     run(cfg)
     assert all(f.stat().st_mtime_ns == stamp[f] for f in files)
     assert len(list((root / "variants").glob("*/proxy_seed*.json"))) == 3
+
+
+def test_se_diff_and_proxy_summary_support_a_real_significance_check(workspace):
+    from mltok.runner import se_diff
+
+    a = {"bpb": 0.7349, "bpb_std": 0.0021, "n_seeds": 3}
+    b = {"bpb": 0.7380, "bpb_std": 0.0005, "n_seeds": 3}
+    se = se_diff(a, b)
+    assert 0.0014 < se < 0.0017                                   # sample variance (n-1): the real run's 64K-vs-48K comparison
+    z = (0.7380 - 0.7349) / se
+    assert 1.9 < z < 2.2                                           # BORDERLINE (z ~ 2.0): the old "gap > 1 std" rule called this clear
+    assert se_diff({"bpb_std": 0.0, "n_seeds": 1}, {"bpb_std": 0.0, "n_seeds": 1}) == 0.0
+    cfg = copy.deepcopy(workspace)
+    cfg["name"] = "t_summary"
+    cfg["proxy"].update(seeds=[0, 1], top_k=1, gpus=[])
+    cfg["search"]["factors"] = {}
+    run(cfg)
+    ps = json.loads((Path(cfg["paths"]["runs"]) / "t_summary" / "proxy_summary.json").read_text())
+    assert ps and all(v["n_seeds"] == 2 and len(v["bpb_seeds"]) == 2 for v in ps.values())
+    assert "standard error" in (Path(cfg["paths"]["runs"]) / "t_summary" / "report.md").read_text() or len(ps) < 2

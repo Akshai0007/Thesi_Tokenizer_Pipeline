@@ -66,11 +66,11 @@ The deciding number is **proxy-LM bits-per-byte (BPB)** — the same small GPT o
 The winner is picked among **eligible** variants only (lossless on eval docs *and* on a stress set of emoji / other scripts / ZWNJ / odd whitespace) — a tokenizer without byte fallback can score a good BPB and still be unusable.
 Confounds: fixed context holds more text for low-fertility tokenizers; bigger vocabularies add embedding parameters (`n_nonembed` is logged). Confirm the Kaggle winner on the DGX proxy before the final run.
 
-## First real run
-See `RESULTS_LOG.md`: SentencePiece Unigram beat our constrained BPE and stock BPE on proxy-LM bits-per-byte (the script-integrity diagnostics did not predict that), and the run exposed a data-mix bug that is now fixed.
+## Real runs
+See `RESULTS_LOG.md`. Run 1: SentencePiece Unigram beat our constrained BPE and stock BPE (script-integrity diagnostics did not predict that); it exposed a data-mix bug. Run 2 (balanced data): Unigram still wins by a clear margin over four BPE implementations; the constraint is neutral on BPB; vocabulary 32K → 48K → 64K improves BPB with diminishing returns.
 
 ## Verified vs not verified (honest status)
-Verified in the dev sandbox (CPU, synthetic data): **97 tests pass** (2 GPU tests skip without CUDA): Python and HF normalizers/pre-tokenizers agree;
+Verified in the dev sandbox (CPU, synthetic data): **103 tests pass** (2 GPU tests skip without CUDA): Python and HF normalizers/pre-tokenizers agree;
 exported tokenizer equals a slow reference BPE encoder; lossless round-trip incl. byte fallback and old-style chillu; loads in `transformers.AutoTokenizer` with chat template;
 every built-in plugin passes its contract check and the independence rule; every starter template is a valid plugin; a brand-new dataset works as one file; replacing a plugin
 invalidates exactly its dependents (and nothing else); resumable runner; multi-process counting equals single-process; per-GPU worker fan-out (with CPU workers).

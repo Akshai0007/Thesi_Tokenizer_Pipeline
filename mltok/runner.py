@@ -35,6 +35,15 @@ DEFAULT_METRICS = ["basic", "structure", "roundtrip", "stress"]
 DEFAULT_COLUMNS = ["fertility", "bytes_per_token", "renyi_eff", "mark_start_rate", "akshara_break_rate", "unk_rate", "roundtrip_ok", "stress_roundtrip_ok"]
 
 
+def se_diff(a: dict, b: dict) -> float:
+    """Standard error of (mean_a - mean_b) from per-variant seed statistics (bpb_std is the population std)."""
+    def var_of_mean(x):
+        n = x.get("n_seeds", 1)
+        sample_var = (x.get("bpb_std", 0.0) ** 2) * n / (n - 1) if n > 1 else 0.0
+        return sample_var / max(n, 1)
+    return (var_of_mean(a) + var_of_mean(b)) ** 0.5
+
+
 def load_config(path: str, overrides: dict | None = None) -> dict:
     cfg = yaml.safe_load(Path(path).read_text())
     for k, v in (overrides or {}).items():
@@ -476,19 +485,22 @@ class Run:
             elig = [(n, p) for n, p in ranked if sel.eligible(results[n])]
             if len(elig) >= 2:
                 (a, pa), (b, pb) = elig[0], elig[1]
-                gap, noise = pb["bpb"] - pa["bpb"], max(pa.get("bpb_std", 0), pb.get("bpb_std", 0))
-                if pa.get("n_seeds", 1) < 2:
-                    L += ["", f"_Top-2 gap: {gap:.4f} BPB ({a} vs {b}). Only one seed was run, so noise is unknown - rerun with `proxy.seeds: [0,1,2]`._"]
+                gap, se = pb["bpb"] - pa["bpb"], se_diff(pa, pb)
+                if pa.get("n_seeds", 1) < 2 or pb.get("n_seeds", 1) < 2:
+                    L += ["", f"_Top-2 gap: {gap:.4f} BPB ({a} vs {b}). Fewer than 2 seeds, so noise is unknown - rerun with `proxy.seeds: [0,1,2]`._"]
                 else:
-                    verdict = "WITHIN seed noise - treat as a TIE" if gap <= noise else "larger than seed noise"
-                    L += ["", f"_Top-2 gap: {gap:.4f} BPB vs seed std {noise:.4f} -> {verdict}._"]
+                    z = gap / se if se > 0 else float("inf")
+                    verdict = ("clearly larger than seed noise" if z >= 2 else "NOT clearly larger than seed noise - treat as a TIE")
+                    L += ["", f"_Top-2 gap: {gap:.4f} BPB = {z:.1f} x the standard error of the difference ({a} vs {b}) -> {verdict}._"]
         L += ["", "## Provenance", "", "```json", json.dumps(provenance, indent=1, default=str), "```",
               "", f"Stage times (s): {self.timings}", "",
               "_Caveats: intrinsic metrics are proxies; BPB comes from a small model at fixed sequence length "
               "(low-fertility tokenizers see more text per window). Confirm the winner on the larger DGX proxy._"]
         (self.root / "report.md").write_text("\n".join(L))
         (self.root / "timings.json").write_text(json.dumps(self.timings))
-        for f in ("report.md", "results.csv", "timings.json"):
+        (self.root / "proxy_summary.json").write_text(json.dumps(
+            {n: {k: p.get(k) for k in ("bpb", "bpb_std", "n_seeds", "bpb_seeds")} for n, p in proxy.items()}, indent=1))
+        for f in ("report.md", "results.csv", "timings.json", "proxy_summary.json"):
             self.sync.mark(self.root / f)
         self.sync.mark(best)
         self.sync.flush(force=True, message=f"{self.root.name}: report + best ({win})")

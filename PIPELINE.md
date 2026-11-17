@@ -152,3 +152,9 @@ The Hugging Face token is read **only from the environment** (`HF_TOKEN`); it ca
 * **`resources.max_word_types`** caps the word table used by `mlbpe` only; a warning prints if the kept types cover < 97 % of the text (algorithms that stream all text are then not comparable).
 * **SentencePiece Unigram -> Hugging Face.** `spm_unigram` writes `tokenizer.json` next to `spm.model` (rebuilt piece table, byte fallback, digit splitting, our normalizer). Each export is parity-checked against SentencePiece on sample text + built-in edge cases: *identical ids* or an *exact Viterbi score tie* are accepted, anything else rejects the export (`info.hf_export`). For an older run: `python -m mltok export-hf --spm <best>/spm.model --normalizer ml`. `spm_bpe` is not converted (HF BPE is a different model class).
 * **Known limitations.** Text containing special tokens does not round-trip exactly (marker added per segment); plain-text pretraining is unaffected. SentencePiece and the converted tokenizer can break an exact Viterbi tie differently (rare, equally probable, lossless).
+
+## 10. Sync details learned from a real run
+* Pushes run in a **background thread**; training never waits on the network. Stage ends, errors and exits use `flush(force=True)` and wait.
+* A mid-training checkpoint is pushed only after a **full** `ckpt_push_interval_s` (default 900 s) since the process started, so short jobs never upload one; only long jobs (e.g. DGX) do.
+* A file modified while it is uploading stays queued and is re-pushed.
+* `proxy_summary.json` stores per-variant seed statistics; the freeze checklist uses the **standard error of the difference** between two seed-averaged BPBs (>= 2 required, 2-3 labelled borderline).

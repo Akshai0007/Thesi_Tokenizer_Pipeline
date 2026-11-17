@@ -134,10 +134,12 @@ def test_pushes_are_batched_and_throttled(tmp_path):
         (tmp_path / "runs" / "t" / f"f{i}.json").write_text("x")
     sy.mark(tmp_path / "runs" / "t")
     sy.flush()                       # first push: allowed (interval counted from "never")
+    sy.wait()
     assert Counting.pushes == 1 and len(list((tmp_path / "bk" / "runs" / "t").glob("*.json"))) == 5
     (tmp_path / "runs" / "t" / "late.json").write_text("y")
     sy.mark(tmp_path / "runs" / "t" / "late.json")
     sy.flush()                       # inside min_interval -> throttled
+    sy.wait()
     assert Counting.pushes == 1
     sy.flush(force=True)             # stage end / error / exit -> immediate
     assert Counting.pushes == 2 and (tmp_path / "bk" / "runs" / "t" / "late.json").exists()
@@ -227,3 +229,82 @@ def test_unchanged_files_are_not_pushed_twice(tmp_path):
     (root / "a.json").write_text("22")                   # changed -> sent again
     sy.push_tree(root)
     assert Counting.sent == ["runs/t/a.json", "runs/t/a.json"]
+
+
+def test_pushes_run_in_the_background_and_never_block_the_caller(tmp_path):
+    """Regression for the real run: a slow/failing Hub stalled training for ~100 s because pushes were synchronous."""
+    import threading
+
+    gate_open = threading.Event()
+
+    class Slow(registry.plugin_class("store", "local_dir")):
+        def push(self, files, message=""):
+            gate_open.wait(10)                              # simulates a stuck upload / Hub 503 retries
+            super().push(files, message)
+
+    root = tmp_path / "runs" / "t"
+    root.mkdir(parents=True)
+    (root / "a.json").write_text("1")
+    sy = Sync({"store": {"type": "local_dir", "path": str(tmp_path / "bk")}, "sync": {"min_interval_s": 0}}, root, log=quiet)
+    sy.store = Slow(path=str(tmp_path / "bk"))
+    sy.mark(root)
+    t0 = time.time()
+    sy.flush()                                              # returns immediately although the push is stuck
+    assert time.time() - t0 < 1.0
+    assert not (tmp_path / "bk" / "runs" / "t" / "a.json").exists()
+    gate_open.set()
+    sy.flush(force=True)                                    # force waits for the background push to finish
+    assert (tmp_path / "bk" / "runs" / "t" / "a.json").exists()
+
+
+def test_first_checkpoint_is_not_pushed_until_a_full_interval_has_passed(tmp_path):
+    """Regression for the real run: every ~4-minute job uploaded a 283 MB checkpoint it never needed."""
+    class Counting(registry.plugin_class("store", "local_dir")):
+        sent = []
+
+        def push(self, files, message=""):
+            Counting.sent += [r for _, r in files]
+            super().push(files, message)
+
+    root = tmp_path / "runs" / "t"
+    root.mkdir(parents=True)
+    ck = root / "proxy_seed0.ckpt"
+    ck.write_bytes(b"x" * 100)
+    sy = Sync({"store": {"type": "local_dir", "path": str(tmp_path / "bk")},
+               "sync": {"min_interval_s": 0, "ckpt_push_interval_s": 3600}}, root, log=quiet)
+    sy.store = Counting(path=str(tmp_path / "bk"))
+    sy.mark(ck)
+    sy.flush()
+    sy.wait()
+    assert Counting.sent == []                              # short job: checkpoint never leaves the machine
+    sy.flush(force=True)                                    # exit/crash: now it is worth saving
+    assert Counting.sent == ["runs/t/proxy_seed0.ckpt"]
+
+
+def test_file_modified_during_upload_stays_queued(tmp_path):
+    import threading
+
+    started, release = threading.Event(), threading.Event()
+
+    class Hold(registry.plugin_class("store", "local_dir")):
+        def push(self, files, message=""):
+            started.set()
+            release.wait(10)
+            super().push(files, message)
+
+    root = tmp_path / "runs" / "t"
+    root.mkdir(parents=True)
+    f = root / "a.json"
+    f.write_text("v1")
+    sy = Sync({"store": {"type": "local_dir", "path": str(tmp_path / "bk")}, "sync": {"min_interval_s": 0}}, root, log=quiet)
+    sy.store = Hold(path=str(tmp_path / "bk"))
+    sy.mark(f)
+    sy.flush()
+    assert started.wait(5)
+    time.sleep(0.01)
+    f.write_text("version-two")                             # changed while v1 is uploading
+    sy.mark(f)
+    release.set()
+    sy.wait()
+    sy.flush(force=True)
+    assert (tmp_path / "bk" / "runs" / "t" / "a.json").read_text() == "version-two"
