@@ -80,3 +80,10 @@ def test_one_shot_mode_is_available_but_off_by_default():
 def test_dry_run_gpu_gate_only_judges_jobs_that_actually_ran():
     text = "\n".join(CODE)
     assert "os.path.getmtime(f) >= T0" in text and "restored from the store" in text
+
+
+def test_the_decision_is_pinned_in_round_5():
+    first, text = CODE[0], "\n".join(CODE)
+    assert 'PIN_VARIANT = "spm_unigram-ml-v48000"' in first
+    assert "mt(f\"pin -c {FULL_CFG}" in text and "pinned choice gives up" in text
+    assert '"pin")' in text.replace("'", '"') or "pin\")" in text          # pin is pushed to the checkpoint store too

@@ -131,6 +131,15 @@ def cmd_run(a):
     _log(f"winner: {run(cfg, a.stage)}")
 
 
+def cmd_pin(a):
+    """Make a deliberate choice (not necessarily the proxy-BPB winner) the run's best/, with the reason recorded."""
+    from .runner import Run
+
+    cfg = load_config(a.config, _kv(a.set))
+    r = Run(cfg)
+    r.pin(a.variant, a.reason)
+
+
 def cmd_synth(a):
     import gzip
 
@@ -280,6 +289,9 @@ def main(argv=None):
     add("store-check", cmd_store_check)
     s = add("push", cmd_push)
     s.add_argument("--data", action="store_true", help="also push the cleaned data shards")
+    s = add("pin", cmd_pin)
+    s.add_argument("--variant", required=True, help="variant name as printed in the report, e.g. spm_unigram-ml-v48000")
+    s.add_argument("--reason", required=True, help="why this choice (recorded in best/SELECTION.json)")
     s = add("synth", cmd_synth, config=False)
     s.add_argument("--seed-file", default="data/seed_ml.txt")
     s.add_argument("--out", required=True)

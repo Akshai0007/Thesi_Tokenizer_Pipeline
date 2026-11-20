@@ -417,6 +417,59 @@ class Run:
                 _log(f"baseline {name}: skipped ({type(e).__name__}: {str(e)[:100]})")
         return out
 
+    # ---------------------------------------------------------------- provenance / pin
+    def provenance_of(self, v) -> dict:
+        return {
+            "variant": v,
+            "plugin_fingerprints": {
+                "normalizer": fingerprint("normalizer", v["normalizer"]),
+                "pretokenizer": self._pre_fp(v),
+                "algorithm": fingerprint("algorithm", v["algorithm"]),
+                "metrics": [fingerprint("metric", m) for m in self.metric_specs],
+            },
+            "plugin_files": {k: registry.plugin_class(k, v[k]["type"])._plugin_file for k in ("normalizer", "algorithm")},
+            "data_fingerprint": {"train": self.data_fp, "eval": self.eval_fp},
+        }
+
+    def pin(self, variant_name: str, reason: str) -> dict:
+        """Make a DELIBERATE choice the run's `best/` (it need not be the proxy-BPB winner), with the trade-off recorded.
+        Only a variant that was trained AND evaluated in this run directory, and is eligible, can be pinned."""
+        cands = [d for d in self.vroot.iterdir() if d.is_dir() and d.name.rsplit("-", 1)[0] == variant_name and (d / "tokenizer.ok").exists()]
+        if not cands:
+            have = sorted({d.name.rsplit("-", 1)[0] for d in self.vroot.iterdir() if d.is_dir()})
+            raise SystemExit(f"no finished variant named {variant_name!r} in {self.vroot}. Available: {have}")
+        d = max(cands, key=lambda p: (p / "metrics.json").stat().st_mtime if (p / "metrics.json").exists() else 0)
+        if not (d / "metrics.json").exists():
+            raise SystemExit(f"{variant_name} has no metrics.json - run the intrinsic stage first")
+        m = json.loads((d / "metrics.json").read_text())
+        if not self.selector.eligible(m):
+            raise SystemExit(f"{variant_name} is not eligible (lossless / stress / unk rules) - it cannot be pinned")
+        v = json.loads((d / "variant.json").read_text())
+        summ = json.loads((self.root / "proxy_summary.json").read_text()) if (self.root / "proxy_summary.json").exists() else {}
+        mine = summ.get(variant_name)
+        def _eligible(name):  # compare only against variants that could actually be chosen (lossless etc.)
+            ms = [dd / "metrics.json" for dd in self.vroot.iterdir() if dd.is_dir() and dd.name.rsplit("-", 1)[0] == name and (dd / "metrics.json").exists()]
+            return bool(ms) and self.selector.eligible(json.loads(max(ms, key=lambda f: f.stat().st_mtime).read_text()))
+        pool = {n: x for n, x in summ.items() if _eligible(n)}
+        best_name = min(pool, key=lambda n: pool[n]["bpb"]) if pool else None
+        info = {"reason": reason, "variant": variant_name}
+        if mine and best_name:
+            info.update(proxy_winner=best_name, proxy_winner_bpb=pool[best_name]["bpb"], bpb=mine["bpb"],
+                        bpb_gap_pct=(mine["bpb"] / pool[best_name]["bpb"] - 1) * 100,
+                        z_vs_proxy_winner=((mine["bpb"] - pool[best_name]["bpb"]) / se_diff(mine, pool[best_name])
+                                           if se_diff(mine, pool[best_name]) > 0 else None))
+        best = self.root / "best"
+        if best.exists():
+            shutil.rmtree(best)
+        shutil.copytree(d, best)
+        sel = {"winner": variant_name, "basis": f"PINNED by decision: {reason}", "pinned": info, "metrics": m,
+               "proxy": mine, "provenance": self.provenance_of(v)}
+        (best / "SELECTION.json").write_text(json.dumps(sel, indent=2, default=str))
+        self.sync.mark(best)
+        self.sync.flush(force=True, message=f"{self.root.name}: pinned {variant_name}")
+        _log(f"pinned {variant_name} -> {best}" + (f" (BPB {info['bpb_gap_pct']:+.2f}% vs proxy winner {best_name})" if "bpb_gap_pct" in info else ""))
+        return sel
+
     # ---------------------------------------------------------------- report
     def finish(self, results, proxy, baselines):
         sel = self.selector
@@ -444,17 +497,7 @@ class Run:
         if best.exists():
             shutil.rmtree(best)
         shutil.copytree(self.vdir(v), best)
-        provenance = {
-            "variant": v,
-            "plugin_fingerprints": {
-                "normalizer": fingerprint("normalizer", v["normalizer"]),
-                "pretokenizer": self._pre_fp(v),
-                "algorithm": fingerprint("algorithm", v["algorithm"]),
-                "metrics": [fingerprint("metric", m) for m in self.metric_specs],
-            },
-            "plugin_files": {k: registry.plugin_class(k, v[k]["type"])._plugin_file for k in ("normalizer", "algorithm")},
-            "data_fingerprint": {"train": self.data_fp, "eval": self.eval_fp},
-        }
+        provenance = self.provenance_of(v)
         (best / "SELECTION.json").write_text(json.dumps(
             {"winner": win, "basis": basis, "metrics": results[win], "proxy": proxy.get(win), "provenance": provenance},
             indent=2, default=str))

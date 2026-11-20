@@ -128,3 +128,43 @@ def test_se_diff_and_proxy_summary_support_a_real_significance_check(workspace):
     ps = json.loads((Path(cfg["paths"]["runs"]) / "t_summary" / "proxy_summary.json").read_text())
     assert ps and all(v["n_seeds"] == 2 and len(v["bpb_seeds"]) == 2 for v in ps.values())
     assert "standard error" in (Path(cfg["paths"]["runs"]) / "t_summary" / "report.md").read_text() or len(ps) < 2
+
+
+def test_pin_makes_a_deliberate_choice_with_the_trade_off_recorded(workspace, tmp_path):
+    cfg = copy.deepcopy(workspace)
+    cfg["name"] = "t_pin"
+    cfg["proxy"].update(seeds=[0, 1], top_k=3, gpus=[])
+    cfg["search"]["factors"] = {"algorithm": ["mlbpe_plain", "spm_unigram"]}
+    run(cfg)
+    root = Path(cfg["paths"]["runs"]) / "t_pin"
+    auto = json.loads((root / "best" / "SELECTION.json").read_text())["winner"]
+    names = sorted({p.parent.name.rsplit("-", 1)[0] for p in (root / "variants").glob("*/proxy_seed0.json")})
+    pick = next(n for n in names if n != auto)                      # deliberately choose something that is NOT the BPB winner
+    sel = Run(cfg).pin(pick, "test: smaller embedding table")
+    assert sel["winner"] == pick and sel["basis"].startswith("PINNED")
+    saved = json.loads((root / "best" / "SELECTION.json").read_text())
+    assert saved["pinned"]["reason"] == "test: smaller embedding table" and saved["pinned"]["proxy_winner"] == auto
+    assert "bpb_gap_pct" in saved["pinned"] and (root / "best" / "tokenizer.json").exists()
+    assert saved["provenance"]["plugin_fingerprints"]["algorithm"]
+
+
+def test_pin_refuses_unknown_or_ineligible_variants(workspace):
+    cfg = copy.deepcopy(workspace)
+    cfg["name"] = "t_pin2"
+    cfg["proxy"]["enabled"] = False
+    cfg["search"]["factors"] = {"algorithm": ["hf_bpe"]}           # hf_bpe has no byte fallback -> ineligible
+    run(cfg)
+    with pytest.raises(SystemExit, match="no finished variant"):
+        Run(cfg).pin("does_not_exist-ml-v1600", "x")
+    with pytest.raises(SystemExit, match="not eligible"):
+        Run(cfg).pin("hf_bpe-ml-word-v1600", "x")
+
+
+def test_pin_compares_only_against_variants_that_could_be_chosen(workspace):
+    cfg = copy.deepcopy(workspace)
+    cfg["name"] = "t_pin3"
+    cfg["proxy"].update(seeds=[0, 1], top_k=3, gpus=[], always_include=["hf_bpe", "mlbpe", "mlbpe_plain"])
+    cfg["search"]["factors"] = {"algorithm": ["mlbpe_plain", "hf_bpe"]}
+    run(cfg)
+    sel = Run(cfg).pin("mlbpe-ml-word-v1600", "test")
+    assert sel["pinned"]["proxy_winner"] != "hf_bpe-ml-word-v1600"          # hf_bpe is lossy -> never the reference

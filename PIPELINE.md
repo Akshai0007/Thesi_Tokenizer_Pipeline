@@ -57,7 +57,7 @@ Anything not in this table (engine, lib) is meant to stay as is.
 ### Plugins — the replaceable files: see the table in section 1.
 
 ### Config and run scripts
-`configs/*.yaml` (smoke, scale_test, kaggle_dryrun, kaggle_small, dgx_full), `scripts/run_dgx.sh`, `scripts/build_zip.sh`, `notebooks/kaggle_runner.ipynb`.
+`configs/*.yaml` (smoke, scale_test, kaggle_dryrun, kaggle_small, dgx_confirm, dgx_final), `scripts/run_dgx.sh`, `scripts/build_zip.sh`, `notebooks/kaggle_runner.ipynb`.
 
 ## 3. Dependency rules (enforced by tests)
 
@@ -158,3 +158,8 @@ The Hugging Face token is read **only from the environment** (`HF_TOKEN`); it ca
 * A mid-training checkpoint is pushed only after a **full** `ckpt_push_interval_s` (default 900 s) since the process started, so short jobs never upload one; only long jobs (e.g. DGX) do.
 * A file modified while it is uploading stays queued and is re-pushed.
 * `proxy_summary.json` stores per-variant seed statistics; the freeze checklist uses the **standard error of the difference** between two seed-averaged BPBs (>= 2 required, 2-3 labelled borderline).
+
+## 11. Pinning a decision, and the two DGX steps
+* `python -m mltok pin -c <cfg> --variant <name> --reason "<why>"` copies a finished, **eligible** variant to `best/` and writes `SELECTION.json` with `pinned: {reason, proxy_winner, bpb_gap_pct, z_vs_proxy_winner}` + provenance. The reference ("proxy winner") is the best *eligible* variant, so a lossy tokenizer can never be the benchmark. The notebook's freeze gate then requires the pinned choice to give up < 1 % BPB.
+* `configs/dgx_confirm.yaml` — step 1: Unigram 32K/48K/64K and the best BPE on a `small` proxy (3 seeds, 8 GB balanced text). `configs/dgx_final.yaml` — step 2: train the decided tokenizer on all data, no proxies. `scripts/run_dgx.sh <gpu> <config>`.
+* `tests/test_configs.py` validates every shipped config (plugins exist, params construct, vocab is a multiple of 64, DGX configs never use `gpus: auto` and stay within the 60 GB cap).

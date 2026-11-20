@@ -56,7 +56,7 @@ A fresh session restores automatically (`restore`) and the cache reuses everythi
 * `proxy.micro_batch` accumulates gradients so large vocabularies fit a 16 GB T4.
 
 ### DGX
-Edit `configs/dgx_full.yaml` (`components`, `search.factors` = Kaggle winners), then `scripts/run_dgx.sh [GPU_INDEX]`.
+Two steps (decision: **SentencePiece Unigram, 48K**, see RESULTS_LOG.md): `scripts/run_dgx.sh 0 configs/dgx_confirm.yaml` (confirms 48K vs 32K/64K and Unigram vs best BPE with a larger proxy model), then `scripts/run_dgx.sh 0 configs/dgx_final.yaml` (trains the final tokenizer on all data).
 It waits until ≥ 60 GB of that A100 is free and utilisation is low, and caps its own CUDA allocator at 60 GB. `proxy.gpus` is an explicit list there — `auto` would use every GPU in the box.
 
 ## How to read results
@@ -70,7 +70,7 @@ Confounds: fixed context holds more text for low-fertility tokenizers; bigger vo
 See `RESULTS_LOG.md`. Run 1: SentencePiece Unigram beat our constrained BPE and stock BPE (script-integrity diagnostics did not predict that); it exposed a data-mix bug. Run 2 (balanced data): Unigram still wins by a clear margin over four BPE implementations; the constraint is neutral on BPB; vocabulary 32K → 48K → 64K improves BPB with diminishing returns.
 
 ## Verified vs not verified (honest status)
-Verified in the dev sandbox (CPU, synthetic data): **103 tests pass** (2 GPU tests skip without CUDA): Python and HF normalizers/pre-tokenizers agree;
+Verified in the dev sandbox (CPU, synthetic data): **122 tests pass** (2 GPU tests skip without CUDA): Python and HF normalizers/pre-tokenizers agree;
 exported tokenizer equals a slow reference BPE encoder; lossless round-trip incl. byte fallback and old-style chillu; loads in `transformers.AutoTokenizer` with chat template;
 every built-in plugin passes its contract check and the independence rule; every starter template is a valid plugin; a brand-new dataset works as one file; replacing a plugin
 invalidates exactly its dependents (and nothing else); resumable runner; multi-process counting equals single-process; per-GPU worker fan-out (with CPU workers).

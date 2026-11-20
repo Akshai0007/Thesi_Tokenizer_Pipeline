@@ -70,6 +70,27 @@ Keep this file honest: record what was measured, what it does *not* show, and wh
 * The dry-run gate "both GPUs used" failed only because the dry run's results were restored from the store (no job ran). The gate now judges only jobs that ran in the current session.
 * The freeze gate compared the winner/runner-up gap to one seed standard deviation, which is not a significance test (it called the borderline 64K-vs-48K gap clear). It now uses the standard error of the difference (≥ 2 required; borderline cases are labelled).
 
+## DECISION (after run 2): SentencePiece Unigram, 48 000 vocabulary, normalizer `ml`
+
+**Why Unigram:** best in both runs and on two data mixes, ahead of four independent BPE implementations (best BPE +0.0164 BPB, z ≈ 5.9). Parity-checked export to Hugging Face is built in.
+
+**Why 48K (and not 32K or 64K).** BPB gain over 32K: 48K −0.0076 (clear, z ≈ 3.3), 64K −0.0107 (the extra −0.0031 is borderline, z ≈ 2.0). 48K keeps 71 % of the 64K gain. The cost side depends on model size
+(tied embeddings; training FLOPs per word ∝ fertility × (non-embedding params + V·d_model); fertility 1.949 / 1.840 / 1.769 measured on the run-2 eval set — a model, not a measurement):
+
+| model | embedding share of params 32K / 48K / 64K | training compute per word vs 32K: 48K / 64K |
+|---|---|---|
+| ~125M (d=768) | 22 % / 30 % / 37 % | +5.0 % / +11.1 % |
+| ~350M (d=1024) | 10 % / 14 % / 18 % | −1.0 % / −0.4 % |
+| ~1B (d=2048) | 5 % / 8 % / 10 % | −3.2 % / −4.6 % |
+
+48K is compute-neutral or cheaper from ~350M parameters upward and costs only +5 % at 125M; 64K only pays off from ~1B and its extra gain is borderline. The proxy's own gains also include extra embedding parameters (non-embedding size was fixed), which is why the decision rests on this cost model and not on BPB alone.
+
+**When to deviate:** model ≤ ~125M and compute per word matters most → 32K. `dgx_confirm` shows 64K beating 48K by ≥ 2 standard errors **and** the embedding table stays ≤ ~15 % of the model → 64K. A bilingual (Malayalam+English) model → re-run before choosing; this decision is Malayalam-only.
+
+**Still provisional on:** the DGX confirmation (`configs/dgx_confirm.yaml`: Unigram 32K/48K/64K and the best BPE, `small` proxy, 3 seeds) — everything so far used an 11M-parameter proxy and ~8.5M tokens. The Kaggle Unigram models also saw only ~150 MB of text (`spm_max_mb: 150`); the final run (`configs/dgx_final.yaml`) trains on all data.
+
+**In the pipeline:** the notebook's `PIN_VARIANT = "spm_unigram-ml-v48000"` (and `python -m mltok pin --variant ... --reason ...`) makes this the run's `best/` with the trade-off recorded in `SELECTION.json`; the freeze gate then checks that the choice gives up < 1 % BPB versus the best eligible variant (here +0.42 % vs 64K).
+
 ## Known limitations (not fixed)
 * Text containing special tokens does not round-trip exactly (`<|im_start|>user` decodes as `<|im_start|> user`): the word-start marker is added per text segment. Plain-text pretraining is unaffected (documents are separated by ids); it matters for chat/SFT formatting.
 * SentencePiece and the converted tokenizer may break an exact Viterbi tie differently (rare; equal probability, both lossless).
