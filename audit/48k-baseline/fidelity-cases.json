@@ -1,0 +1,16 @@
+{
+  "schema": "fidelity_probes_v1",
+  "cases": [
+    {"id":"ordinary","mode":"plain","text":"ക്ഷേത്രത്തിൽ കുട്ടികൾക്ക് അവധി.","raw":true,"normalized":true},
+    {"id":"literal-marker","mode":"plain","text":"ക▁ക","raw":false,"normalized":false,"observed":"ക ക"},
+    {"id":"literal-chat-delimiter","mode":"plain","text":"മലയാളം<|im_start|>വാക്ക്","raw":false,"normalized":false,"observed":"മലയാളം<|im_start|> വാക്ക്","registered_special":"<|im_start|>"},
+    {"id":"literal-padding-spelling","mode":"plain","text":"ക<pad>ക","registered_special":"<pad>"},
+    {"id":"nfc-vowel","mode":"plain","text":"ക\u0d46\u0d3e","raw":false,"normalized":true,"observed":"കൊ"},
+    {"id":"legacy-chillu","mode":"plain","text":"ന\u0d4d\u200d","raw":false,"normalized":true,"observed":"ൻ"},
+    {"id":"zero-width-space-rule","mode":"plain","text":"ക\u200bക","raw":false,"normalized":true,"observed":"കക"},
+    {"id":"explicit-zwnj","mode":"plain","text":"ക\u0d4d\u200cഷ","raw":true,"normalized":true},
+    {"id":"leading-and-trailing-spaces","mode":"plain","text":"  മലയാളം\tഭാഷ  ","raw":true,"normalized":true},
+    {"id":"empty","mode":"plain","text":"","raw":true,"normalized":true},
+    {"id":"caller-inserted-delimiter","mode":"trusted_control_probe","text":"<|im_start|>","registered_special":"<|im_start|>","raw":true,"normalized":true}
+  ]
+}
