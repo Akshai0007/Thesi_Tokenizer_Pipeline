@@ -45,12 +45,16 @@ def wait_for_gpu(
     index: int = 0,
     log=print,
 ) -> bool:
-    """True when the GPU is free enough (or not present); False on timeout."""
+    """Return true only after confirming that the requested GPU is available."""
+    if str(index).strip().isdigit() and int(index) == 7:
+        log("[gpu] physical GPU 7 is reserved on the university DGX")
+        return False
     t0 = time.time()
     while True:
         s = gpu_status(index)
         if s is None:
-            return True
+            log("[gpu] could not verify GPU availability")
+            return False
         if s["free_gb"] >= min_free_gb and s["util_pct"] <= max_util_pct:
             log(f"[gpu] ok: {s['free_gb']:.1f} GB free, util {s['util_pct']:.0f}%")
             return True

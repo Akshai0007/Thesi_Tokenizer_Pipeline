@@ -14,6 +14,7 @@ from pathlib import Path, PurePosixPath
 
 from .lib.artifact_paths import relative_path, unlinked_path
 from .lib.atomic import atomic_writer
+from .lib.io import is_shard
 
 _DIGEST = re.compile(r"[0-9a-f]{64}")
 
@@ -160,7 +161,7 @@ class Snapshots:
             if not include_ckpt and path.suffix == ".ckpt":
                 continue
             if scope == "data" and rel.as_posix() != "clean_stats.json":
-                if rel.parts[0] not in ("train", "eval") or ".jsonl" not in path.name:
+                if rel.parts[0] not in ("train", "eval") or not is_shard(path):
                     continue
             st = path.stat()
             files[rel.as_posix()] = (path, (st.st_ino, st.st_size, st.st_mtime_ns))
@@ -370,13 +371,17 @@ class Snapshots:
             manifests = self._manifests(self.store.revision())
             if not manifests and not selected:
                 raise NoSnapshot("No verified snapshot for this experiment. Legacy remote files are not restored automatically.")
-            for manifest in manifests:
+            candidates = [manifest for manifest in manifests
+                          if scopes <= {f["scope"] for f in manifest["snapshot"]["files"]}]
+            if not candidates and not selected:
+                raise NoSnapshot("No verified snapshot contains all requested scopes.")
+            for manifest in candidates:
                 body = manifest["snapshot"]
                 if selected and selected != manifest["id"]:
                     continue
                 if pending and pending.get("revision", manifest["revision"]) != manifest["revision"]:
                     continue
-                if (body["config"] != self.config or not scopes <= {f["scope"] for f in body["files"]}
+                if (body["config"] != self.config
                         or (existing_dataset is not None and body["dataset"] != existing_dataset)):
                     continue
                 try:

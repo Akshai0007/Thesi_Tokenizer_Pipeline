@@ -428,3 +428,42 @@ def test_unfinished_restore_and_corpus_block_run_even_with_store_disabled(experi
 def test_hub_privacy_requires_explicit_boolean(value):
     with pytest.raises(ValueError, match="privacy must be explicitly"):
         HFHubStore("fixture/private", private=value)
+
+
+def test_automatic_restore_access_failure_stops_before_run_creation(experiment, tmp_path, monkeypatch):
+    from mltok import runner
+
+    hub, cfg, root, _, _ = experiment
+    runs = tmp_path / "fresh"
+    hub.access = 403
+    cfg.update(name=root.name, paths={"runs": str(runs), "clean": str(tmp_path / "data")})
+    monkeypatch.setattr(runner, "Run", lambda config: pytest.fail("Run started after a restore failure"))
+    with pytest.raises(RuntimeError, match="Verified snapshot restore failed"):
+        runner.run(cfg)
+    assert not (runs / root.name).exists() and not hub.commits
+
+
+def test_data_only_snapshot_is_not_a_combined_restore_and_text_shards_are_verified(experiment, tmp_path):
+    from mltok.lib.io import list_shards
+
+    hub, _, root, make, _ = experiment
+    clean = tmp_path / "clean"
+    for split in ("train", "eval"):
+        shard = clean / split / "shard.txt"
+        shard.parent.mkdir(parents=True)
+        shard.write_text("sample\n")
+        (shard.parent / "partial.jsonl.tmp").write_text("incomplete")
+        (shard.parent / ".hidden.txt").write_text("hidden")
+        assert list_shards(shard.parent) == [str(shard)]
+    (clean / "clean_stats.json").write_text("{}")
+    assert make(clean=clean).push_tree(clean)
+    target_data = tmp_path / "other-clean"
+    target_run = tmp_path / "restore" / root.name
+    sync = make(target_run, clean=target_data)
+    assert sync.restore("all") == 0 and sync.last_error is None
+    assert not target_data.exists() and not target_run.exists()
+    assert sync.restore("data") == 3
+    assert sorted(item["path"] for item in hub.manifests()[0]["snapshot"]["files"]) == [
+        "clean_stats.json", "eval/shard.txt", "train/shard.txt",
+    ]
+    assert (target_data / "eval" / "shard.txt").read_text() == "sample\n"

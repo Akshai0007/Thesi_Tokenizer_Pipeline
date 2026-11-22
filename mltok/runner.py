@@ -11,8 +11,6 @@ it depends on, so swapping a plugin file recomputes exactly what depended on it)
 from __future__ import annotations
 
 import csv
-import gzip
-import hashlib
 import json
 import math
 import os
@@ -143,7 +141,7 @@ class Run:
         )
 
     def vdir(self, v) -> Path:
-        return self.vroot / f"{self.vname(v)}-{self.tok_key(v)[:8]}"
+        return self.vroot / f"{self.vname(v)}-{self.tok_key(v)}"
 
     # ---------------------------------------------------------------- data
     def eval_docs(self):
@@ -173,7 +171,8 @@ class Run:
             wc = dict(count_words(self.train_shards, v["normalizer"], v["pretokenizer"],
                                   workers=self.res.get("workers", 1),
                                   max_docs_per_shard=self.res.get("max_docs_per_shard", 0), log=_log))
-            f.write_bytes(pickle.dumps(wc, protocol=4))
+            with atomic_writer(f) as stream:
+                pickle.dump(wc, stream, protocol=4)
             self.sync.mark(f)
             self.sync.flush(message=f"{self.root.name}: word table")
         self._wc[key] = wc
@@ -231,7 +230,8 @@ class Run:
         for ms in self.metric_specs:
             m.update(make("metric", ms).compute(be, docs))
         m.update(_key=key, name=self.vname(v), variant=v, train_info=info)
-        mp.write_text(json.dumps(m, indent=2))
+        with atomic_writer(mp) as stream:
+            stream.write(json.dumps(m, indent=2).encode("utf-8"))
         self.sync.mark(mp)
         self.sync.flush(message=f"{self.root.name}: metrics {self.vname(v)}")
         _log("   " + self.vname(v) + ": " + " ".join(
@@ -248,7 +248,7 @@ class Run:
 
     def proxy_key(self, v, seed: int) -> str:
         pc = self._pc()
-        return keyhash("proxy-v2", self.tok_key(v), self.proxy_data_fingerprints, self.proxy_runtime_versions,
+        return keyhash("proxy-v3", self.tok_key(v), self.data_fp, self.eval_fp, self.proxy_runtime_versions,
                        fingerprint("proxy_model", pc.get("model", {"type": "gpt", "size": "tiny"})),
                        {k: pc.get(k) for k in ("seq_len", "batch", "micro_batch", "train_mb", "eval_mb", "epochs", "lr", "gpus")},
                        self.cfg.get("search", {}).get("eval_docs", 20000), int(seed))
@@ -257,21 +257,6 @@ class Run:
     def proxy_runtime_versions(self):
         return {"python": tuple(sys.version_info[:3]),
                 **{name: version(name) for name in ("torch", "numpy", "tokenizers", "sentencepiece")}}
-
-    @cached_property
-    def proxy_data_fingerprints(self):
-        splits = []
-        for paths in (self.train_shards, self.eval_shards):
-            digests = []
-            for path in paths:
-                digest = hashlib.sha256()
-                opener = gzip.open if str(path).endswith(".gz") else open
-                with opener(path, "rb") as stream:
-                    for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-                        digest.update(chunk)
-                digests.append(digest.hexdigest())
-            splits.append(digests)
-        return splits
 
     def proxy_path(self, v, seed: int) -> Path:
         return self.vdir(v) / f"proxy_seed{seed}-{self.proxy_key(v, seed)}.json"
@@ -442,7 +427,8 @@ class Run:
             return {}
         g = self.cfg.get("gpu", {})
         if g.get("guard"):
-            wait_for_gpu(g.get("min_free_gb", 60), g.get("max_util_pct", 30), index=g.get("index", 0), log=_log)
+            if not wait_for_gpu(g.get("min_free_gb", 60), g.get("max_util_pct", 30), index=g.get("index", 0), log=_log):
+                raise RuntimeError("GPU availability check failed. Proxy training did not start.")
         _log(f"proxy GPUs: {self.resolve_gpus() or 'none (CPU)'}")
         ranked = sorted((n for n, m in results.items() if self.selector.eligible(m)),
                         key=lambda n: self.selector.score(results[n]))
@@ -474,8 +460,10 @@ class Run:
 
     def stage_baselines(self) -> dict[str, dict]:
         out = {}
+        eval_key = keyhash(self.eval_fp, self.cfg.get("search", {}).get("eval_docs", 20000),
+                           [fingerprint("metric", m) for m in self.metric_specs])
         for name in self.cfg.get("baselines", []):
-            f = self.cache / f"baseline_{name.replace('/', '__')}_{self.eval_fp}.json"
+            f = self.cache / f"baseline_{name.replace('/', '__')}_{eval_key}.json"
             if f.exists():
                 out[name] = json.loads(f.read_text())
                 continue
@@ -485,7 +473,8 @@ class Run:
                 for ms in self.metric_specs:
                     m.update(make("metric", ms).compute(be, self.eval_docs()))
                 out[name] = m
-                f.write_text(json.dumps(m))
+                with atomic_writer(f) as stream:
+                    stream.write(json.dumps(m).encode("utf-8"))
                 _log(f"baseline {name}: fertility={m['fertility']:.3f}")
             except Exception as e:  # noqa: BLE001
                 _log(f"baseline {name}: skipped ({type(e).__name__}: {str(e)[:100]})")
@@ -637,6 +626,8 @@ def run(cfg: dict, stage: str = "all") -> str:
         # A local run may legitimately have advanced past its last remote snapshot.
         if pre.snapshot is None or pre.snapshot.pending.exists() or not any(root.glob("*")):
             pre.restore("all" if pre.include_data else "run")
+            if pre.snapshot is not None and pre.last_error:
+                raise RuntimeError("Verified snapshot restore failed. Resolve the reported error before starting the run.")
     if pending_restore_path(root).exists():
         raise RuntimeError("A snapshot restore is incomplete. Finish the same restore before running experiments.")
     r = Run(cfg)

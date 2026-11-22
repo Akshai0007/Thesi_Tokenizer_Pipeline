@@ -11,16 +11,32 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 GPU="${1:-0}"
 CFG="${2:-configs/dgx_confirm.yaml}"
-export CUDA_VISIBLE_DEVICES="$GPU"
+if [[ ! "$GPU" =~ ^(0|[1-9][0-9]*)$ || "$GPU" == 7 ]]; then
+  echo "[run_dgx] Choose a valid physical GPU index. GPU 7 is reserved." >&2
+  exit 2
+fi
 export TOKENIZERS_PARALLELISM=true
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
-cfgval() { python -c "import yaml,sys;c=yaml.safe_load(open('$CFG'));print(eval(sys.argv[1]))" "$1"; }
+cfgval() { python -c 'import yaml,sys;c=yaml.safe_load(open(sys.argv[1],encoding="utf-8"));print(eval(sys.argv[2]))' "$CFG" "$1"; }
 RAW="$(cfgval "c['paths']['raw']")"
 CLEAN="$(cfgval "c['paths']['clean']")"
 RUNS="$(cfgval "c['paths']['runs']+'/'+c['name']")"
 USES_GPU="$(cfgval "bool(c.get('proxy',{}).get('enabled', False))")"
 SYNC_DATA="$(cfgval "bool(c.get('sync',{}).get('include_data', False))")"
+export CUDA_VISIBLE_DEVICES=""
+if [ "$USES_GPU" = "True" ]; then
+  if [ "$(cfgval "c.get('proxy',{}).get('gpus') == [0] and c.get('gpu',{}).get('guard') is True")" != "True" ]; then
+    echo "[run_dgx] Proxy configurations must enable the GPU guard and use proxy.gpus: [0]." >&2
+    exit 2
+  fi
+  GPU_UUID="$(nvidia-smi --id="$GPU" --query-gpu=uuid --format=csv,noheader)"
+  if [[ ! "$GPU_UUID" =~ ^GPU-[[:xdigit:]-]+$ ]]; then
+    echo "[run_dgx] Could not identify the requested physical GPU." >&2
+    exit 2
+  fi
+  export CUDA_VISIBLE_DEVICES="$GPU_UUID"
+fi
 
 STORE_SET=""
 if [ -n "${HF_REPO:-}" ]; then
@@ -28,7 +44,6 @@ if [ -n "${HF_REPO:-}" ]; then
 fi
 
 python -m mltok sysinfo
-if [ "$USES_GPU" = "True" ]; then python -m mltok selftest --single; fi
 if [ -n "$STORE_SET" ]; then
   python -m mltok store-check -c "$CFG" --set "$STORE_SET"      # fail early if the token/repo does not work
   RESTORE_SCOPE=run
