@@ -75,10 +75,11 @@ class Run:
         self.res = cfg.get("resources", {})
         self.specials = cfg.get("specials", DEFAULT_SPECIALS)
         comp = cfg["components"]
-        self.base = self.canon(
-            {"normalizer": spec_of(comp["normalizer"]), "pretokenizer": spec_of(comp["pretokenizer"]),
-             "algorithm": spec_of(comp["algorithm"]), "vocab": int(comp["vocab"])}
-        )
+        self.configured_base = {
+            "normalizer": spec_of(comp["normalizer"]), "pretokenizer": spec_of(comp["pretokenizer"]),
+            "algorithm": spec_of(comp["algorithm"]), "vocab": int(comp["vocab"]),
+        }
+        self.base = self.canon(self.configured_base)
         self.selector = make("selector", cfg.get("selector", "default"))
         self.metric_specs = [spec_of(m) for m in cfg.get("metrics", DEFAULT_METRICS)]
         self.data_fp = data_fingerprint(self.train_shards)
@@ -332,13 +333,14 @@ class Run:
     def stage_intrinsic(self) -> dict[str, dict]:
         t0 = time.time()
         factors = self.cfg.get("search", {}).get("factors", {})
+        configured = self.configured_base
         for f in factors:
             if f not in ("normalizer", "pretokenizer", "algorithm"):
                 raise ValueError(f"search.factors key {f!r} must be normalizer / pretokenizer / algorithm")
         self.variants = {self.vname(self.base): self.base}
         for f, vals in factors.items():
             for val in vals:
-                v = self.canon({**self.base, f: spec_of(val)})
+                v = self.canon({**configured, f: spec_of(val)})
                 self.variants.setdefault(self.vname(v), v)
         results = {n: self.ensure_metrics(v) for n, v in list(self.variants.items())}
 
@@ -346,12 +348,12 @@ class Run:
             best = {}
             for f, vals in factors.items():
                 cands = []
-                for val in list(vals) + [self.base[f]]:
-                    n = self.vname(self.canon({**self.base, f: spec_of(val)}))
+                for val in list(vals) + [configured[f]]:
+                    n = self.vname(self.canon({**configured, f: spec_of(val)}))
                     if n in results and self.selector.eligible(results[n]):
                         cands.append((self.selector.score(results[n]), spec_of(val)))
-                best[f] = min(cands, key=lambda x: x[0])[1] if cands else self.base[f]
-            comb = self.canon({**self.base, **best})
+                best[f] = min(cands, key=lambda x: x[0])[1] if cands else configured[f]
+            comb = self.canon({**configured, **best})
             n = self.vname(comb)
             if n not in results:
                 _log(f"combined candidate: { {k: slug(x) for k, x in best.items()} }")
@@ -374,7 +376,7 @@ class Run:
                         key=lambda n: self.selector.score(results[n]))
         chosen = ranked[: pc.get("top_k", 3)]
         for n, v in self.variants.items():  # reference algorithms always get a proxy run
-            pre_ok = v["pretokenizer"]["type"] == "-" or v["pretokenizer"] == self.base["pretokenizer"]  # SentencePiece ignores it
+            pre_ok = v["pretokenizer"]["type"] == "-" or v["pretokenizer"] == self.configured_base["pretokenizer"]
             if (v["algorithm"]["type"] in pc.get("always_include", ["hf_bpe"]) and v["normalizer"] == self.base["normalizer"]
                     and pre_ok and v["vocab"] == self.base["vocab"] and n not in chosen):
                 chosen.append(n)
