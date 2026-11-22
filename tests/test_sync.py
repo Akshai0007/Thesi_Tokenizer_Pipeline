@@ -31,9 +31,9 @@ def test_finished_work_is_pushed_then_restored_without_retraining(tmp_path, caps
     win = run(cfg)
     bk = tmp_path / "backup" / "runs" / "t"
     assert list(bk.glob("variants/*/tokenizer.json")) and list(bk.glob("variants/*/metrics.json"))
-    assert list(bk.glob("variants/*/proxy_seed0.json")) and (bk / "report.md").exists()
+    assert list(bk.glob("variants/*/proxy_seed0-*.json")) and (bk / "report.md").exists()
     assert (bk / "best" / "tokenizer.json").exists() and list(bk.glob("cache/words-*.pkl"))
-    assert not list(bk.rglob("*.ckpt")), "finished checkpoints must be cleaned from the store"
+    assert list(bk.glob("variants/*/proxy_seed0-*.ckpt")), "finished checkpoints are retained for verified recovery"
 
     shutil.rmtree(tmp_path / "runs")            # simulate a brand-new Kaggle machine
     capsys.readouterr()
@@ -102,10 +102,10 @@ def test_proxy_resumes_from_checkpoint_after_a_crash(tmp_path, capsys):
     resumed = train_proxy(be, tr, ev, model, ckpt_path=str(ck), ckpt_every=4, ckpt_key="k1", **{**kw, "log": logs.append})
     assert any("resuming from checkpoint at step 8" in x for x in logs)
     assert abs(resumed["bpb"] - clean["bpb"]) < 0.02 * clean["bpb"]    # same result as an uninterrupted run
-    assert not ck.exists(), "checkpoint is removed once the run has finished"
+    assert ck.exists(), "training leaves checkpoint retention to the caller"
 
 
-def test_stale_or_corrupt_checkpoints_are_ignored(tmp_path):
+def test_corrupt_checkpoint_without_fallback_is_preserved(tmp_path):
     from mltok.proxy_train import train_proxy
 
     be, docs = tiny_backend(vocab=1200)
@@ -113,9 +113,10 @@ def test_stale_or_corrupt_checkpoints_are_ignored(tmp_path):
     ck = tmp_path / "p.ckpt"
     ck.write_bytes(b"not a checkpoint")
     logs = []
-    r = train_proxy(be, docs[:1200], docs[1200:1300], model, seq_len=64, batch=8, train_mb=0.2, eval_mb=0.05,
+    with pytest.raises(RuntimeError, match="No usable proxy checkpoint"):
+        train_proxy(be, docs[:1200], docs[1200:1300], model, seq_len=64, batch=8, train_mb=0.2, eval_mb=0.05,
                     ckpt_path=str(ck), ckpt_every=3, ckpt_key="k", log=logs.append)
-    assert any("could not load checkpoint" in x for x in logs) and r["bpb"] > 0
+    assert any("could not load checkpoint" in x for x in logs) and ck.read_bytes() == b"not a checkpoint"
 
 
 def test_pushes_are_batched_and_throttled(tmp_path):

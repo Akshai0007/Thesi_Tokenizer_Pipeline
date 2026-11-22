@@ -154,7 +154,7 @@ def test_multi_seed_proxy_reports_mean_and_spread(workspace):
     run(cfg)
     root = Path(cfg["paths"]["runs"]) / "t_seeds"
     files = sorted((root / "variants").glob("*/proxy_seed*.json"))
-    assert {f.name for f in files} == {"proxy_seed0.json", "proxy_seed1.json"}
+    assert {f.stem.split("-", 1)[0] for f in files} == {"proxy_seed0", "proxy_seed1"}
     bpbs = [json.loads(f.read_text())["bpb"] for f in files]
     p = json.loads((root / "best" / "SELECTION.json").read_text())["proxy"]
     assert p["n_seeds"] == 2 and abs(p["bpb"] - sum(bpbs) / 2) < 1e-9 and p["bpb_std"] > 0
@@ -195,7 +195,7 @@ def test_pin_makes_a_deliberate_choice_with_the_trade_off_recorded(workspace, tm
     run(cfg)
     root = Path(cfg["paths"]["runs"]) / "t_pin"
     auto = json.loads((root / "best" / "SELECTION.json").read_text())["winner"]
-    names = sorted({p.parent.name.rsplit("-", 1)[0] for p in (root / "variants").glob("*/proxy_seed0.json")})
+    names = sorted({p.parent.name.rsplit("-", 1)[0] for p in (root / "variants").glob("*/proxy_seed0-*.json")})
     pick = next(n for n in names if n != auto)                      # deliberately choose something that is NOT the BPB winner
     sel = Run(cfg).pin(pick, "test: smaller embedding table")
     assert sel["winner"] == pick and sel["basis"].startswith("PINNED")
