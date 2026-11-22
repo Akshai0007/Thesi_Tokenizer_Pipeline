@@ -1,0 +1,9 @@
+/.deps/
+/original/
+/historical-eval/
+/measurement-v2/
+**/vocabulary.jsonl
+**/diagnostic-tokenizations.jsonl
+/hub-verification.json
+/historical-evidence.json
+/audit-backup.json

@@ -1,0 +1,20 @@
+{
+  "source": "official PyPI wheels installed in an isolated local audit directory",
+  "artifacts": [
+    {
+      "project": "mlmorph",
+      "version": "1.4.3",
+      "file": "mlmorph-1.4.3-py3-none-any.whl",
+      "sha256": "362940f23b2072f242802606829e2427a45df5ade260ee3dd85e15db7422a6ef",
+      "source_url": "https://pypi.org/project/mlmorph/1.4.3/"
+    },
+    {
+      "project": "sfst",
+      "version": "1.10.0",
+      "file": "sfst-1.10.0-cp312-cp312-win_amd64.whl",
+      "sha256": "2f22e998fbe78dc2fc78d907fbb0fd85712f0670d2fa24d15a02276946264ff3",
+      "source_url": "https://pypi.org/project/sfst/1.10.0/"
+    }
+  ],
+  "interpretation": "Analyzer candidates and ranking weights are retained, with no inferred surface offsets."
+}

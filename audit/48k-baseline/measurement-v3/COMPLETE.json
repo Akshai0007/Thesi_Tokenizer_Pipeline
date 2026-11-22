@@ -1,0 +1,65 @@
+{
+  "artifact_revision": "cff0d31c84b598436087f21cc8183021993831e1",
+  "files": [
+    {
+      "path": "boundary-analysis.json",
+      "size": 25489,
+      "sha256": "5311f6053668954235310a40ebdc0387757d2f14ddf93887013938b1d0bc5b1f"
+    },
+    {
+      "path": "boundary-root-causes.json",
+      "size": 6211,
+      "sha256": "c40d7c9eea4b609416816f4b0d29696d5c37f1cdad69362626cb35e099734e51"
+    },
+    {
+      "path": "configuration.json",
+      "size": 1533,
+      "sha256": "ca509e9b7969d104f675ed3139d703eefb38dce709103d564a38e912e357ad34"
+    },
+    {
+      "path": "diagnostic-tokenizations.jsonl",
+      "size": 31332,
+      "sha256": "d1bdfb462c83433312327dec3606281a053b39fcc994bc2c7551e56f3b5983a3"
+    },
+    {
+      "path": "domain-analysis.json",
+      "size": 5351,
+      "sha256": "2e10e460401a333c7eae11b6dea649edf21e0fec4dc9746bbcfed12e8b64f30f"
+    },
+    {
+      "path": "hf-compatibility.json",
+      "size": 639,
+      "sha256": "70dc6303dd78aa144c2469149320ea6a7b4fcef97e4c03085c4f1457f5ff9066"
+    },
+    {
+      "path": "measurements.json",
+      "size": 1729,
+      "sha256": "f5883432c873855df656e4e4cb72a9fb8d046ac4d718b92368b12d0725c01a08"
+    },
+    {
+      "path": "morphology-analysis.json",
+      "size": 21250,
+      "sha256": "80652470ca7ab89448b8a303008ab8e30c9c9eda1b65fded0afb7d40174aa3a0"
+    },
+    {
+      "path": "tokenizer-configuration.json",
+      "size": 3924,
+      "sha256": "13433b1657b16db7551d4d5156385d109ad962070b8c0c6db4010986822b3b9a"
+    },
+    {
+      "path": "unicode-analysis.json",
+      "size": 31061,
+      "sha256": "ece0dc9317eb5759ccf1040bd9f86872e421a2d45f7d5285511b8567ee0f5adf"
+    },
+    {
+      "path": "vocabulary-analysis.json",
+      "size": 10921,
+      "sha256": "69769e08d0f0f23a8cf7051aa140e0d3f3e50217f82f4c768a9782385291a404"
+    },
+    {
+      "path": "vocabulary.jsonl",
+      "size": 7808001,
+      "sha256": "1eba3040f7b8a8569cc8ac71b3d2a489908c772077595c6e59801daeb31173c7"
+    }
+  ]
+}

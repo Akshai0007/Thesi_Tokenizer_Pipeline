@@ -1,0 +1,22 @@
+{
+  "repository": "Akzhai/malayalam-mlbpe-tokenizer",
+  "revision": "cff0d31c84b598436087f21cc8183021993831e1",
+  "directory": "original\\cff0d31c84b598436087f21cc8183021993831e1",
+  "artifacts": [
+    {
+      "path": "special_tokens_map.json",
+      "size": 95,
+      "sha256": "0655d856e7dd462048486aac66d4247753e5cab12480baeb9f4e8f7fe03f7d4c"
+    },
+    {
+      "path": "tokenizer.json",
+      "size": 4789154,
+      "sha256": "2f4b7e8b0706007f7ab3f0b8b2cc1b169094072c334585dabc4081d455e69ff5"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "size": 495,
+      "sha256": "9da308a907e8599b54646eabc8907db3f9d6a8adfa920fe517b56a13fe8100e3"
+    }
+  ]
+}
