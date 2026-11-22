@@ -35,6 +35,7 @@ from .lib.backends import HubBackend
 from .lib.bpe_core import DEFAULT_SPECIALS
 from .lib.io import count_words, data_fingerprint, iter_docs, iter_texts, list_shards
 from .registry import fingerprint, keyhash, make, slug, spec_of
+from .snapshots import Snapshots, pending_restore_path, restored_corpus_path
 from .sync import Sync
 
 DEFAULT_METRICS = ["basic", "structure", "roundtrip", "stress"]
@@ -70,6 +71,13 @@ class Run:
         registry.load_plugins(cfg.get("plugins_dir", []))
         self.cfg = cfg
         self.root = Path(cfg["paths"]["runs"]) / cfg["name"]
+        if pending_restore_path(self.root).exists():
+            raise RuntimeError("Finish the interrupted snapshot restore before running experiments.")
+        clean = Path(cfg["paths"]["clean"])
+        if (clean / ".mltok-cleaning").exists():
+            raise RuntimeError("Cleaned corpus has an unfinished write. Finish cleaning before running experiments.")
+        if restored_corpus_path(self.root).exists():
+            Snapshots(cfg, None, self.root, clean, _log).check_restored_corpus()
         self.vroot = self.root / "variants"
         self.cache = self.root / "cache"
         for d in (self.vroot, self.cache):
@@ -193,8 +201,13 @@ class Run:
             _log(f"   WARNING: {self.vname(v)} trained on word types covering only {mass:.1%} of the text "
                  f"(resources.max_word_types caps the word table) - raise it, or this variant is handicapped against "
                  f"algorithms that see all the data")
-        (d / "variant.json").write_text(json.dumps(v))
-        done.write_text(json.dumps(info))
+        info["_artifact_paths"] = sorted(p.relative_to(d).as_posix() for p in d.rglob("*")
+                                         if p.is_file() and p.name not in ("variant.json", "metrics.json")
+                                         and not p.name.startswith((".", "proxy_seed"))
+                                         and p.suffix not in (".tmp", ".part", ".pyc", ".lock"))
+        for path, value in ((d / "variant.json", v), (done, info)):
+            with atomic_writer(path) as stream:
+                stream.write(json.dumps(value).encode("utf-8"))
         self.sync.mark(d)
         self.sync.flush(message=f"{self.root.name}: tokenizer {self.vname(v)}")
         return be, info
@@ -621,7 +634,11 @@ def run(cfg: dict, stage: str = "all") -> str:
     root = Path(cfg["paths"]["runs"]) / cfg["name"]
     pre = Sync(cfg, root, Path(cfg["paths"]["clean"]), log=_log)
     if pre.enabled and pre.restore_on_start:  # fresh session: pull finished work first
-        pre.restore("all" if pre.include_data else "run")
+        # A local run may legitimately have advanced past its last remote snapshot.
+        if pre.snapshot is None or pre.snapshot.pending.exists() or not any(root.glob("*")):
+            pre.restore("all" if pre.include_data else "run")
+    if pending_restore_path(root).exists():
+        raise RuntimeError("A snapshot restore is incomplete. Finish the same restore before running experiments.")
     r = Run(cfg)
     try:
         results = r.stage_intrinsic()
@@ -629,4 +646,4 @@ def run(cfg: dict, stage: str = "all") -> str:
         baselines = r.stage_baselines() if stage in ("all", "baselines", "proxy") else {}
         return r.finish(results, proxy, baselines)
     finally:  # crash, Ctrl-C or normal exit: never leave finished work un-pushed
-        r.sync.flush(force=True, message=f"{r.root.name}: final flush")
+        r.sync.close(message=f"{r.root.name}: final flush")

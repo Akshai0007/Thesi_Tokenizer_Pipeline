@@ -54,16 +54,20 @@ def cmd_ingest(a):
 def cmd_clean(a):
     from .ingest import clean_corpus
     from .lib.io import list_shards
+    from .snapshots import pending_restore_path
 
     cfg = load_config(a.config, _kv(a.set))
     _plugins(cfg)
+    sy = _sync(cfg)
+    if pending_restore_path(sy.root).exists():
+        raise SystemExit("Finish the interrupted snapshot restore before cleaning")
     paths = list_shards(cfg["paths"]["raw"])
     if not paths:
         raise SystemExit(f"no raw files under {cfg['paths']['raw']} - run `mltok ingest` first")
     clean_corpus(paths, cfg["paths"]["clean"], cfg.get("filters", []), log=_log, **cfg.get("split", {}))
-    sy = _sync(cfg)
     if sy.enabled and sy.include_data:
-        sy.push_tree(cfg["paths"]["clean"], message="cleaned data")
+        if not sy.push_tree(cfg["paths"]["clean"], message="cleaned data") and sy.snapshot is not None:
+            _log("Cleaned data is available locally. Remote snapshot was not verified.")
 
 
 def _sync(cfg):
@@ -79,7 +83,9 @@ def cmd_restore(a):
     if not sy.enabled:
         print("no store configured (store: none) - nothing to restore")
         return
-    sy.restore(a.what)
+    sy.restore(a.what, a.snapshot)
+    if sy.last_error:
+        sys.exit(1)
 
 
 def cmd_push(a):
@@ -89,14 +95,35 @@ def cmd_push(a):
     if not sy.enabled:
         print("no store configured (store: none) - nothing to push")
         return
-    sy.push_tree(sy.root, message=f"{sy.name}: manual push")
-    if a.data and sy.clean_dir:
+    if sy.snapshot is not None:
+        sy.include_data = sy.include_data or a.data
+        if not sy.push_tree(sy.root, message=f"{sy.name}: manual push"):
+            sys.exit(1)
+    else:
+        sy.push_tree(sy.root, message=f"{sy.name}: manual push")
+    if sy.snapshot is None and a.data and sy.clean_dir:
         sy.include_data = True            # explicit request on the command line
         sy.push_tree(sy.clean_dir, message="cleaned data")
 
 
+def cmd_snapshot_cleanup_plan(a):
+    from .contracts import StoreAccessError
+    from .snapshots import SnapshotError
+
+    cfg = load_config(a.config, _kv(a.set))
+    _plugins(cfg)
+    sy = _sync(cfg)
+    if not sy.enabled or sy.snapshot is None:
+        raise SystemExit("The configured store does not support verified snapshots")
+    try:
+        print(json.dumps(sy.snapshot.cleanup_plan(a.retain), indent=2))
+    except (SnapshotError, StoreAccessError) as exc:
+        raise SystemExit(str(exc)) from None
+
+
 def cmd_store_check(a):
-    """Push a tiny file, read it back, delete it: proves the store (and its token) works BEFORE a long run."""
+    """Push and read back a tiny health-check file before a long run."""
+    import hashlib
     import tempfile
     import time
 
@@ -109,16 +136,24 @@ def cmd_store_check(a):
     try:
         with tempfile.TemporaryDirectory() as d:
             f = Path(d) / "ping.txt"
-            payload = f"mltok store check {time.time()}"
+            payload = "mltok verified store health check v1" if sy.snapshot is not None else f"mltok store check {time.time()}"
             f.write_text(payload)
-            remote = f"healthcheck/{sy.name}/ping.txt"
-            sy.store.push([(f, remote)], "mltok store check")
-            got = Path(d) / "got"
-            n = sy.store.pull(f"healthcheck/{sy.name}", got)
-            ok = n == 1 and (got / "ping.txt").read_text() == payload
-            sy.store.delete([remote])
+            if sy.snapshot is not None:
+                remote = f"healthcheck/{hashlib.sha256(f.read_bytes()).hexdigest()}.txt"
+                revision = sy.store.revision(create=True)
+                if remote not in sy.store.list_at(revision):
+                    revision = sy.store.push_at([(f, remote)], "mltok store check", revision)
+                ok = sy.store.fetch_at(remote, revision, Path(d) / "got").read_bytes() == f.read_bytes()
+            else:
+                remote = f"healthcheck/{sy.name}/ping.txt"
+                sy.store.push([(f, remote)], "mltok store check")
+                got = Path(d) / "got"
+                n = sy.store.pull(f"healthcheck/{sy.name}", got)
+                ok = n == 1 and (got / "ping.txt").read_text() == payload
     except Exception as e:  # noqa: BLE001 - print the type/message only, never credentials
-        print(f"[FAIL] store check failed: {type(e).__name__}: {str(e)[:200]}")
+        from .contracts import StoreAccessError
+
+        print(f"[FAIL] store check failed: {str(e) if isinstance(e, StoreAccessError) else type(e).__name__}")
         sys.exit(1)
     print("[PASS] store push -> pull round trip works" if ok else "[FAIL] store round trip returned different data")
     sys.exit(0 if ok else 1)
@@ -212,6 +247,9 @@ def cmd_proxy_worker(a):
 
     cfg = json.loads(Path(a.cfg).read_text())
     r = Run(cfg)
+    if r.sync.snapshot is not None:
+        # The parent publishes a combined snapshot after all workers join.
+        r.sync.enabled = False
     g = cfg.get("gpu", {})
     if g.get("guard"):
         cap_memory(g.get("max_gb", 60), log=_log)
@@ -222,7 +260,7 @@ def cmd_proxy_worker(a):
             r.variants[r.vname(v)] = v
             r.ensure_proxy(v, int(seed))
     finally:
-        r.sync.flush(force=True, message="proxy worker: final flush")
+        r.sync.close(message="proxy worker: final flush")
 
 
 def cmd_selftest(a):
@@ -287,10 +325,13 @@ def main(argv=None):
     s = add("run", cmd_run)
     s.add_argument("--stage", default="all", choices=["intrinsic", "proxy", "baselines", "all"])
     s = add("restore", cmd_restore)
+    s.add_argument("--snapshot", help="Restore this verified snapshot ID")
     s.add_argument("--what", default="run", choices=["run", "data", "all"])
     add("store-check", cmd_store_check)
     s = add("push", cmd_push)
     s.add_argument("--data", action="store_true", help="also push the cleaned data shards")
+    s = add("snapshot-cleanup-plan", cmd_snapshot_cleanup_plan)
+    s.add_argument("--retain", type=int, default=2, help="keep at least this many recent manifests out of the review list")
     s = add("pin", cmd_pin)
     s.add_argument("--variant", required=True, help="variant name as printed in the report, e.g. spm_unigram-ml-v48000")
     s.add_argument("--reason", required=True, help="why this choice (recorded in best/SELECTION.json)")
