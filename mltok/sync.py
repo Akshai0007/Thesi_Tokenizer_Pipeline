@@ -6,8 +6,8 @@ Policy
   each proxy-LM seed, report / best / freeze record. Dirty files are uploaded in ONE batch.
 * Pushes are throttled (`sync.min_interval_s`, default 120 s) so Hub commit rate limits are not hit;
   stage ends, errors and exits flush immediately.
-* Mid-training proxy-LM checkpoints are big, so they have their own slower interval
-  (`sync.ckpt_push_interval_s`, default 900 s) and only the newest one is kept remotely.
+* Proxy-LM checkpoints have their own slower interval (`sync.ckpt_push_interval_s`,
+  default 900 s). The current and previous generations are retained after publication.
 * Pushes run in a BACKGROUND thread: training never waits for the network (a Hub outage cannot stall it).
   Stage ends, errors and exits (`force=True`) wait for the push to finish.
 * A failing store NEVER stops the run: the error is logged, files stay queued, the next flush retries.

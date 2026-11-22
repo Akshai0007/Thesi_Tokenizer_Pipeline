@@ -8,7 +8,7 @@ import pytest
 
 from conftest import base_cfg, prepare_data
 from mltok.plugins.metric.basic import renyi_efficiency
-from mltok.runner import Run, run
+from mltok.runner import Run, load_config, run
 
 
 @pytest.fixture(scope="module")
@@ -84,6 +84,63 @@ def test_irrelevant_factors_do_not_duplicate_runs(workspace):
     assert len(names) == 1  # SentencePiece ignores the pre-tokenizer -> one run, not two
 
 
+@pytest.fixture
+def candidate_paths(tmp_path):
+    clean = tmp_path / "clean"
+    for split in ("train", "eval"):
+        shard = clean / split / "sample.jsonl"
+        shard.parent.mkdir(parents=True)
+        shard.write_text('{"text": "fixture", "src": "test"}\n', encoding="utf-8")
+    return {"raw": str(tmp_path / "raw"), "clean": str(clean), "runs": str(tmp_path / "runs")}
+
+
+@pytest.mark.parametrize(("base", "challenger"), [("spm_unigram", "mlbpe"), ("mlbpe", "spm_unigram")])
+def test_algorithm_switch_preserves_candidate_pretokenization(candidate_paths, monkeypatch, base, challenger):
+    cfg = base_cfg(Path(candidate_paths["runs"]).parent, paths=candidate_paths)
+    cfg["components"].update(algorithm=base, pretokenizer={"type": "word"})
+    cfg["search"]["factors"] = {"algorithm": [challenger], "pretokenizer": ["ws", "word"]}
+    r = Run(cfg)
+
+    def candidate_metrics(v):
+        _, pre, _ = r.inst(v)
+        r.tok_key(v)
+        if v["algorithm"]["type"] == "spm_unigram":
+            assert pre is None
+        else:
+            assert pre.name == v["pretokenizer"]["type"]
+        return {"fertility": 0 if v["algorithm"]["type"] == challenger else 1}
+
+    monkeypatch.setattr(r, "ensure_metrics", candidate_metrics)
+    r.stage_intrinsic()
+    assert {v["pretokenizer"]["type"] for v in r.variants.values() if v["algorithm"]["type"] == "mlbpe"} == {"word", "ws"}
+    spm = [v for v in r.variants.values() if v["algorithm"]["type"] == "spm_unigram"]
+    assert len(spm) == 1 and spm[0]["pretokenizer"] == {"type": "-"}
+
+
+def test_dgx_confirm_constructs_and_shortlists_both_algorithms(candidate_paths, monkeypatch):
+    path = Path(__file__).resolve().parents[1] / "configs" / "dgx_confirm.yaml"
+    r = Run(load_config(str(path), {"paths": candidate_paths}))
+    monkeypatch.setattr(r, "ensure_metrics", lambda v: {"fertility": 1})
+    results = r.stage_intrinsic()
+    spm, bpe = "spm_unigram-ml-v48000", "mlbpe-ml-word-v48000"
+    assert set(results) == {spm, bpe}
+    assert r.inst(r.variants[spm])[1] is None
+    assert r.inst(r.variants[bpe])[1].name == "word"
+
+    # Exercise always_include independently of the intrinsic top-k without starting a worker.
+    r.cfg["proxy"]["top_k"] = 0
+    monkeypatch.setattr("mltok.runner.wait_for_gpu", lambda *args, **kwargs: None)
+    selected = []
+
+    def capture_proxies(names):
+        selected.extend(names)
+        return {}
+
+    monkeypatch.setattr(r, "run_proxies", capture_proxies)
+    r.stage_proxy(results)
+    assert set(selected) == {spm, bpe}
+
+
 def test_renyi_bounds():
     assert renyi_efficiency(np.ones(100), 100) == pytest.approx(1.0)
     assert renyi_efficiency(np.array([1000, 1, 1, 1]), 4) < 0.5
@@ -97,7 +154,7 @@ def test_multi_seed_proxy_reports_mean_and_spread(workspace):
     run(cfg)
     root = Path(cfg["paths"]["runs"]) / "t_seeds"
     files = sorted((root / "variants").glob("*/proxy_seed*.json"))
-    assert {f.name for f in files} == {"proxy_seed0.json", "proxy_seed1.json"}
+    assert {f.stem.split("-", 1)[0] for f in files} == {"proxy_seed0", "proxy_seed1"}
     bpbs = [json.loads(f.read_text())["bpb"] for f in files]
     p = json.loads((root / "best" / "SELECTION.json").read_text())["proxy"]
     assert p["n_seeds"] == 2 and abs(p["bpb"] - sum(bpbs) / 2) < 1e-9 and p["bpb_std"] > 0
@@ -138,7 +195,7 @@ def test_pin_makes_a_deliberate_choice_with_the_trade_off_recorded(workspace, tm
     run(cfg)
     root = Path(cfg["paths"]["runs"]) / "t_pin"
     auto = json.loads((root / "best" / "SELECTION.json").read_text())["winner"]
-    names = sorted({p.parent.name.rsplit("-", 1)[0] for p in (root / "variants").glob("*/proxy_seed0.json")})
+    names = sorted({p.parent.name.rsplit("-", 1)[0] for p in (root / "variants").glob("*/proxy_seed0-*.json")})
     pick = next(n for n in names if n != auto)                      # deliberately choose something that is NOT the BPB winner
     sel = Run(cfg).pin(pick, "test: smaller embedding table")
     assert sel["winner"] == pick and sel["basis"].startswith("PINNED")

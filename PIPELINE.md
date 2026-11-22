@@ -98,7 +98,7 @@ Every result lives under a key built from the **source code + parameters** of ea
 | the **normalizer** or **pretokenizer** file/params | affected variants | affected variants | affected | affected |
 | the **algorithm** file/params | reused | that algorithm's variants | those | those |
 | a **metric** plugin or the `metrics:` list | reused | **reused** | all | reused |
-| the **proxy_model** file or proxy settings (incl. each new seed) | reused | reused | reused | all (finished seeds are kept: `proxy_seed<N>.json`) |
+| the **proxy_model** file or proxy settings (incl. each new seed) | reused | reused | reused | affected seeds (historical `proxy_seed<N>-<key>.json` files are kept) |
 | the **selector** | reused | reused | reused | reused (only the choice changes) |
 | `vocab`, a factor value | only new variants | only new variants | new | new |
 
@@ -137,14 +137,17 @@ The Hugging Face token is read **only from the environment** (`HF_TOKEN`); it ca
 
 | Level | What is saved | When | How a restart uses it |
 |---|---|---|---|
-| finished unit | word table, trained tokenizer, `metrics.json`, each `proxy_seed<N>.json`, report, `best/`, `freeze.json` | right after the unit finishes (batched, at most every `min_interval_s`; forced at stage end, on error and on exit) | `restore` pulls them; the content-addressed cache reuses every one whose key still matches |
-| inside a proxy-LM run | model + optimizer + scaler + RNG every `proxy.checkpoint_every_steps` steps | local at every interval; pushed at most every `ckpt_push_interval_s`; only the newest is kept remotely and it is deleted when the run finishes | training resumes from that step and reaches the same result as an uninterrupted run (tested) |
+| finished unit | word table, trained tokenizer, `metrics.json`, each `proxy_seed<N>-<key>.json`, report, `best/`, `freeze.json` | right after the unit finishes (batched, at most every `min_interval_s`; forced at stage end, on error and on exit) | `restore` pulls them; the content-addressed cache reuses every one whose key still matches |
+| inside a proxy-LM run | model, optimizer, scaler, sampler and global RNG state at configured intervals and at the final optimizer step | atomically written locally; sync throttles intermediate pushes and flushes at stage boundaries | resume from the latest usable generation, or evaluate without repeating optimizer steps when the final checkpoint exists |
 | cleaned data | shards | only with `sync.include_data: true` (can be GBs) | otherwise re-ingest + re-clean; cleaning is deterministic, so cache keys still match |
 
 * A store failure (network, token, rate limit) is logged and the files stay queued; the run continues. It is retried at the next flush.
 * The `hf_hub` store writes only under its `prefix` folder and creates the repo private if missing; other files in the repo are never touched.
 * Not checkpointed (honest limits): **mid-way through one BPE training** and **mid-way through word counting of one shard** — those are minutes-scale units that are simply redone. Everything before and after them is saved.
-* Every checkpoint is a new LFS object in the repo history; for large DGX checkpoints consider `squash_every` (irreversible history squash) or a dedicated repo.
+* The current and previous proxy checkpoint files remain available after result publication. A verified local result is reused on retry and queued again for sync. There is no automatic checkpoint retirement. Future cleanup requires approval and verified replacements and backups.
+* Proxy artifact names include a key for corpus contents, evaluation sample size, model, execution settings, and runtime versions. Historical unkeyed files are preserved for review. The runner starts a separate keyed experiment because the old result identity did not establish compatibility. Legacy checkpoint loading remains available when the training engine is given the checkpoint explicitly.
+* Proxy checkpoints record the completed step and schedule settings. The warmup/cosine rate is computed from the step, so it has no separate mutable scheduler state. Recovery checks the archive CRCs and new checkpoints also verify the run key, effective settings, and encoded train/eval fingerprints. If neither generation can be restored, the run stops with the files preserved. Load checkpoints only from trusted writers.
+* The CPU test with dropout demonstrates exact continuation under the tested software and deterministic settings. Bitwise continuation depends on matching software, hardware, numerical settings, and deterministic operations. Legacy checkpoints lack the full RNG and input metadata. A crash before the first durable save can repeat work, and a crash after the final save can repeat evaluation. Backup availability after loss of the local disk depends on the store having received the checkpoint.
 
 ## 9. Data mixing, SentencePiece export, known limits (added after the first real run — see RESULTS_LOG.md)
 
@@ -155,7 +158,7 @@ The Hugging Face token is read **only from the environment** (`HF_TOKEN`); it ca
 
 ## 10. Sync details learned from a real run
 * Pushes run in a **background thread**; training never waits on the network. Stage ends, errors and exits use `flush(force=True)` and wait.
-* A mid-training checkpoint is pushed only after a **full** `ckpt_push_interval_s` (default 900 s) since the process started, so short jobs never upload one; only long jobs (e.g. DGX) do.
+* Background checkpoint pushes wait for a full `ckpt_push_interval_s` (default 900 s). Forced stage-end and worker-exit flushes bypass this interval.
 * A file modified while it is uploading stays queued and is re-pushed.
 * `proxy_summary.json` stores per-variant seed statistics; the freeze checklist uses the **standard error of the difference** between two seed-averaged BPBs (>= 2 required, 2-3 labelled borderline).
 

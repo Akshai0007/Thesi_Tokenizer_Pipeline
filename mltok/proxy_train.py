@@ -9,15 +9,20 @@ low-fertility tokenizer, and bigger vocabularies add embedding parameters (n_non
 """
 from __future__ import annotations
 
+import hashlib
 import math
-import os
+import random
+import shutil
 import time
+import zipfile
 from pathlib import Path
 
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+from .lib.atomic import atomic_writer
 
 
 def _encode_stream(backend, texts, eos_id, budget_bytes, chunk=2000):
@@ -41,6 +46,13 @@ def _flush(backend, buf, eos_id, out):
     return sum(len(t.encode("utf-8")) for t in buf)
 
 
+def _verify_checkpoint_archive(stream):
+    with zipfile.ZipFile(stream) as archive:
+        if archive.testzip() is not None:
+            raise ValueError("checkpoint archive has a corrupt member")
+    stream.seek(0)
+
+
 def train_proxy(
     backend,
     train_texts,
@@ -62,9 +74,15 @@ def train_proxy(
     on_ckpt=None,
     log=print,
 ) -> dict:
-    """ckpt_path/ckpt_every: save model+optimizer+RNG every N steps and RESUME from it after a crash
-    (a checkpoint is only used if its `ckpt_key` and step count match). on_ckpt(path) is called after each save."""
+    """Save at the configured interval and at the final step when a path is supplied.
+
+    The final checkpoint is saved before evaluation and retained by the caller.
+    Exact continuation requires deterministic operations and the same execution environment.
+    Legacy checkpoints lack global RNG and input fingerprints.
+    """
     t0 = time.time()
+    random.seed(seed)
+    np.random.seed(seed % (2**32))
     torch.manual_seed(seed)
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
     eos = backend.eos_id if backend.eos_id is not None and backend.eos_id >= 0 else 0
@@ -76,11 +94,7 @@ def train_proxy(
     dt_np = np.uint16 if V < 65536 else np.int32
     tr, ev = tr.astype(dt_np), ev.astype(dt_np)
 
-    model = model_plugin.build(V, seq_len).to(device)
-    n_params = sum(p.numel() for p in model.parameters())
-    n_embed = model_plugin.n_embedding_params(model)
     steps = max(1, math.ceil(len(tr) * epochs / (batch * seq_len)))
-    opt = torch.optim.AdamW(model.parameters(), lr=lr, betas=(0.9, 0.95), weight_decay=0.1)
     warm = max(1, int(0.03 * steps))
 
     def lr_at(i):
@@ -97,26 +111,117 @@ def train_proxy(
         amp_dtype = torch.bfloat16 if major >= 8 else torch.float16
     else:
         amp_dtype = torch.float32
-    scaler = torch.amp.GradScaler("cuda", enabled=use_cuda and amp_dtype == torch.float16)
     mb = micro_batch if micro_batch and micro_batch < batch else batch
     n_micro = math.ceil(batch / mb)
-    rng = np.random.default_rng(seed)
     hi = len(tr) - seq_len - 1
     start = 0
-    if ckpt_path and Path(ckpt_path).exists():
-        try:
-            ck = torch.load(ckpt_path, map_location=device, weights_only=False)  # our own file
-            if ck.get("key") == ckpt_key and ck.get("steps") == steps:
+
+    def new_state():
+        model = model_plugin.build(V, seq_len).to(device)
+        return (
+            model,
+            torch.optim.AdamW(model.parameters(), lr=lr, betas=(0.9, 0.95), weight_decay=0.1),
+            torch.amp.GradScaler("cuda", enabled=use_cuda and amp_dtype == torch.float16),
+            np.random.default_rng(seed),
+        )
+
+    def rng_state():
+        return (random.getstate(), np.random.get_state(), torch.get_rng_state(),
+                torch.cuda.get_rng_state(device) if use_cuda else None)
+
+    def restore_rng(state):
+        python_rng, numpy_rng, torch_rng, cuda_rng = state
+        random.setstate(python_rng)
+        np.random.set_state(numpy_rng)
+        torch.set_rng_state(torch_rng)
+        if use_cuda:
+            torch.cuda.set_rng_state(cuda_rng, device)
+
+    checkpoint = Path(ckpt_path) if ckpt_path else None
+    primary_valid = False
+    restored = None
+    if checkpoint is not None:
+        previous = checkpoint.with_suffix(".previous.ckpt")
+        metadata = {
+            "seed": seed, "vocab": V, "seq_len": seq_len, "batch": batch, "micro_batch": mb,
+            "train_mb": train_mb, "eval_mb": eval_mb, "epochs": epochs, "lr": lr,
+            "schedule": "warmup_cosine_v1", "warmup_steps": warm,
+            "train_bytes": tr_bytes, "eval_bytes": ev_bytes,
+            "train_ids": hashlib.sha256(tr).hexdigest(), "eval_ids": hashlib.sha256(ev).hexdigest(),
+            "amp_dtype": str(amp_dtype), "device_type": torch.device(device).type,
+            "torch_version": str(torch.__version__),
+        }
+        available = [p for p in (checkpoint, previous) if p.exists()]
+        initial_rng = rng_state() if available else None
+        for path in available:
+            try:
+                # Only restore checkpoints from trusted writers.
+                with path.open("rb") as stream:
+                    _verify_checkpoint_archive(stream)
+                    ck = torch.load(stream, map_location="cpu", weights_only=False)
+                step = ck["step"]
+                version = ck.get("version", 0)
+                if (version not in (0, 1) or ck["key"] != ckpt_key or ck["steps"] != steps
+                        or type(step) is not int or not 0 < step <= steps
+                        or (version == 1 and ck["metadata"] != metadata)):
+                    raise ValueError("checkpoint does not match this training run")
+                if step <= start:
+                    continue
+                model, opt, scaler, rng = new_state()
+                build_rng = rng_state()
                 model.load_state_dict(ck["model"])
                 opt.load_state_dict(ck["opt"])
                 scaler.load_state_dict(ck["scaler"])
                 rng.bit_generator.state = ck["rng"]
-                start = int(ck["step"])
-                log(f"    [{backend.name}] resuming from checkpoint at step {start}/{steps}")
-            else:
-                log(f"    [{backend.name}] checkpoint does not match this run (config/data changed) - ignoring it")
-        except Exception as e:  # noqa: BLE001 - a corrupt checkpoint must not block training
-            log(f"    [{backend.name}] could not load checkpoint ({type(e).__name__}); training from scratch")
+                if version == 1:
+                    build_rng = (ck["python_rng"], ck["numpy_rng"], ck["torch_rng"], ck["cuda_rng"])
+                restore_rng(build_rng)
+                restored = (model, opt, scaler, rng, build_rng, version)
+                start, primary_valid = step, path == checkpoint
+                if start == steps:
+                    break
+            except Exception as e:
+                log(f"    [{backend.name}] could not load checkpoint {path.name} ({type(e).__name__})")
+            finally:
+                restore_rng(initial_rng)
+        if available and restored is None:
+            raise RuntimeError("No usable proxy checkpoint. Existing checkpoints were preserved.")
+        if restored is not None:
+            model, opt, scaler, rng, saved_rng, version = restored
+            del ck, restored
+            if version == 0:
+                restore_rng(saved_rng)
+                log(f"    [{backend.name}] legacy checkpoint lacks full RNG and input metadata")
+            log(f"    [{backend.name}] resuming from checkpoint at step {start}/{steps}")
+
+    if start == 0:
+        model, opt, scaler, rng = new_state()
+    n_params = sum(p.numel() for p in model.parameters())
+    n_embed = model_plugin.n_embedding_params(model)
+    if start and version == 1:
+        restore_rng(saved_rng)
+
+    def save_checkpoint(step):
+        nonlocal primary_valid
+        if primary_valid:
+            with checkpoint.open("rb") as source, atomic_writer(previous) as target:
+                shutil.copyfileobj(source, target)
+                target.flush()
+                _verify_checkpoint_archive(target)
+        python_rng, numpy_rng, torch_rng, cuda_rng = rng_state()
+        state = {
+            "version": 1, "key": ckpt_key, "steps": steps, "step": step, "metadata": metadata,
+            "model": model.state_dict(), "opt": opt.state_dict(), "scaler": scaler.state_dict(),
+            "rng": rng.bit_generator.state, "python_rng": python_rng, "numpy_rng": numpy_rng,
+            "torch_rng": torch_rng, "cuda_rng": cuda_rng,
+        }
+        with atomic_writer(checkpoint) as stream:
+            torch.save(state, stream)
+            stream.flush()
+            _verify_checkpoint_archive(stream)
+        primary_valid = True
+        if on_ckpt:
+            on_ckpt(ckpt_path)
     model.train()
     last = float("nan")
     for i in range(start, steps):
@@ -138,17 +243,11 @@ def train_proxy(
         nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         scaler.step(opt)
         scaler.update()
+        if checkpoint is not None and (i + 1 == steps or (ckpt_every and (i + 1) % ckpt_every == 0)):
+            save_checkpoint(i + 1)
         last = loss.item() if (i % 50 == 0 or i == steps - 1) else last
         if i % max(1, steps // 10) == 0:
             log(f"    [{backend.name}] step {i}/{steps} loss {last:.3f}")
-        if ckpt_path and ckpt_every and (i + 1) % ckpt_every == 0 and (i + 1) < steps:
-            tmp = str(ckpt_path) + ".tmp"
-            torch.save({"key": ckpt_key, "steps": steps, "step": i + 1, "model": model.state_dict(),
-                        "opt": opt.state_dict(), "scaler": scaler.state_dict(),
-                        "rng": rng.bit_generator.state}, tmp)
-            os.replace(tmp, ckpt_path)
-            if on_ckpt:
-                on_ckpt(ckpt_path)
 
     model.eval()
     n_win = (len(ev) - 1) // seq_len
@@ -164,8 +263,6 @@ def train_proxy(
                     logits = model(xb[:, :-1])
                 nll += F.cross_entropy(logits.float().reshape(-1, V), xb[:, 1:].reshape(-1), reduction="sum").item()
                 scored += xb[:, 1:].numel()
-    if ckpt_path:
-        Path(ckpt_path).unlink(missing_ok=True)  # finished: the result file supersedes the checkpoint
     bytes_scored = ev_bytes * scored / len(ev)
     bpb = nll / math.log(2) / bytes_scored
     return {

@@ -215,12 +215,14 @@ def cmd_proxy_worker(a):
     g = cfg.get("gpu", {})
     if g.get("guard"):
         cap_memory(g.get("max_gb", 60), log=_log)
-    for job in a.variants.split(","):
-        dname, seed = job.rsplit(":", 1)
-        v = json.loads((r.vroot / dname / "variant.json").read_text())
-        r.variants[r.vname(v)] = v
-        r.ensure_proxy(v, int(seed))
-    r.sync.flush(force=True, message="proxy worker: final flush")
+    try:
+        for job in a.variants.split(","):
+            dname, seed = job.rsplit(":", 1)
+            v = json.loads((r.vroot / dname / "variant.json").read_text())
+            r.variants[r.vname(v)] = v
+            r.ensure_proxy(v, int(seed))
+    finally:
+        r.sync.flush(force=True, message="proxy worker: final flush")
 
 
 def cmd_selftest(a):

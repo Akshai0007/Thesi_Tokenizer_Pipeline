@@ -11,13 +11,18 @@ it depends on, so swapping a plugin file recomputes exactly what depended on it)
 from __future__ import annotations
 
 import csv
+import gzip
+import hashlib
 import json
+import math
 import os
 import pickle
 import shutil
 import subprocess
 import sys
 import time
+from functools import cached_property
+from importlib.metadata import version
 from pathlib import Path
 
 import yaml
@@ -25,6 +30,7 @@ import yaml
 from . import registry
 from .contracts import TrainContext
 from .gpu import cap_memory, gpu_count, wait_for_gpu
+from .lib.atomic import atomic_writer
 from .lib.backends import HubBackend
 from .lib.bpe_core import DEFAULT_SPECIALS
 from .lib.io import count_words, data_fingerprint, iter_docs, iter_texts, list_shards
@@ -75,10 +81,11 @@ class Run:
         self.res = cfg.get("resources", {})
         self.specials = cfg.get("specials", DEFAULT_SPECIALS)
         comp = cfg["components"]
-        self.base = self.canon(
-            {"normalizer": spec_of(comp["normalizer"]), "pretokenizer": spec_of(comp["pretokenizer"]),
-             "algorithm": spec_of(comp["algorithm"]), "vocab": int(comp["vocab"])}
-        )
+        self.configured_base = {
+            "normalizer": spec_of(comp["normalizer"]), "pretokenizer": spec_of(comp["pretokenizer"]),
+            "algorithm": spec_of(comp["algorithm"]), "vocab": int(comp["vocab"]),
+        }
+        self.base = self.canon(self.configured_base)
         self.selector = make("selector", cfg.get("selector", "default"))
         self.metric_specs = [spec_of(m) for m in cfg.get("metrics", DEFAULT_METRICS)]
         self.data_fp = data_fingerprint(self.train_shards)
@@ -228,45 +235,91 @@ class Run:
 
     def proxy_key(self, v, seed: int) -> str:
         pc = self._pc()
-        return keyhash(self.tok_key(v), self.eval_fp, self.data_fp,
+        return keyhash("proxy-v2", self.tok_key(v), self.proxy_data_fingerprints, self.proxy_runtime_versions,
                        fingerprint("proxy_model", pc.get("model", {"type": "gpt", "size": "tiny"})),
-                       {k: pc.get(k) for k in ("seq_len", "batch", "train_mb", "eval_mb", "epochs", "lr")}, int(seed))
+                       {k: pc.get(k) for k in ("seq_len", "batch", "micro_batch", "train_mb", "eval_mb", "epochs", "lr", "gpus")},
+                       self.cfg.get("search", {}).get("eval_docs", 20000), int(seed))
+
+    @cached_property
+    def proxy_runtime_versions(self):
+        return {"python": tuple(sys.version_info[:3]),
+                **{name: version(name) for name in ("torch", "numpy", "tokenizers", "sentencepiece")}}
+
+    @cached_property
+    def proxy_data_fingerprints(self):
+        splits = []
+        for paths in (self.train_shards, self.eval_shards):
+            digests = []
+            for path in paths:
+                digest = hashlib.sha256()
+                opener = gzip.open if str(path).endswith(".gz") else open
+                with opener(path, "rb") as stream:
+                    for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                        digest.update(chunk)
+                digests.append(digest.hexdigest())
+            splits.append(digests)
+        return splits
 
     def proxy_path(self, v, seed: int) -> Path:
-        return self.vdir(v) / f"proxy_seed{seed}.json"
+        return self.vdir(v) / f"proxy_seed{seed}-{self.proxy_key(v, seed)}.json"
 
     def _proxy_done(self, v, seed: int) -> bool:
         p = self.proxy_path(v, seed)
-        return p.exists() and json.loads(p.read_text()).get("_key") == self.proxy_key(v, seed)
+        try:
+            result = json.loads(p.read_text(encoding="utf-8"))
+        except (FileNotFoundError, ValueError):
+            return False
+        return (isinstance(result, dict) and result.get("_key") == self.proxy_key(v, seed)
+                and result.get("seed") == seed
+                and all(type(result.get(k)) in (float, int) and math.isfinite(result[k])
+                        for k in ("bpb", "n_params", "n_nonembed", "train_tokens", "seconds"))
+                and type(result.get("steps")) is int and result["steps"] > 0)
+
+    def _mark_proxy_checkpoints(self, path):
+        path = Path(path)
+        self.sync.mark(path.with_suffix(".previous.ckpt"))
+        self.sync.mark(path)
+
+    def _queue_proxy_result(self, path):
+        self.sync.mark(path)
+        self._mark_proxy_checkpoints(path.with_suffix(".ckpt"))
+        self.sync.flush(message=f"{self.root.name}: proxy result {path.stem}")
 
     def ensure_proxy(self, v, seed: int) -> dict:
         from .proxy_train import train_proxy
 
         pp = self.proxy_path(v, seed)
         if self._proxy_done(v, seed):
-            return json.loads(pp.read_text())
+            self._queue_proxy_result(pp)
+            return json.loads(pp.read_text(encoding="utf-8"))
         if pp.exists():
-            _log(f"   proxy result for {self.vname(v)} seed {seed} is stale -> retraining")
+            _log(f"   proxy result for {self.vname(v)} seed {seed} is incomplete or stale. Checking for a checkpoint.")
         pc = self._pc()
         be, _ = self.ensure_tokenizer(v)
         _log(f"== proxy LM for {self.vname(v)} (seed {seed})")
+
+        def on_checkpoint(path):
+            self._mark_proxy_checkpoints(path)
+            self.sync.flush()
+
         r = train_proxy(
             be, iter_texts(self.train_shards), (t for t, _ in self.eval_docs()),
             make("proxy_model", pc.get("model", {"type": "gpt", "size": "tiny"})),
             seq_len=pc.get("seq_len", 512), batch=pc.get("batch", 64), train_mb=pc.get("train_mb", 100),
             eval_mb=pc.get("eval_mb", 10), epochs=pc.get("epochs", 1), lr=pc.get("lr", 1e-3),
             seed=seed, micro_batch=pc.get("micro_batch", 0),
-            ckpt_path=str(self.vdir(v) / f"proxy_seed{seed}.ckpt"), ckpt_every=int(pc.get("checkpoint_every_steps", 0)),
+            ckpt_path=str(pp.with_suffix(".ckpt")), ckpt_every=int(pc.get("checkpoint_every_steps", 0)),
             ckpt_key=self.proxy_key(v, seed),
-            on_ckpt=lambda path: (self.sync.mark(path), self.sync.flush()),
+            on_ckpt=on_checkpoint,
             log=_log,
         )
         r["_key"] = self.proxy_key(v, seed)
         r["seed"] = seed
-        pp.write_text(json.dumps(r, indent=2))
-        self.sync.mark(pp)
-        self.sync.mark_delete(self.vdir(v) / f"proxy_seed{seed}.ckpt")
-        self.sync.flush(message=f"{self.root.name}: proxy {self.vname(v)} seed {seed}")
+        with atomic_writer(pp) as stream:
+            stream.write(json.dumps(r, indent=2, allow_nan=False).encode("utf-8"))
+        if not self._proxy_done(v, seed):
+            raise RuntimeError(f"Could not verify proxy result {pp}")
+        self._queue_proxy_result(pp)
         _log(f"   {self.vname(v)} seed {seed}: BPB={r['bpb']:.4f} ({r['seconds']}s)")
         return r
 
@@ -274,7 +327,7 @@ class Run:
         """Mean over seeds (what the selector sees) + spread, so noise is visible in the report."""
         import statistics
 
-        rs = [json.loads(self.proxy_path(v, sd).read_text()) for sd in self.seeds()]
+        rs = [json.loads(self.proxy_path(v, sd).read_text(encoding="utf-8")) for sd in self.seeds()]
         bpbs = [r["bpb"] for r in rs]
         agg = {k: x for k, x in rs[0].items() if not k.startswith("_")}
         agg.update(bpb=statistics.fmean(bpbs), bpb_std=(statistics.pstdev(bpbs) if len(bpbs) > 1 else 0.0),
@@ -290,7 +343,14 @@ class Run:
     def run_proxies(self, names: list[str]) -> dict[str, dict]:
         """One job per (variant, seed). With >= 2 GPUs: one worker process per GPU
         (CUDA_VISIBLE_DEVICES pinned); a "cpu" entry runs a CPU worker (used by tests)."""
-        todo = [(n, sd) for n in names for sd in self.seeds() if not self._proxy_done(self.variants[n], sd)]
+        todo = []
+        for n in names:
+            v = self.variants[n]
+            for sd in self.seeds():
+                if self._proxy_done(v, sd):
+                    self._queue_proxy_result(self.proxy_path(v, sd))
+                else:
+                    todo.append((n, sd))
         gpus = self.resolve_gpus()
         if todo:
             if len(gpus) < 2 or len(todo) < 2:
@@ -332,13 +392,14 @@ class Run:
     def stage_intrinsic(self) -> dict[str, dict]:
         t0 = time.time()
         factors = self.cfg.get("search", {}).get("factors", {})
+        configured = self.configured_base
         for f in factors:
             if f not in ("normalizer", "pretokenizer", "algorithm"):
                 raise ValueError(f"search.factors key {f!r} must be normalizer / pretokenizer / algorithm")
         self.variants = {self.vname(self.base): self.base}
         for f, vals in factors.items():
             for val in vals:
-                v = self.canon({**self.base, f: spec_of(val)})
+                v = self.canon({**configured, f: spec_of(val)})
                 self.variants.setdefault(self.vname(v), v)
         results = {n: self.ensure_metrics(v) for n, v in list(self.variants.items())}
 
@@ -346,12 +407,12 @@ class Run:
             best = {}
             for f, vals in factors.items():
                 cands = []
-                for val in list(vals) + [self.base[f]]:
-                    n = self.vname(self.canon({**self.base, f: spec_of(val)}))
+                for val in list(vals) + [configured[f]]:
+                    n = self.vname(self.canon({**configured, f: spec_of(val)}))
                     if n in results and self.selector.eligible(results[n]):
                         cands.append((self.selector.score(results[n]), spec_of(val)))
-                best[f] = min(cands, key=lambda x: x[0])[1] if cands else self.base[f]
-            comb = self.canon({**self.base, **best})
+                best[f] = min(cands, key=lambda x: x[0])[1] if cands else configured[f]
+            comb = self.canon({**configured, **best})
             n = self.vname(comb)
             if n not in results:
                 _log(f"combined candidate: { {k: slug(x) for k, x in best.items()} }")
@@ -374,7 +435,7 @@ class Run:
                         key=lambda n: self.selector.score(results[n]))
         chosen = ranked[: pc.get("top_k", 3)]
         for n, v in self.variants.items():  # reference algorithms always get a proxy run
-            pre_ok = v["pretokenizer"]["type"] == "-" or v["pretokenizer"] == self.base["pretokenizer"]  # SentencePiece ignores it
+            pre_ok = v["pretokenizer"]["type"] == "-" or v["pretokenizer"] == self.configured_base["pretokenizer"]
             if (v["algorithm"]["type"] in pc.get("always_include", ["hf_bpe"]) and v["normalizer"] == self.base["normalizer"]
                     and pre_ok and v["vocab"] == self.base["vocab"] and n not in chosen):
                 chosen.append(n)
@@ -446,11 +507,13 @@ class Run:
             raise SystemExit(f"{variant_name} is not eligible (lossless / stress / unk rules) - it cannot be pinned")
         v = json.loads((d / "variant.json").read_text())
         summ = json.loads((self.root / "proxy_summary.json").read_text()) if (self.root / "proxy_summary.json").exists() else {}
-        mine = summ.get(variant_name)
         def _eligible(name):  # compare only against variants that could actually be chosen (lossless etc.)
             ms = [dd / "metrics.json" for dd in self.vroot.iterdir() if dd.is_dir() and dd.name.rsplit("-", 1)[0] == name and (dd / "metrics.json").exists()]
             return bool(ms) and self.selector.eligible(json.loads(max(ms, key=lambda f: f.stat().st_mtime).read_text()))
-        pool = {n: x for n, x in summ.items() if _eligible(n)}
+        pool = {n: x for n, x in summ.items()
+                if x.get("variant") and x.get("keys") == [self.proxy_key(x["variant"], sd) for sd in self.seeds()]
+                and _eligible(n)}
+        mine = pool.get(variant_name) if d == self.vdir(v) else None
         best_name = min(pool, key=lambda n: pool[n]["bpb"]) if pool else None
         info = {"reason": reason, "variant": variant_name}
         if mine and best_name:
@@ -461,7 +524,7 @@ class Run:
         best = self.root / "best"
         if best.exists():
             shutil.rmtree(best)
-        shutil.copytree(d, best)
+        shutil.copytree(d, best, ignore=shutil.ignore_patterns("*.ckpt", "*.tmp"))
         sel = {"winner": variant_name, "basis": f"PINNED by decision: {reason}", "pinned": info, "metrics": m,
                "proxy": mine, "provenance": self.provenance_of(v)}
         (best / "SELECTION.json").write_text(json.dumps(sel, indent=2, default=str))
@@ -496,7 +559,7 @@ class Run:
         best = self.root / "best"
         if best.exists():
             shutil.rmtree(best)
-        shutil.copytree(self.vdir(v), best)
+        shutil.copytree(self.vdir(v), best, ignore=shutil.ignore_patterns("*.ckpt", "*.tmp"))
         provenance = self.provenance_of(v)
         (best / "SELECTION.json").write_text(json.dumps(
             {"winner": win, "basis": basis, "metrics": results[win], "proxy": proxy.get(win), "provenance": provenance},
@@ -542,7 +605,9 @@ class Run:
         (self.root / "report.md").write_text("\n".join(L))
         (self.root / "timings.json").write_text(json.dumps(self.timings))
         (self.root / "proxy_summary.json").write_text(json.dumps(
-            {n: {k: p.get(k) for k in ("bpb", "bpb_std", "n_seeds", "bpb_seeds")} for n, p in proxy.items()}, indent=1))
+            {n: {**{k: p.get(k) for k in ("bpb", "bpb_std", "n_seeds", "bpb_seeds")},
+                 "variant": self.variants[n], "keys": [self.proxy_key(self.variants[n], sd) for sd in self.seeds()]}
+             for n, p in proxy.items()}, indent=1))
         for f in ("report.md", "results.csv", "timings.json", "proxy_summary.json"):
             self.sync.mark(self.root / f)
         self.sync.mark(best)
