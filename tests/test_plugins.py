@@ -155,7 +155,7 @@ def test_replacing_dataset_invalidates_everything_downstream(tmp_path, isolated_
 
 def test_engine_files_never_import_plugins():
     for f in ("runner.py", "ingest.py", "proxy_train.py", "cli.py", "contracts.py", "registry.py", "gpu.py", "verify.py"):
-        tree = ast.parse((ROOT / "mltok" / f).read_text())
+        tree = ast.parse((ROOT / "mltok" / f).read_text(encoding="utf-8"))
         for node in ast.walk(tree):
             mods = [a.name for a in node.names] if isinstance(node, ast.Import) else \
                    [node.module or ""] if isinstance(node, ast.ImportFrom) else []
@@ -164,7 +164,8 @@ def test_engine_files_never_import_plugins():
 
 def test_lib_never_imports_plugins():
     for p in (ROOT / "mltok" / "lib").glob("*.py"):
-        assert "mltok.plugins" not in p.read_text() and "from ..plugins" not in p.read_text(), p.name
+        source = p.read_text(encoding="utf-8")
+        assert "mltok.plugins" not in source and "from ..plugins" not in source, p.name
 
 
 def test_broken_plugin_is_reported_not_fatal(tmp_path, isolated_registry):

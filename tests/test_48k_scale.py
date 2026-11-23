@@ -6,8 +6,11 @@ from experiments.mom_bpe import scale_data, scale_fit
 from experiments.mom_bpe.corpus_materialize import normalizer
 from experiments.mom_bpe.corpus_overlap import DuplicateIndex, signatures
 from experiments.mom_bpe.diagnose import format_json, sha
+from experiments.mom_bpe.scale_compare import prefix
 from experiments.mom_bpe.scale_proxy_plan import parameter_counts
+from experiments.mom_bpe.scale_rescore import disjoint
 from mltok import registry
+from mltok.lib.bpe_progress import canonical
 
 
 def document(identifier, text, normalize, group=None):
@@ -50,6 +53,22 @@ def test_ordered_source_stream_frames_document_boundaries():
     stats = [scale_data.split_identity(rows, str) for rows in (left, right)]
     assert stats[0]["canonical_bytes"] == stats[1]["canonical_bytes"] == 3
     assert stats[0]["canonical_stream_sha256"] != stats[1]["canonical_stream_sha256"]
+
+
+def test_intermediate_budget_preserves_the_document_prefix():
+    rows = [document(str(i), text, str) for i, text in enumerate(["abc", "defgh", "i"])]
+    assert list(prefix(rows, 4)) == rows[:1]
+    assert list(prefix(rows, 8)) == rows[:2]
+
+
+def test_pilot_rescore_rejects_shared_source_group(tmp_path):
+    train, valid = tmp_path / "train.jsonl", tmp_path / "validation.jsonl"
+    train.write_bytes(canonical(document("train", "a distinct passage", str, group="shared")) + b"\n")
+    valid.write_bytes(canonical(document("valid", "different wording", str, group="other")) + b"\n")
+    disjoint(train, valid)
+    valid.write_bytes(canonical(document("valid", "different wording", str, group="shared")) + b"\n")
+    with pytest.raises(ValueError, match="overlapping groups"):
+        disjoint(train, valid)
 
 
 @pytest.mark.parametrize("with_sketch", [False, True])
