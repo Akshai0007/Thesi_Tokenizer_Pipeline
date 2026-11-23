@@ -1,0 +1,11 @@
+schema: mom-boundary-optimization-arms-v1
+matched_exploratory_vocab: 7744
+primary_scientific_vocab: 48000
+normalizer: {type: ml_conservative, terminal_chillu: true}
+pretokenizer: {type: script_runs, scripts: [Malayalam, Latin]}
+arms:
+  T1: {type: picky_bpe, segmenter: codepoint, alphabet_coverage: 0.99999, hybrid_min_count: 8, hybrid_max_atoms: 512}
+  T3: {type: picky_bpe, segmenter: akshara, alphabet_coverage: 0.99999, hybrid_min_count: 8, hybrid_max_atoms: 512}
+  T4: {type: picky_bpe, segmenter: hybrid, alphabet_coverage: 0.99999, hybrid_min_count: 8, hybrid_max_atoms: 512}
+  T5: {type: picky_bpe, segmenter: hybrid, alphabet_coverage: 0.99999, hybrid_min_count: 8, hybrid_max_atoms: 512, picky_threshold_milli: 900}
+  T8: {type: boundary_guarded_hybrid, guard_milli: 1000, alphabet_coverage: 0.99999, hybrid_min_count: 8, hybrid_max_atoms: 512, picky_threshold_milli: 900}
