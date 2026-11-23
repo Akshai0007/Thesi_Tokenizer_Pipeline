@@ -51,6 +51,7 @@ def train_bpe(
     initial_units: Callable[[str], list[str]] | None = None,
     boundary_weights: dict[str, dict[int, int]] | None = None,
     penalty_milli: int = 0,
+    progress=None,
     log_every: int = 2000,
     log=print,
 ) -> BPEResult:
@@ -72,7 +73,30 @@ def train_bpe(
     seqs: list[list[int]] = []
     freqs: list[int] = []
     flags: list[list[int] | None] = []
-    for w, c in items:
+    merges: list[tuple[str, str]] = []
+    if progress is not None and (initial_units is None or seed_pairs):
+        raise ValueError("Merge checkpoints require unique-output, seed-free BPE")
+    saved = progress.latest() if progress is not None else None
+    resumed_merges = 0
+    if saved is not None:
+        seqs, flags = saved["seqs"], saved["flags"]
+        if len(seqs) != len(items) or len(flags) != len(items) or len(saved["merges"]) > n_new:
+            raise ValueError("BPE checkpoint does not match the training dimensions")
+        for a, b in saved["merges"]:
+            if a not in tok2id or b not in tok2id or a + b in tok2id:
+                raise ValueError("Invalid BPE merge in checkpoint")
+            tok2id[a + b] = len(tok_list)
+            tok_list.append(a + b)
+            merges.append((a, b))
+        for seq, ff in zip(seqs, flags):
+            if any(type(i) is not int or (i != BLOCK and not 0 <= i < len(tok_list)) for i in seq):
+                raise ValueError("Invalid BPE sequence in checkpoint")
+            if ff is not None and (len(ff) != len(seq)
+                                   or any(type(x) is not int or not 0 <= x <= CONFIDENCE_SCALE for x in ff)):
+                raise ValueError("Invalid BPE boundary weights in checkpoint")
+        freqs = [c for _, c in items]
+        resumed_merges = len(merges)
+    for w, c in (() if saved is not None else items):
         units = list(w) if initial_units is None else initial_units(w)
         seqs.append([tok2id.get(ch, BLOCK) for ch in units])
         freqs.append(c)
@@ -199,8 +223,6 @@ def train_bpe(
         cross.pop(k, None)
         return touched
 
-    merges: list[tuple[str, str]] = []
-
     def do_merge(a: int, b: int) -> None:
         s = tok_list[a] + tok_list[b]
         nid = tok2id.get(s)
@@ -262,6 +284,8 @@ def train_bpe(
             break
         a, b = k >> KEY_BITS, k & KEY_MASK
         do_merge(a, b)
+        if progress is not None and len(merges) % progress.interval == 0:
+            progress.save(merges, seqs, flags)
         if log_every and len(merges) % log_every == 0:
             log(
                 f"  merge {len(merges):>6} {tok_list[a]!r}+{tok_list[b]!r} score={cur:.0f} "
@@ -276,6 +300,9 @@ def train_bpe(
         "word_mass_covered": kept_mass / total_mass,
         "train_seconds": round(time.time() - t0, 1),
     }
+    if progress is not None:
+        progress.save(merges, seqs, flags)
+        info["resumed_merges"] = resumed_merges
     return BPEResult(alphabet=alphabet, tokens=tok_list, merges=merges, info=info)
 
 

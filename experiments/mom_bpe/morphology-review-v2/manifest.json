@@ -1,0 +1,27 @@
+{
+  "annotation": "Review independently before opening evidence. Use accepted, ambiguous, or abstain. Enter zero-based codepoint offsets separately for raw and canonical forms. Keep uncertain readings and unresolved cases with a reason. Save filled copies under a new identity.",
+  "authorized_training_labels": 0,
+  "contextual_prompts": 12,
+  "dependencies": {
+    "mlmorph": "1.4.3",
+    "sfst": "1.10.0"
+  },
+  "dependency_lock_sha256": "9cf98a2839fc818ccbf48fa24e865ec8c3ea9726a9107984ad412dcdd6734984",
+  "file_sha256": {
+    "adjudication.tsv": "f8f18efd36ff2231638b89d94395315640b0db4f5f2070b899f7efef9f122dd1",
+    "evidence-after-blind-review.json": "70ccde6620d184af88ea0bd3f3507bc6811281c4a164d28d76787ed0d9640b81",
+    "reviewer-1.tsv": "ad5f054f052a28e5f5609d9f8a605b53313c310a6fc453e19acec72a5dcc3d33",
+    "reviewer-2.tsv": "ad5f054f052a28e5f5609d9f8a605b53313c310a6fc453e19acec72a5dcc3d33"
+  },
+  "forms_to_review": 108,
+  "input_sha256": {
+    "analyzer_observations": "da31217c1843bd601bbdf5c999a71ffedcf4957835d51760b234cdd8d1f0202d",
+    "desk_review": "e5226185b93c2596bace434c376a5a28d467f44892a2adfbbd468d2cf89c20a4",
+    "queue": "126526508f5ae858b5dd37589d4bc55b8ea94ff850e837e148e9122858ef8feb"
+  },
+  "isolated_prompts": 96,
+  "schema": "mom-morphology-review-packet-v2",
+  "status": "awaiting two independent human reviews",
+  "transducer_sha256": "f6eb3d3fb73fdc7e1f422d5a0b14e20e33fc736d4a830e4395213577611dfa72",
+  "transducer_size": 18619083
+}

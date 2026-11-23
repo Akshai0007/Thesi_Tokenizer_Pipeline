@@ -4,7 +4,7 @@ import json
 import pytest
 import yaml
 
-from experiments.mom_bpe import prepare, verify_frozen
+from experiments.mom_bpe import pilot, prepare, verify_frozen
 from mltok import registry
 
 
@@ -130,3 +130,31 @@ def test_plan_rejects_a_manifest_replaced_after_verification(tmp_path, frozen, m
     monkeypatch.setattr(prepare, "verify", replace)
     with pytest.raises(ValueError, match="changed after verification"):
         prepare.prepare(tmp_path / "manifest.json")
+
+
+def test_bounded_pilot_shares_the_frozen_prefix_and_reuses_each_arm(tmp_path, frozen):
+    frozen.pop("training_alignments")
+    frozen.pop("morphology_panel")
+    first = document("one", "g-one", "മലയാളം മലയാളം")
+    second = document("two", "g-two", "പൂക്കൾ പൂക്കൾ")
+    frozen["splits"]["train"] = [member(tmp_path, "train.jsonl", jsonl(first, second))]
+    frozen["source_counts"]["train"]["authored"] = 2
+    manifest = tmp_path / "manifest.json"
+    manifest.write_bytes(json.dumps(frozen).encode())
+    root = tmp_path / "pilot"
+    plan = pilot.prepare(manifest, root, first["canonical_bytes"])
+    assert pilot.prepare(manifest, root, first["canonical_bytes"]) == plan
+    assert plan["training_docs"] == 1 and plan["training_canonical_bytes"] == first["canonical_bytes"]
+    assert plan["freeze"]["reviewed_morphology_cases"] is None
+    for arm in ("A", "B", "C"):
+        result = pilot.run(root / "plan.json", arm)
+        assert result == pilot.run(root / "plan.json", arm)
+        assert result["identity"]["training_fingerprint"] == plan["training_fingerprint"]
+        assert result["fit"]["training"]["canonical_bytes"] == first["canonical_bytes"]
+        assert result["fit"]["fit_attempt_process_peak_rss_bytes"] > 0
+        assert result["fit"]["primary_48k_eligible"] is False
+        news = result["natural_text"]["by_stratum"]["news"]
+        assert news["mom_canonical_equal"] == 1 and 0 <= news["fallback_rate"] <= 1
+    (root / "train.jsonl").write_bytes(b"tampered")
+    with pytest.raises(ValueError, match="SHA-256"):
+        pilot.run(root / "plan.json", "A")

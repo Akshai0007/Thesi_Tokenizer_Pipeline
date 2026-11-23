@@ -1,0 +1,1828 @@
+{
+  "desk_notes": {
+    "desk-001": {
+      "desk": {
+        "context": "കിളികൾ പറന്നു.",
+        "offsets": [
+          4
+        ],
+        "operation": "affix",
+        "parts": [
+          "കിളി",
+          "കൾ"
+        ],
+        "reading": "കിളി<n><pl>",
+        "reason": "The bird stem is unchanged before the plural suffix.",
+        "text": "കിളികൾ"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 148,
+            "reading": "കിളി<n><pl>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl"
+                ],
+                "root": "കിളി"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": [
+          4
+        ],
+        "generated_exact_surface": true,
+        "observed_offsets": [
+          4
+        ],
+        "text": "കിളികൾ",
+        "training_boundary_offsets": []
+      }
+    },
+    "desk-002": {
+      "desk": {
+        "context": "കടയിൽ കുടകൾ വിൽക്കുന്നു.",
+        "offsets": [
+          3
+        ],
+        "operation": "affix",
+        "parts": [
+          "കുട",
+          "കൾ"
+        ],
+        "reading": "കുട<n><pl>",
+        "reason": "The umbrella stem and plural ending are overt.",
+        "text": "കുടകൾ"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 144,
+            "reading": "കുട<n><pl>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl"
+                ],
+                "root": "കുട"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": [
+          3
+        ],
+        "generated_exact_surface": true,
+        "observed_offsets": [
+          3
+        ],
+        "text": "കുടകൾ",
+        "training_boundary_offsets": []
+      }
+    },
+    "desk-003": {
+      "desk": {
+        "context": "മുറിയിൽ കസേരകൾ ഉണ്ട്.",
+        "offsets": [
+          4
+        ],
+        "operation": "affix",
+        "parts": [
+          "കസേര",
+          "കൾ"
+        ],
+        "reading": "കസേര<n><pl>",
+        "reason": "The chair stem is unchanged before the plural ending.",
+        "text": "കസേരകൾ"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 148,
+            "reading": "കസേര<n><pl>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl"
+                ],
+                "root": "കസേര"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": [
+          4
+        ],
+        "generated_exact_surface": true,
+        "observed_offsets": [
+          4
+        ],
+        "text": "കസേരകൾ",
+        "training_boundary_offsets": []
+      }
+    },
+    "desk-004": {
+      "desk": {
+        "context": "അവിടെ വീടുകൾ പണിയുന്നു.",
+        "offsets": [
+          4
+        ],
+        "operation": "stem_mutation",
+        "parts": [
+          "വീട്",
+          "കൾ"
+        ],
+        "reading": "വീട്<n><pl>",
+        "reason": "The final consonant retains its stem affiliation; the surface stem ends in u before -kaḷ.",
+        "surface_parts": [
+          "വീടു",
+          "കൾ"
+        ],
+        "text": "വീടുകൾ"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 148,
+            "reading": "വീട്<n><pl>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl"
+                ],
+                "root": "വീട്"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": [
+          4
+        ],
+        "generated_exact_surface": true,
+        "observed_offsets": [
+          4
+        ],
+        "text": "വീടുകൾ",
+        "training_boundary_offsets": []
+      }
+    },
+    "desk-005": {
+      "desk": {
+        "context": "പൂച്ചയിൽ ഈ രോഗം കാണാം.",
+        "offsets": [
+          5
+        ],
+        "operation": "sandhi",
+        "parts": [
+          "പൂച്ച",
+          "ഇൽ"
+        ],
+        "reading": "പൂച്ച<n><locative>",
+        "reason": "The y linker is included with the surface locative so the split leaves the word stem intact.",
+        "surface_parts": [
+          "പൂച്ച",
+          "യിൽ"
+        ],
+        "text": "പൂച്ചയിൽ"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 170,
+            "reading": "പൂച്ച<n><locative>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "locative"
+                ],
+                "root": "പൂച്ച"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": [
+          5
+        ],
+        "generated_exact_surface": true,
+        "observed_offsets": [
+          5
+        ],
+        "text": "പൂച്ചയിൽ",
+        "training_boundary_offsets": []
+      }
+    },
+    "desk-006": {
+      "desk": {
+        "context": "കടകളിൽ തിരക്കുണ്ട്.",
+        "offsets": null,
+        "operation": "agglutination",
+        "parts": [
+          "കട",
+          "കൾ",
+          "ഇൽ"
+        ],
+        "reading": "കട<n><pl><locative>",
+        "reason": "The locative vowel sign belongs to ളി in the written form. This complete three-part projection must abstain.",
+        "surface_parts": [
+          "കട",
+          "കള",
+          "ിൽ"
+        ],
+        "text": "കടകളിൽ"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 193,
+            "reading": "കട<n><pl><locative>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl",
+                  "locative"
+                ],
+                "root": "കട"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": null,
+        "generated_exact_surface": true,
+        "observed_offsets": null,
+        "text": "കടകളിൽ",
+        "training_boundary_offsets": []
+      }
+    },
+    "desk-007": {
+      "desk": {
+        "context": "കുളത്തിൽ മീനുകൾ ഉണ്ട്.",
+        "offsets": null,
+        "reason": "The pinned analyzer has no reading. The absence does not invalidate the observed form.",
+        "text": "മീനുകൾ"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "മീനുകൾ",
+        "training_boundary_offsets": []
+      }
+    },
+    "desk-008": {
+      "desk": {
+        "context": "പൂക്കൾ വിരിഞ്ഞു.",
+        "offsets": null,
+        "reason": "The pinned reading list includes plural and another analysis. The current word-level join does not disambiguate context.",
+        "text": "പൂക്കൾ"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 140,
+            "reading": "പൂ<n><pl>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl"
+                ],
+                "root": "പൂ"
+              }
+            ]
+          },
+          {
+            "rank": 267,
+            "reading": "പൂ<n><coordinative>അക്കൾ<n>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "coordinative"
+                ],
+                "root": "പൂ"
+              },
+              {
+                "pos": [
+                  "n"
+                ],
+                "root": "അക്കൾ"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "പൂക്കൾ",
+        "training_boundary_offsets": []
+      }
+    },
+    "desk-009": {
+      "desk": {
+        "context": "ഞങ്ങൾ കടൽക്കര കണ്ടു.",
+        "offsets": null,
+        "reason": "The reading list includes an opaque noun and distinct compound readings. A plausible split does not resolve all candidates.",
+        "text": "കടൽക്കര"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 125,
+            "reading": "കടൽക്കര<n>",
+            "structured": [
+              {
+                "pos": [
+                  "n"
+                ],
+                "root": "കടൽക്കര"
+              }
+            ]
+          },
+          {
+            "rank": 265,
+            "reading": "കടൽ<n><adj>കര<n>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "adj"
+                ],
+                "root": "കടൽ"
+              },
+              {
+                "pos": [
+                  "n"
+                ],
+                "root": "കര"
+              }
+            ]
+          },
+          {
+            "rank": 300,
+            "reading": "കടൽ<n><adj>കരം<n><adj>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "adj"
+                ],
+                "root": "കടൽ"
+              },
+              {
+                "pos": [
+                  "n",
+                  "adj"
+                ],
+                "root": "കരം"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "കടൽക്കര",
+        "training_boundary_offsets": []
+      }
+    },
+    "desk-010": {
+      "desk": {
+        "context": "ക്ഷേത്രോത്സവം തുടങ്ങി.",
+        "offsets": null,
+        "reason": "The transducer returns no reading and the vowel junction is fused.",
+        "text": "ക്ഷേത്രോത്സവം"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "ക്ഷേത്രോത്സവം",
+        "training_boundary_offsets": []
+      }
+    },
+    "desk-011": {
+      "desk": {
+        "context": "അവൾ വീട്ടിൽ ഉണ്ടായിരുന്നു.",
+        "offsets": null,
+        "reason": "An exact locative lemma reading exists among several. The old synthetic വീ|ട്ടിൽ split also moves written stem material to the suffix and is unsuitable as a linguistic label.",
+        "text": "വീട്ടിൽ"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 134,
+            "reading": "വീട്ടിൽ<np>",
+            "structured": [
+              {
+                "pos": [
+                  "np"
+                ],
+                "root": "വീട്ടിൽ"
+              }
+            ]
+          },
+          {
+            "rank": 166,
+            "reading": "വീട്<n><locative>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "locative"
+                ],
+                "root": "വീട്"
+              }
+            ]
+          },
+          {
+            "rank": 223,
+            "reading": "വീട്ടുക<v><cvb-adv-part-conditional>",
+            "structured": [
+              {
+                "pos": [
+                  "v",
+                  "cvb-adv-part-conditional"
+                ],
+                "root": "വീട്ടുക"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "വീട്ടിൽ",
+        "training_boundary_offsets": []
+      }
+    },
+    "desk-012": {
+      "desk": {
+        "context": "കുട്ടികൾക്കും ഭക്ഷണം കിട്ടി.",
+        "offsets": null,
+        "reason": "The word admits multiple analyzer readings. The dative and additive parts also share a fused written junction.",
+        "text": "കുട്ടികൾക്കും"
+      },
+      "observed": {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 329,
+            "reading": "കുട്ടി<n><pl><dative>ഉം<cnj>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl",
+                  "dative"
+                ],
+                "root": "കുട്ടി"
+              },
+              {
+                "pos": [
+                  "cnj"
+                ],
+                "root": "ഉം"
+              }
+            ]
+          },
+          {
+            "rank": 338,
+            "reading": "കുട്ടി<np><pl><dative>ഉം<cnj>",
+            "structured": [
+              {
+                "pos": [
+                  "np",
+                  "pl",
+                  "dative"
+                ],
+                "root": "കുട്ടി"
+              },
+              {
+                "pos": [
+                  "cnj"
+                ],
+                "root": "ഉം"
+              }
+            ]
+          },
+          {
+            "rank": 355,
+            "reading": "കുട്ടി<n><n-v-compound>കൾക്കുക<v><future>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "n-v-compound"
+                ],
+                "root": "കുട്ടി"
+              },
+              {
+                "pos": [
+                  "v",
+                  "future"
+                ],
+                "root": "കൾക്കുക"
+              }
+            ]
+          },
+          {
+            "rank": 364,
+            "reading": "കുട്ടി<np><n-v-compound>കൾക്കുക<v><future>",
+            "structured": [
+              {
+                "pos": [
+                  "np",
+                  "n-v-compound"
+                ],
+                "root": "കുട്ടി"
+              },
+              {
+                "pos": [
+                  "v",
+                  "future"
+                ],
+                "root": "കൾക്കുക"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "കുട്ടികൾക്കും",
+        "training_boundary_offsets": []
+      }
+    }
+  },
+  "queue_notes": {
+    "prior-001": {
+      "analyses": [
+        [
+          "കുട്ടി<n>",
+          123
+        ],
+        [
+          "കുട്ടി<np>",
+          132
+        ]
+      ],
+      "prior_offsets": "[]",
+      "status": "multiple_analyzer_candidates"
+    },
+    "prior-002": {
+      "analyses": [
+        [
+          "കുട്ടി<n><pl>",
+          156
+        ],
+        [
+          "കുട്ടി<np><pl>",
+          165
+        ]
+      ],
+      "prior_offsets": "[6]",
+      "status": "multiple_analyzer_candidates"
+    },
+    "prior-003": {
+      "analyses": [
+        [
+          "കുട്ടി<n><pl><dative>",
+          211
+        ],
+        [
+          "കുട്ടി<np><pl><dative>",
+          220
+        ]
+      ],
+      "prior_offsets": "[6,8]",
+      "status": "multiple_analyzer_candidates"
+    },
+    "prior-004": {
+      "analyses": [
+        [
+          "കുട്ടി<n><pl><genitive>",
+          217
+        ],
+        [
+          "കുട്ടി<np><pl><genitive>",
+          226
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "alignment_unresolved"
+    },
+    "prior-005": {
+      "analyses": [
+        [
+          "കുട്ടി<n><pl><dative>ഉം<cnj>",
+          329
+        ],
+        [
+          "കുട്ടി<np><pl><dative>ഉം<cnj>",
+          338
+        ],
+        [
+          "കുട്ടി<n><n-v-compound>കൾക്കുക<v><future>",
+          355
+        ],
+        [
+          "കുട്ടി<np><n-v-compound>കൾക്കുക<v><future>",
+          364
+        ]
+      ],
+      "prior_offsets": "[6,8]",
+      "status": "multiple_analyzer_candidates"
+    },
+    "prior-006": {
+      "analyses": [
+        [
+          "നഗരം<n>",
+          119
+        ]
+      ],
+      "prior_offsets": "[]",
+      "status": "review_required"
+    },
+    "prior-007": {
+      "analyses": [
+        [
+          "നഗരം<n><locative>",
+          166
+        ],
+        [
+          "നഗർ<np><n-v-compound>അത്തുക<v><cvb-adv-part-conditional>",
+          402
+        ]
+      ],
+      "prior_offsets": "[3]",
+      "status": "multiple_analyzer_candidates"
+    },
+    "prior-008": {
+      "analyses": [
+        [
+          "പുസ്തകം<n>",
+          125
+        ]
+      ],
+      "prior_offsets": "[]",
+      "status": "review_required"
+    },
+    "prior-009": {
+      "analyses": [
+        [
+          "പുസ്തകം<n><locative>",
+          178
+        ]
+      ],
+      "prior_offsets": "[6]",
+      "status": "review_required"
+    },
+    "prior-010": {
+      "analyses": [
+        [
+          "പുസ്തകം<n><pl><dative>",
+          217
+        ]
+      ],
+      "prior_offsets": "[6,10]",
+      "status": "review_required"
+    },
+    "prior-011": {
+      "analyses": [
+        [
+          "വായിക്കുക<v><present>",
+          180
+        ]
+      ],
+      "prior_offsets": "[8]",
+      "status": "review_required"
+    },
+    "prior-012": {
+      "analyses": [
+        [
+          "വായിക്കുക<v>",
+          126
+        ]
+      ],
+      "prior_offsets": "[8]",
+      "status": "review_required"
+    },
+    "prior-013": {
+      "analyses": [
+        [
+          "വായിക്കുക<v><purposive-mood>",
+          201
+        ],
+        [
+          "വായിക്കുക<v><purposive-mood><qn>",
+          250
+        ]
+      ],
+      "prior_offsets": "[8]",
+      "status": "multiple_analyzer_candidates"
+    },
+    "prior-014": {
+      "analyses": [
+        [
+          "പഠിക്കുക<v><present>",
+          176
+        ]
+      ],
+      "prior_offsets": "[7]",
+      "status": "review_required"
+    },
+    "prior-015": {
+      "analyses": [
+        [
+          "പഠിക്കുക<v>",
+          124
+        ]
+      ],
+      "prior_offsets": "[7]",
+      "status": "review_required"
+    },
+    "prior-016": {
+      "analyses": [
+        [
+          "പഠിക്കുക<v><purposive-mood>",
+          197
+        ],
+        [
+          "പഠിക്കുക<v><purposive-mood><qn>",
+          244
+        ]
+      ],
+      "prior_offsets": "[7]",
+      "status": "multiple_analyzer_candidates"
+    },
+    "prior-017": {
+      "analyses": [
+        [
+          "മഴ<n><adj>വെള്ളം<n>",
+          269
+        ],
+        [
+          "മഴ<n><coordinative>വെള്ളം<n>",
+          269
+        ]
+      ],
+      "prior_offsets": "[2]",
+      "status": "multiple_analyzer_candidates"
+    },
+    "prior-018": {
+      "analyses": [
+        [
+          "മഴ<n><adj>കാലം<n>",
+          265
+        ]
+      ],
+      "prior_offsets": "[2]",
+      "status": "review_required"
+    },
+    "prior-019": {
+      "analyses": [],
+      "prior_offsets": "[7]",
+      "status": "no_analyzer_candidate"
+    },
+    "prior-020": {
+      "analyses": [],
+      "prior_offsets": "[13]",
+      "status": "no_analyzer_candidate"
+    },
+    "prior-021": {
+      "analyses": [],
+      "prior_offsets": "",
+      "status": "alignment_unresolved"
+    },
+    "prior-022": {
+      "analyses": [
+        [
+          "മരം<n><adj>കൊമ്പ്<n>",
+          273
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "alignment_unresolved"
+    },
+    "prior-023": {
+      "analyses": [
+        [
+          "കടൽക്കര<n>",
+          125
+        ],
+        [
+          "കടൽ<n><adj>കര<n>",
+          265
+        ],
+        [
+          "കടൽ<n><adj>കരം<n><adj>",
+          300
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "alignment_unresolved"
+    },
+    "prior-024": {
+      "analyses": [
+        [
+          "വീട്ടിൽ<np>",
+          134
+        ],
+        [
+          "വീട്<n><locative>",
+          166
+        ],
+        [
+          "വീട്ടുക<v><cvb-adv-part-conditional>",
+          223
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "alignment_unresolved"
+    },
+    "seed-001": {
+      "analyses": [
+        [
+          "അവൻ<prn>",
+          126
+        ],
+        [
+          "അ<dem>അവൻ<prn>",
+          242
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-002": {
+      "analyses": [
+        [
+          "അവൻ<prn>",
+          126
+        ],
+        [
+          "അ<dem>അവൻ<prn>",
+          242
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-003": {
+      "analyses": [
+        [
+          "മഹൽ<n>",
+          117
+        ],
+        [
+          "മഹൽ<np>",
+          126
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-004": {
+      "analyses": [
+        [
+          "മഹൽ<n>",
+          117
+        ],
+        [
+          "മഹൽ<np>",
+          126
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-005": {
+      "analyses": [
+        [
+          "വയൽ<n>",
+          117
+        ],
+        [
+          "വയൽ<np>",
+          126
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-006": {
+      "analyses": [
+        [
+          "വയൽ<n>",
+          117
+        ],
+        [
+          "വയൽ<np>",
+          126
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-007": {
+      "analyses": [
+        [
+          "ശക്തി<n>",
+          121
+        ],
+        [
+          "ശക്തി<sanskrit>",
+          139
+        ],
+        [
+          "ശക്തി<sanskrit><adj>",
+          176
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-008": {
+      "analyses": [
+        [
+          "ശക്തി<n><genitive>",
+          170
+        ],
+        [
+          "ശക്തി<sanskrit><genitive>",
+          188
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-009": {
+      "analyses": [
+        [
+          "ശ്രദ്ധ<n>",
+          123
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-010": {
+      "analyses": [
+        [
+          "ശ്രദ്ധ<n><sociative>എ<indeclinable>",
+          320
+        ],
+        [
+          "ശ്രദ്ധ<n><adj>ഓട്<n>എ<indeclinable>",
+          422
+        ],
+        [
+          "ശ്രദ്ധ<n><coordinative>ഓട്<n>എ<indeclinable>",
+          422
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-011": {
+      "analyses": [
+        [
+          "ഗ്രന്ഥം<sanskrit>",
+          143
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-012": {
+      "analyses": [
+        [
+          "ഗ്രന്ഥം<sanskrit><genitive>",
+          196
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-013": {
+      "analyses": [
+        [
+          "കാണുക<v><cvb-adv-part-past>",
+          158
+        ],
+        [
+          "കാണുക<v><cvb-adv-part-past><qn>",
+          199
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-014": {
+      "analyses": [
+        [
+          "കാണുക<v><cvb-adv-part-past>",
+          158
+        ],
+        [
+          "കാണുക<v><cvb-adv-part-past><qn>",
+          199
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-015": {
+      "analyses": [
+        [
+          "പറയുക<v><cvb-adv-part-past>",
+          158
+        ],
+        [
+          "പറയുക<v><cvb-adv-part-past><qn>",
+          199
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-016": {
+      "analyses": [
+        [
+          "പറയുക<v><cvb-adv-part-past>",
+          158
+        ],
+        [
+          "പറയുക<v><cvb-adv-part-past><qn>",
+          199
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-017": {
+      "analyses": [
+        [
+          "നാട്<n>",
+          119
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-018": {
+      "analyses": [],
+      "prior_offsets": "",
+      "status": "no_analyzer_candidate"
+    },
+    "seed-019": {
+      "analyses": [
+        [
+          "വീട്<n><pl>",
+          148
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-020": {
+      "analyses": [
+        [
+          "വീട്<n><pl><genitive>",
+          205
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-021": {
+      "analyses": [
+        [
+          "കിളി<n><pl>",
+          148
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-022": {
+      "analyses": [
+        [
+          "കിളി<n><pl><genitive>",
+          205
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-023": {
+      "analyses": [
+        [
+          "കണ്ണ്<n><pl>",
+          152
+        ],
+        [
+          "കണ്ണ്<np><pl>",
+          161
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-024": {
+      "analyses": [
+        [
+          "കണ്ണ്<n><pl><dative>",
+          205
+        ],
+        [
+          "കണ്ണ്<np><pl><dative>",
+          214
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-025": {
+      "analyses": [
+        [
+          "വരുക<v><present>",
+          160
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-026": {
+      "analyses": [
+        [
+          "വരുക<v><simple-perfect-aspect>",
+          202
+        ],
+        [
+          "വരുക<v><cvb-adv-part-past>ഇരിക്കുക<v><past>",
+          321
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-027": {
+      "analyses": [
+        [
+          "വരുക<v><future>ആയിരുന്നു<cnj>",
+          289
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-028": {
+      "analyses": [
+        [
+          "എഴുതുക<v><past>",
+          159
+        ],
+        [
+          "എഴുതുക<v><cvb-adv-part-past>",
+          162
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-029": {
+      "analyses": [
+        [
+          "എഴുതുക<v><past>ഇല്ല<neg>",
+          281
+        ],
+        [
+          "എഴുതുക<v><cvb-adv-part-past>ഇല്ല<neg>",
+          284
+        ],
+        [
+          "എഴുതുക<v><past>ഇല്ല<neg><qn>",
+          310
+        ],
+        [
+          "എഴുതുക<v><cvb-adv-part-past>ഇല്ല<neg><qn>",
+          313
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-030": {
+      "analyses": [
+        [
+          "എഴുതുക<v><iterative-past-aspect>",
+          210
+        ],
+        [
+          "എഴുതുക<v><cvb-adv-part-past>കൊള്ളുക<v><simple-perfect-aspect>",
+          376
+        ],
+        [
+          "എഴുതുക<v><cvb-adv-part-past>കൊള്ളുക<v><cvb-adv-part-past>ഇരിക്കുക<v><past>",
+          495
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-031": {
+      "analyses": [
+        [
+          "മല<n><locative>",
+          158
+        ],
+        [
+          "മലയുക<v><cvb-adv-part-conditional>",
+          215
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-032": {
+      "analyses": [
+        [
+          "മല<n><ablative>",
+          158
+        ],
+        [
+          "മല<n><locative>നിന്ന്<postp>",
+          290
+        ],
+        [
+          "മല<n><locative>നിന്ന്<postp><adj>",
+          329
+        ],
+        [
+          "മലയുക<v><cvb-adv-part-conditional>നിൽക്കുക<v><cvb-adv-part-past>",
+          385
+        ],
+        [
+          "മലയുക<v><cvb-adv-part-conditional>നില്ക്കുക<v><cvb-adv-part-past>",
+          389
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-033": {
+      "analyses": [
+        [
+          "അമ്മ<n><accusative>",
+          172
+        ],
+        [
+          "അമ്മ<np><accusative>",
+          181
+        ],
+        [
+          "അമ്മ<n>എ<indeclinable>",
+          262
+        ],
+        [
+          "അമ്മ<np>എ<indeclinable>",
+          271
+        ],
+        [
+          "അ<dem>അമ്മ<n><accusative>",
+          288
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-034": {
+      "analyses": [
+        [
+          "അമ്മ<n><sociative>",
+          169
+        ],
+        [
+          "അമ്മ<np><sociative>",
+          178
+        ],
+        [
+          "അമ്മ<n><adj>ഓട്<n>",
+          271
+        ],
+        [
+          "അമ്മ<n><coordinative>ഓട്<n>",
+          271
+        ],
+        [
+          "അമ്മം<n><adj>ഓട്<n>",
+          275
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-035": {
+      "analyses": [
+        [
+          "കയ്യ്<n><instrumental>",
+          182
+        ],
+        [
+          "കയ്യ്<n><adj>ആൽ<n>",
+          273
+        ],
+        [
+          "കയ്യ്<n><coordinative>ആൽ<n>",
+          273
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-036": {
+      "analyses": [
+        [
+          "കൈ<n><genitive>",
+          158
+        ],
+        [
+          "കൈ<n><neutral><n><deriv><genitive>",
+          317
+        ],
+        [
+          "കൈ<n><feminine><n><deriv><genitive>",
+          320
+        ],
+        [
+          "കൈ<n><masculine><n><deriv><genitive>",
+          323
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-037": {
+      "analyses": [
+        [
+          "അവർ<prn><dative>ഉം<cnj>",
+          283
+        ],
+        [
+          "അ<dem>അവർ<prn><dative>ഉം<cnj>",
+          399
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-038": {
+      "analyses": [
+        [
+          "അവർ<prn><dative>ഒക്കെ<cnj>",
+          289
+        ],
+        [
+          "അവർ<prn><dative>ഒക്കെ<postp>",
+          295
+        ],
+        [
+          "അ<dem>അവർ<prn><dative>ഒക്കെ<cnj>",
+          405
+        ],
+        [
+          "അ<dem>അവർ<prn><dative>ഒക്കെ<postp>",
+          411
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-039": {
+      "analyses": [],
+      "prior_offsets": "",
+      "status": "no_analyzer_candidate"
+    },
+    "seed-040": {
+      "analyses": [],
+      "prior_offsets": "",
+      "status": "no_analyzer_candidate"
+    },
+    "seed-041": {
+      "analyses": [
+        [
+          "പൂ<n><pl><sociative>ഒപ്പം<cnj>",
+          320
+        ],
+        [
+          "പൂ<n><pl><sociative>ഒപ്പം<cnj><adj>",
+          357
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-042": {
+      "analyses": [
+        [
+          "പൂ<n><pl><dative>വേണ്ടി<cnj>",
+          313
+        ],
+        [
+          "പൂ<n><pl><dative>വേണ്ടി<postp>",
+          319
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-043": {
+      "analyses": [
+        [
+          "തിരുവോണം<n>",
+          127
+        ],
+        [
+          "തിരുവോണം<np>",
+          136
+        ],
+        [
+          "തിരുവോണം<np><adj>",
+          179
+        ],
+        [
+          "തിരു<n><adj>ഓണം<n>",
+          271
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-044": {
+      "analyses": [],
+      "prior_offsets": "",
+      "status": "no_analyzer_candidate"
+    },
+    "seed-045": {
+      "analyses": [
+        [
+          "വിദ്യാലയം<n>",
+          129
+        ],
+        [
+          "വിദ്യ<sanskrit><adj>ലയം<n>",
+          293
+        ],
+        [
+          "വിദ്യ<sanskrit><adj>അല<n><adj>യം<np>",
+          446
+        ],
+        [
+          "വിദ്യ<sanskrit><adj>അലം<n><adj>യം<np>",
+          450
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-046": {
+      "analyses": [
+        [
+          "വിദ്യാഭ്യാസം<n>",
+          135
+        ],
+        [
+          "വിദ്യ<sanskrit><adj>അഭ്യാസം<n>",
+          301
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-047": {
+      "analyses": [
+        [
+          "ദേവാലയം<n>",
+          125
+        ],
+        [
+          "ദേവാ<n><adj>ലയം<n>",
+          271
+        ],
+        [
+          "ദേവാ<n><coordinative>ലയം<n>",
+          271
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-048": {
+      "analyses": [
+        [
+          "ദേവേന്ദ്രൻ<n>",
+          131
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-049": {
+      "analyses": [
+        [
+          "കടൽ<n><adj>തീരം<n>",
+          269
+        ],
+        [
+          "കടൽ<n><adj>തീരം<sanskrit>",
+          287
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-050": {
+      "analyses": [
+        [
+          "കടൽ<n><adj>പാലം<n>",
+          269
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-051": {
+      "analyses": [
+        [
+          "മഴ<n><adj>തുള്ളി<n>",
+          269
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-052": {
+      "analyses": [
+        [
+          "മഴ<n><adj>പാട്ട്<n>",
+          269
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-053": {
+      "analyses": [
+        [
+          "പുഴക്കര<np>",
+          134
+        ],
+        [
+          "പുഴ<n><adj>കര<n>",
+          265
+        ],
+        [
+          "പുഴ<n><dative>അര<quantifier>",
+          295
+        ],
+        [
+          "പുഴ<n><adj>കരം<n><adj>",
+          300
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-054": {
+      "analyses": [
+        [
+          "പുഴ<n><adj>പാലം<n>",
+          269
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-055": {
+      "analyses": [
+        [
+          "നിലാ<n><adj>വെളിച്ചം<n>",
+          281
+        ],
+        [
+          "നിലാ<n><coordinative>വെളിച്ചം<n>",
+          281
+        ],
+        [
+          "നിലാം<n><adj>വെളിച്ചം<n>",
+          285
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-056": {
+      "analyses": [
+        [
+          "നിലാമുറ്റം<n>",
+          131
+        ],
+        [
+          "നിലാ<n><adj>മുറ്റം<n>",
+          277
+        ],
+        [
+          "നിലാ<n><coordinative>മുറ്റം<n>",
+          277
+        ],
+        [
+          "നിലാം<n><adj>മുറ്റം<n>",
+          281
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-057": {
+      "analyses": [],
+      "prior_offsets": "",
+      "status": "no_analyzer_candidate"
+    },
+    "seed-058": {
+      "analyses": [
+        [
+          "കഥ<sanskrit><adj>രചന<n>",
+          281
+        ],
+        [
+          "കഥ<sanskrit><adj>രചന<np>",
+          290
+        ],
+        [
+          "കഥ<sanskrit><adj>അരചം<n><adj>ന<np>",
+          440
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-059": {
+      "analyses": [
+        [
+          "മലയാളം<n><adj>ഭാഷ<sanskrit>",
+          297
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-060": {
+      "analyses": [
+        [
+          "മലയാളം<n><adj>സാഹിത്യം<n>",
+          289
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-061": {
+      "analyses": [
+        [
+          "ബസ്സ്<n><pl>",
+          152
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-062": {
+      "analyses": [
+        [
+          "ബസ്സ്<n><locative>",
+          170
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-063": {
+      "analyses": [
+        [
+          "ഫോൺ<eng><dative>",
+          159
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-064": {
+      "analyses": [
+        [
+          "ഫോൺ<eng><perlative>",
+          168
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-065": {
+      "analyses": [
+        [
+          "കമ്പ്യൂട്ടർ<n><pl>",
+          176
+        ],
+        [
+          "കമ്പ്യൂട്ടർ<eng><pl>",
+          179
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-066": {
+      "analyses": [
+        [
+          "കമ്പ്യൂട്ടർ<n><locative>",
+          194
+        ],
+        [
+          "കമ്പ്യൂട്ടർ<eng><locative>",
+          197
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-067": {
+      "analyses": [
+        [
+          "എന്ത്<n><adj>ഊട്ട്<n>ആണ്<aff>",
+          399
+        ],
+        [
+          "എന്ത്<n><coordinative>ഊട്ട്<n>ആണ്<aff>",
+          399
+        ],
+        [
+          "എന്ത്<n><coordinative>ഊട്ട്<n>ആണ്<aff><adj>",
+          432
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "multiple_analyzer_candidates"
+    },
+    "seed-068": {
+      "analyses": [],
+      "prior_offsets": "",
+      "status": "no_analyzer_candidate"
+    },
+    "seed-069": {
+      "analyses": [],
+      "prior_offsets": "",
+      "status": "no_analyzer_candidate"
+    },
+    "seed-070": {
+      "analyses": [
+        [
+          "ഓള്<n>",
+          117
+        ]
+      ],
+      "prior_offsets": "",
+      "status": "review_required"
+    },
+    "seed-071": {
+      "analyses": [],
+      "prior_offsets": "",
+      "status": "no_analyzer_candidate"
+    },
+    "seed-072": {
+      "analyses": [],
+      "prior_offsets": "",
+      "status": "no_analyzer_candidate"
+    }
+  }
+}

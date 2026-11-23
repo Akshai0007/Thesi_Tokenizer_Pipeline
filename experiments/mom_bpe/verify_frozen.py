@@ -50,7 +50,7 @@ def load_rows(path):
             yield row
 
 
-def verify(manifest_path):
+def verify(manifest_path, *, require_morphology=True):
     path = Path(manifest_path).resolve()
     protocol_bytes = PROTOCOL.read_bytes()
     protocol = json.loads(protocol_bytes)
@@ -119,7 +119,16 @@ def verify(manifest_path):
             or any(not row["text"] or not row["category"] or not independent_reviewers(row["reviewers"])
                    for row in approved)):
         raise ValueError("Orthography panel is not independently adjudicated")
-    morphology = [row for row in load_rows(checked_member(path.parent, manifest["morphology_panel"]))
+    reviewed = _verify_morphology(path.parent, manifest, native, panel) if require_morphology else None
+    if file_identity(path)[1] != manifest_sha:
+        raise ValueError("Frozen manifest changed during verification")
+    return {"manifest_sha256": manifest_sha, "documents": split_ledger,
+            "reviewed_orthography_cases": len(approved), "reviewed_morphology_cases": reviewed,
+            "calibration": "Review receipts checked for integrity; reviewer and license claims need human sign-off"}
+
+
+def _verify_morphology(root, manifest, native, panel):
+    morphology = [row for row in load_rows(checked_member(root, manifest["morphology_panel"]))
                   if row["status"] == "adjudicated"]
     for row in morphology:
         text, offsets = row["text"], row["offsets"]
@@ -132,7 +141,7 @@ def verify(manifest_path):
             or len(morphology) < panel["morphology"]["target_reviewed_forms"]
             or len({row["group"] for row in morphology}) < panel["morphology"]["target_minimum_groups"]):
         raise ValueError("Morphology panel does not meet the protocol size and family targets")
-    alignment = checked_member(path.parent, manifest["training_alignments"])
+    alignment = checked_member(root, manifest["training_alignments"])
     rules = json.loads(alignment.read_bytes())
     if rules.get("schema") != "mom-surface-alignments-v1" or rules.get("qualification") != "adjudicated_training":
         raise ValueError("Training alignment artifact is not marked independently adjudicated")
@@ -147,11 +156,7 @@ def verify(manifest_path):
             raise ValueError("Training alignment lacks adjudication or overlaps held-out morphology")
     if not any(project(word, analyses, UNITIZERS["akshara"]) for word, analyses in reviewed.items()):
         raise ValueError("Training morphology has no defensible surface alignment")
-    if file_identity(path)[1] != manifest_sha:
-        raise ValueError("Frozen manifest changed during verification")
-    return {"manifest_sha256": manifest_sha, "documents": split_ledger,
-            "reviewed_orthography_cases": len(approved), "reviewed_morphology_cases": len(morphology),
-            "calibration": "Review receipts checked for integrity; reviewer and license claims need human sign-off"}
+    return len(morphology)
 
 
 if __name__ == "__main__":

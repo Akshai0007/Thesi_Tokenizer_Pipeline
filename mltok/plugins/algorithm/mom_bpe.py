@@ -6,14 +6,15 @@ from itertools import accumulate, islice
 
 from mltok.contracts import Algorithm
 from mltok.lib.bpe_core import CONFIDENCE_SCALE, train_bpe
-from mltok.lib.io import iter_docs
+from mltok.lib.bpe_progress import BPEProgress
+from mltok.lib.io import data_fingerprint, iter_docs
 from mltok.lib.mom_backend import (
     MOMBackend, SCHEMA, encoder_identity, implementation_identity, preprocessing, pretokenizer_split,
     runtime_identity,
 )
 from mltok.lib.morph_alignment import load_reviewed_forms, project
 from mltok.lib.orthographic_units import UNITIZERS, merge_domains
-from mltok.registry import keyhash, register
+from mltok.registry import fingerprint, keyhash, register
 
 
 @register("algorithm", "mom_bpe")
@@ -46,7 +47,8 @@ class MOMBPE(Algorithm):
     @staticmethod
     def fingerprint_dependencies():
         return {**runtime_identity(), **implementation_identity(
-            "bpe_core.py", "io.py", "mom_backend.py", "morph_alignment.py", "orthographic_units.py", "unicode_ml.py")}
+            "bpe_core.py", "bpe_progress.py", "io.py", "mom_backend.py", "morph_alignment.py",
+            "orthographic_units.py", "unicode_ml.py")}
 
     def train(self, ctx):
         unitize = UNITIZERS[self.segmenter]
@@ -98,10 +100,19 @@ class MOMBPE(Algorithm):
             }
         if self.penalty and not any(weights.values()):
             raise ValueError("Weighted morphology found no supported training surfaces with reachable boundaries")
+        progress = None
+        interval = ctx.resources.get("merge_checkpoint_every", 0)
+        if interval:
+            identity = keyhash(
+                "mom-merge-progress-v1", data_fingerprint(ctx.shard_paths),
+                fingerprint("algorithm", {"type": self.name, **self.params}), ctx.vocab, ctx.specials,
+                json.loads(pre.to_str()), alphabet, weights, limit, max_types,
+            )
+            progress = BPEProgress(ctx.out_dir / "merge-checkpoints", identity, interval)
         trained = train_bpe(
             counts, vocab_target=ctx.vocab, n_specials=len(ctx.specials), alphabet=alphabet,
             initial_units=unitize, boundary_weights=weights, penalty_milli=self.penalty,
-            max_word_types=max_types, log=ctx.log,
+            max_word_types=max_types, progress=progress, log=ctx.log,
         )
         occupied = len(trained.tokens) + len(ctx.specials) + 256
         if self.require_full_vocabulary and occupied != ctx.vocab:
