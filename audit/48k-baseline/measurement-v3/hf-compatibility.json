@@ -1,0 +1,34 @@
+{
+  "autotokenizer_class": "TokenizersBackend",
+  "fast": true,
+  "vocab_id_mismatch_count": 0,
+  "special_ids": {
+    "pad": {
+      "token": "<pad>",
+      "id": 0
+    },
+    "bos": {
+      "token": "<s>",
+      "id": 1
+    },
+    "eos": {
+      "token": "</s>",
+      "id": 2
+    },
+    "unk": {
+      "token": "<unk>",
+      "id": 3
+    }
+  },
+  "model_special_inventory_count": 7,
+  "batch_ids_exact": true,
+  "batch_decode_exact": true,
+  "serializer_reload_ids_exact": true,
+  "clm_collator_batch_shape": [
+    3,
+    10
+  ],
+  "clm_padding_labels_masked": true,
+  "clm_tokens_equal_labels": true,
+  "chat_template_renders": true
+}

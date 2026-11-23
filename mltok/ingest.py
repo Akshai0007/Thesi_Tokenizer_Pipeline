@@ -19,6 +19,7 @@ from collections import Counter
 from pathlib import Path
 
 from . import registry
+from .lib.atomic import atomic_writer
 from .lib.io import iter_docs, list_shards
 
 _CTRL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
@@ -83,6 +84,10 @@ def clean_corpus(in_paths, out_dir, filters: list, *, eval_permille=5, shard_mb=
     """
     flt = [registry.make("filter", f) for f in filters]
     out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    pending = out_dir / ".mltok-cleaning"
+    with atomic_writer(pending) as stream:
+        stream.write(b"cleaning in progress\n")
     for sub in ("train", "eval"):
         (out_dir / sub).mkdir(parents=True, exist_ok=True)
         for old in (out_dir / sub).glob("*.jsonl.gz"):
@@ -169,6 +174,10 @@ def clean_corpus(in_paths, out_dir, filters: list, *, eval_permille=5, shard_mb=
     stats = dict(st)
     tot = sum(v for k, v in stats.items() if k.startswith("train_bytes_")) or 1
     stats["train_share"] = {k[len("train_bytes_"):]: round(v / tot, 3) for k, v in stats.items() if k.startswith("train_bytes_")}
-    (out_dir / "clean_stats.json").write_text(json.dumps(stats, indent=2))
+    stats["shards"] = sorted(p.relative_to(out_dir).as_posix()
+                             for split in ("train", "eval") for p in (out_dir / split).glob("*.jsonl.gz"))
+    with atomic_writer(out_dir / "clean_stats.json") as stream:
+        stream.write(json.dumps(stats, indent=2).encode("utf-8"))
+    pending.unlink()
     log(f"[clean] {stats}")
     return stats

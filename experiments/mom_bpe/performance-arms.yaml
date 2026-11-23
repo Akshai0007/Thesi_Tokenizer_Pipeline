@@ -1,0 +1,20 @@
+schema: malayalam-performance-arms-v1
+primary_vocabulary: 48000
+normalizer: {type: ml_conservative, terminal_chillu: true}
+pretokenizer: {type: script_runs, scripts: [Malayalam, Latin]}
+algorithm: {type: picky_bpe, alphabet_coverage: 0.99999, hybrid_min_count: 8, hybrid_max_atoms: 512}
+arms:
+  T0: {published_baseline: true}
+  T1: {segmenter: codepoint}
+  T2: {segmenter: grapheme}
+  T3: {segmenter: akshara}
+  T4: {segmenter: hybrid}
+  T5: {segmenter: hybrid, picky_threshold_milli: 900}
+  T6: {segmenter: hybrid, morphology_penalty_milli: 400}
+  T7: {segmenter: hybrid, picky_threshold_milli: 900, morphology_penalty_milli: 400}
+downstream:
+  normalization: canonical_utf8
+  document_context: reset
+  bos: context_only
+  eos: one_predicted_per_complete_document
+  budgets: [fixed_source_bytes, fixed_training_tokens]

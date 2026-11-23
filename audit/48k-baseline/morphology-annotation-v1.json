@@ -1,0 +1,41 @@
+{
+  "status": "awaiting independent human annotation",
+  "human_verified_forms": 0,
+  "human_verified_boundaries": 0,
+  "counts": {
+    "prior_forms": 24,
+    "forms_with_analyzer_candidates": 84,
+    "forms_with_multiple_analyzer_candidates": 52,
+    "multiple_analyzer_candidates": 49,
+    "prior_manual_offsets_carried_forward": 16,
+    "alignment_unresolved": 5,
+    "review_required": 31,
+    "no_analyzer_candidate": 11,
+    "new_forms": 72
+  },
+  "new_forms_by_category": {
+    "chillu_representations": 6,
+    "virama_and_conjuncts": 6,
+    "samvruthokaram": 6,
+    "noun_inflections": 6,
+    "verb_inflections": 6,
+    "case_suffixes": 6,
+    "productive_agglutination": 6,
+    "sandhi": 6,
+    "gemination": 6,
+    "compounds": 6,
+    "loanwords": 6,
+    "rare_and_regional": 6
+  },
+  "analyzer_versions": {
+    "mlmorph": "1.4.3",
+    "sfst": "1.10.0"
+  },
+  "unicode_version": "15.0.0",
+  "inputs": {
+    "fixtures_sha256": "a712126a68d444ad31a86a7da40a10e58c4b61b223d112a7591c58a874aa69d1",
+    "candidates_sha256": "d59fe6f291ec464ae0fc9aaae66403edc9c405653c946cc5a924b1ff206f542e"
+  },
+  "queue_sha256": "126526508f5ae858b5dd37589d4bc55b8ea94ff850e837e148e9122858ef8feb",
+  "analyzer_fields": "First five ranked NFC analyses. Weights are ranks, not probabilities or surface offsets."
+}

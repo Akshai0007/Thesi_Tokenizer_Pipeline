@@ -74,3 +74,14 @@ def test_both_dgx_steps_share_one_bounded_raw_download():
     web = next(s for s in cf["sources"] if s["id"] == "fineweb2")
     assert 0 < web["max_docs"] <= 1_500_000          # the full 3.3M docs would be a ~3.5 h download nobody reads
     assert cf["paths"]["clean"] != fi["paths"]["clean"] and cf["name"] != fi["name"]       # safe to run side by side after ingest
+
+
+def test_dgx_availability_check_rejects_reserved_and_unverifiable_gpu(monkeypatch):
+    from mltok import gpu
+
+    probed = []
+    monkeypatch.setattr(gpu, "gpu_status", lambda index: probed.append(index))
+    assert not gpu.wait_for_gpu(index=7)
+    assert not probed
+    assert not gpu.wait_for_gpu(index=0)
+    assert probed == [0]

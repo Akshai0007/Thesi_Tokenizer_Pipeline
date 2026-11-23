@@ -3,12 +3,14 @@ import copy
 import shutil
 import time
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from conftest import base_cfg, prepare_data
 from mltok import registry
 from mltok.contract_checks import fixture_docs, tiny_backend
+from mltok.contracts import StoreAccessError
 from mltok.plugins.store.hf_hub import HFHubStore
 from mltok.runner import run
 from mltok.sync import Sync
@@ -151,6 +153,10 @@ class FakeApi:
 
     def __init__(self, files=None, fail_first=0):
         self.files, self.calls, self.fail_first = dict(files or {}), [], fail_first
+        self.revision = "0" * 40
+
+    def repo_info(self, repo_id, **kw):
+        return SimpleNamespace(private=True, sha=self.revision)
 
     def create_repo(self, repo_id, *, private=None, repo_type=None, exist_ok=False, **kw):
         self.calls.append(("create_repo", repo_id, private, repo_type, exist_ok))
@@ -165,6 +171,8 @@ class FakeApi:
             else:
                 self.files.pop(op.path_in_repo, None)
         self.calls.append(("create_commit", commit_message))
+        self.revision = f"{int(self.revision, 16) + 1:040x}"
+        return SimpleNamespace(oid=self.revision)
 
     def list_repo_files(self, repo_id, *, repo_type=None, **kw):
         return list(self.files)
@@ -183,7 +191,7 @@ def test_hf_store_is_private_prefixed_retrying_and_never_touches_other_files(tmp
     monkeypatch.setattr(time, "sleep", lambda *_: None)
     api = FakeApi(files={"README.md": b"my model card", "weights.safetensors": b"precious"}, fail_first=1)
     monkeypatch.setattr(HFHubStore, "api_factory", lambda self=None: api, raising=False)
-    st = HFHubStore(repo="Akzhai/mltok-malayalam-runs", prefix="mltok", retries=3, squash_every=2)
+    st = HFHubStore(repo="Akzhai/mltok-malayalam-runs", prefix="mltok", retries=3)
     f = tmp_path / "a.json"
     f.write_text("{}")
     st.push([(f, "runs/t/variants/x/a.json")], "msg")                      # first create_commit fails once, then succeeds
@@ -193,13 +201,16 @@ def test_hf_store_is_private_prefixed_retrying_and_never_touches_other_files(tmp
     new_paths = set(api.files) - {"README.md", "weights.safetensors"}
     assert all(p.startswith("mltok/") for p in new_paths)
     st.push([(f, "runs/t/b.json")], "again")
-    assert ("squash", "Akzhai/mltok-malayalam-runs") in api.calls            # squash_every=2
+    assert not any(call[0] == "squash" for call in api.calls)
+    with pytest.raises(ValueError, match="squashing is disabled"):
+        HFHubStore(repo="fixture/test", squash_every=2)
 
     out = tmp_path / "restored"
     assert st.pull("runs/t", out) == 2 and (out / "variants" / "x" / "a.json").read_text() == "{}"
     assert st.pull("runs/t", out) == 0                                       # nothing overwritten
-    st.delete(["runs/t/b.json"])
-    assert "mltok/runs/t/b.json" not in api.files and "README.md" in api.files
+    with pytest.raises(StoreAccessError, match="deletion is disabled"):
+        st.delete(["runs/t/b.json"])
+    assert "mltok/runs/t/b.json" in api.files and "README.md" in api.files
 
 
 def test_hf_store_token_comes_from_env_only():

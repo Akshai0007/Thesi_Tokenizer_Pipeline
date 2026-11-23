@@ -1,0 +1,14 @@
+/.deps/
+/original/
+/historical-eval/
+/measurement-v2/
+**/vocabulary.jsonl
+**/diagnostic-tokenizations.jsonl
+/hub-verification.json
+/historical-evidence.json
+/audit-backup.json
+/recovery-raw-metadata.json
+/recovery-remote-scan.json
+/foundation-backup.json
+/morphology-review-v1.json
+/morphology-review-v1.tsv

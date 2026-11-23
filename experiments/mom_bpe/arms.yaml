@@ -1,0 +1,23 @@
+schema: mom-bpe-ablation-v1
+vocab: 48000
+normalizer: {type: ml_conservative, terminal_chillu: true}
+pretokenizer: {type: script_runs, scripts: [Malayalam, Latin]}
+common_algorithm: {type: mom_bpe, alphabet_coverage: 0.99999, require_full_vocabulary: true}
+metrics: [basic, roundtrip, mom_surface]
+arms:
+  T0:
+    published_revision: cff0d31c84b598436087f21cc8183021993831e1
+    tokenizer_sha256: 2f4b7e8b0706007f7ab3f0b8b2cc1b169094072c334585dabc4081d455e69ff5
+  T0-matched: {segmenter: codepoint, morphology_penalty_milli: 0}
+  T1: {segmenter: grapheme, morphology_penalty_milli: 0}
+  T2: {segmenter: akshara, morphology_penalty_milli: 0}
+  T3-off: {segmenter: akshara, morphology_penalty_milli: 0, use_verified_alignment: true}
+  T3: {segmenter: akshara, morphology_penalty_milli: 400, use_verified_alignment: true}
+downstream:
+  seeds: [17, 29, 43]
+  model: {type: gpt, size: tiny}
+  context_tokens: 512
+  budgets: [fixed_source_bytes, fixed_training_tokens]
+  byte_denominator: canonical_utf8
+  document_policy: "Reset context per document. BOS is given; predict every text token and one EOS."
+  bpb_margin: 0.005

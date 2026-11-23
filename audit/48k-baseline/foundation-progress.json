@@ -1,0 +1,125 @@
+{
+  "identity": "malayalam-48k-evaluation-foundation-v1",
+  "status": "methodology and authored diagnostics complete; no replacement evaluation corpus frozen",
+  "branch": "research/tokenizer-v2",
+  "pinned_infrastructure_commit": "b8e531709bf2b78280cbe8b5a2155d688e943cb7",
+  "baseline_audit_commit": "37035b75560dde1f747db49adb99fb8d919d308f",
+  "baseline_tokenizer_revision": "cff0d31c84b598436087f21cc8183021993831e1",
+  "historical_eval": {
+    "expected_documents": 22120,
+    "expected_legacy_shard_name_size_fingerprint": "c1321250cd78",
+    "original_shards_found": false,
+    "known_trusted_document_hashes": false,
+    "raw_backup_streams_found": 3,
+    "raw_backup_bytes_compressed": 7518303142,
+    "raw_corpus_bytes_downloaded": 0,
+    "verified_reconstruction": false
+  },
+  "cpu_verification": {
+    "python": "3.12.0",
+    "unicode_database": "15.0.0",
+    "packages": {
+      "regex": "2026.9.29",
+      "tokenizers": "0.23.3",
+      "pytest": "9.1.1"
+    },
+    "pytest": {
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0
+    },
+    "pinned_fidelity_probes": 11,
+    "ordinary_breaks_each_reference": 6,
+    "eligible_ordinary_transitions": 133,
+    "morphology_forms": 96,
+    "independently_reviewed_forms": 0,
+    "training_started": false,
+    "commands": [
+      "python -m pytest -q -p no:cacheprovider tests/test_boundary_audit.py tests/test_boundary_offsets_v2.py tests/test_configs.py tests/test_pipeline.py::test_algorithm_switch_preserves_candidate_pretokenization tests/test_pipeline.py::test_dgx_confirm_constructs_and_shortlists_both_algorithms tests/test_pipeline.py::test_failed_gpu_guard_does_not_start_proxy_training tests/test_pipeline.py::test_same_size_corpus_edits_invalidate_tokenizer_and_metric_keys tests/test_plugins.py::test_engine_files_never_import_plugins tests/test_plugins.py::test_lib_never_imports_plugins",
+      "python audit/48k-baseline/foundation_checks.py",
+      "python audit/48k-baseline/build_morphology_queue.py"
+    ]
+  },
+  "files": [
+    {
+      "path": "audit/48k-baseline/FOUNDATION.md",
+      "bytes_lf": 13927,
+      "sha256_lf": "b267d3d600a4e876a892f12cdc4e4fbc53b0e322d6df24b7ee1cb641cffa7e2f"
+    },
+    {
+      "path": "audit/48k-baseline/baseline-artifacts.json",
+      "bytes_lf": 662,
+      "sha256_lf": "79a322328ce879f19ae49cea0829e89efc3d464e55c4c39ed15d771c945f2dec"
+    },
+    {
+      "path": "audit/48k-baseline/fixtures.json",
+      "bytes_lf": 12603,
+      "sha256_lf": "a712126a68d444ad31a86a7da40a10e58c4b61b223d112a7591c58a874aa69d1"
+    },
+    {
+      "path": "audit/48k-baseline/fidelity-cases.json",
+      "bytes_lf": 1490,
+      "sha256_lf": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229"
+    },
+    {
+      "path": "audit/48k-baseline/evaluation-protocol-v1.json",
+      "bytes_lf": 5579,
+      "sha256_lf": "1ff56f1a584073b3d9eaa965b6d44f179f7322e1758c9afc47d04a0a7a340167"
+    },
+    {
+      "path": "audit/48k-baseline/foundation-evidence.json",
+      "bytes_lf": 30424,
+      "sha256_lf": "7aba6d5e915100c8e9a262accf5b7f377f2f084dfcd2fa07bcfbe576bed314b1"
+    },
+    {
+      "path": "audit/48k-baseline/foundation_checks.py",
+      "bytes_lf": 5589,
+      "sha256_lf": "a4c6af77132eb95b9c72eb3511d2875b25334e35f04980b282f63c32adb0239d"
+    },
+    {
+      "path": "audit/48k-baseline/morphology-dependencies.json",
+      "bytes_lf": 743,
+      "sha256_lf": "9cf98a2839fc818ccbf48fa24e865ec8c3ea9726a9107984ad412dcdd6734984"
+    },
+    {
+      "path": "audit/48k-baseline/morphology-candidates.json",
+      "bytes_lf": 3284,
+      "sha256_lf": "d59fe6f291ec464ae0fc9aaae66403edc9c405653c946cc5a924b1ff206f542e"
+    },
+    {
+      "path": "audit/48k-baseline/build_morphology_queue.py",
+      "bytes_lf": 5549,
+      "sha256_lf": "a7ad1220a275622c7fadf07e684c073f9313c73fd2ef62b0f29bb029d4d04cd7"
+    },
+    {
+      "path": "audit/48k-baseline/morphology-annotation-v1.json",
+      "bytes_lf": 1301,
+      "sha256_lf": "668b9d8b7ced7c9e649845e3c13f21359516a53fd167cc1676f578faba165a94"
+    },
+    {
+      "path": "audit/48k-baseline/morphology-annotation-v1.tsv",
+      "bytes_lf": 26398,
+      "sha256_lf": "126526508f5ae858b5dd37589d4bc55b8ea94ff850e837e148e9122858ef8feb"
+    },
+    {
+      "path": "mltok/plugins/metric/boundary_offsets_v2.py",
+      "bytes_lf": 4469,
+      "sha256_lf": "4efb8ee969b291be9f0afbebf345bf4b3416201269763dd6dff9926401fae8a6"
+    },
+    {
+      "path": "mltok/lib/unicode_ml.py",
+      "bytes_lf": 2576,
+      "sha256_lf": "b7dcfc5d8010dac523f93e16c165de6e83966e56ee313c3996fb7406dbfedd62"
+    },
+    {
+      "path": "tests/test_boundary_offsets_v2.py",
+      "bytes_lf": 3247,
+      "sha256_lf": "a3f862656a24291a0da30b34dde460319e488d5f9a2bf9f26f963bdff201a623"
+    },
+    {
+      "path": "tests/test_boundary_audit.py",
+      "bytes_lf": 1125,
+      "sha256_lf": "3911ac72b790b1b2c7a94c1a996bdbfc6b483f128045f4a8df6db87997bba222"
+    }
+  ]
+}

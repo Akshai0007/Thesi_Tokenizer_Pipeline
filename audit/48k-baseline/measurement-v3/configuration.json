@@ -1,0 +1,30 @@
+{
+  "artifact_revision": "cff0d31c84b598436087f21cc8183021993831e1",
+  "tokenizer_sha256": "2f4b7e8b0706007f7ab3f0b8b2cc1b169094072c334585dabc4081d455e69ff5",
+  "fixture_sha256": "a712126a68d444ad31a86a7da40a10e58c4b61b223d112a7591c58a874aa69d1",
+  "script_sha256": "db566230acad914ed8a7a4d452d9e3077720b93467cc552cd2c27493a0f6c0e1",
+  "metric_sources": {
+    "basic": "f9ece63a33c9936fb9c66ec21ae3937d00348212c17b4a976014ef1bd5aa35ff",
+    "structure": "0189b961ae54fc9f0d132f4d959af14d515531a7eda111374cfb5e8ff20b63e0",
+    "roundtrip": "5611fa96d19fbe80a670b90c8b58f6c9b7745fe747b19245eede40f0f2ee2044",
+    "stress": "06544e91b4c14dd47a38111e9ac26189225f1a9420facde1c114170a7ac004f4",
+    "boundary_audit": "396a6b20872449579d4b459f86d5540a10dbd8f43f3b1423475cdd3f6adb44bb"
+  },
+  "shared_boundary_source": "ea42e125e0288d7c9768b7f9ba2357431568fba50f782303477217e320c13758",
+  "versions": {
+    "python": "3.12.0",
+    "unicode": "15.0.0",
+    "tokenizers": "0.23.3",
+    "transformers": "5.19.0",
+    "regex": "2026.9.29",
+    "numpy": "2.5.2"
+  },
+  "diagnostic_corpus_kind": "authored diagnostic fixtures, not a representative or historical benchmark",
+  "document_count": 54,
+  "boundary_reference": {
+    "akshara": "pipeline regex",
+    "grapheme": "installed regex \\X",
+    "eligibility": "consecutive non-byte, non-special tokens with a shared exact offset whose two adjacent characters satisfy is_ml"
+  },
+  "normalization_reference": "actual serialized lexical steps, excluding the verified marker transport suffix"
+}

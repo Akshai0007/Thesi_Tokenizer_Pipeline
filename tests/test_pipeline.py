@@ -129,7 +129,7 @@ def test_dgx_confirm_constructs_and_shortlists_both_algorithms(candidate_paths, 
 
     # Exercise always_include independently of the intrinsic top-k without starting a worker.
     r.cfg["proxy"]["top_k"] = 0
-    monkeypatch.setattr("mltok.runner.wait_for_gpu", lambda *args, **kwargs: None)
+    monkeypatch.setattr("mltok.runner.wait_for_gpu", lambda *args, **kwargs: True)
     selected = []
 
     def capture_proxies(names):
@@ -139,6 +139,31 @@ def test_dgx_confirm_constructs_and_shortlists_both_algorithms(candidate_paths, 
     monkeypatch.setattr(r, "run_proxies", capture_proxies)
     r.stage_proxy(results)
     assert set(selected) == {spm, bpe}
+
+
+def test_failed_gpu_guard_does_not_start_proxy_training(candidate_paths, monkeypatch):
+    cfg = base_cfg(Path(candidate_paths["runs"]).parent, paths=candidate_paths)
+    cfg["gpu"] = {"guard": True}
+    r = Run(cfg)
+    monkeypatch.setattr("mltok.runner.wait_for_gpu", lambda *args, **kwargs: False)
+    monkeypatch.setattr(r, "run_proxies", lambda names: pytest.fail("proxy training started"))
+    with pytest.raises(RuntimeError, match="availability check failed"):
+        r.stage_proxy({})
+
+
+def test_same_size_corpus_edits_invalidate_tokenizer_and_metric_keys(candidate_paths):
+    cfg = base_cfg(Path(candidate_paths["runs"]).parent, paths=candidate_paths)
+    original = Run(cfg)
+    tok_key, metric_key = original.tok_key(original.base), original.metrics_key(original.base)
+    eval_shard = Path(original.eval_shards[0])
+    eval_shard.write_bytes(eval_shard.read_bytes().replace(b"fixture", b"changed"))
+    changed_eval = Run(cfg)
+    assert changed_eval.tok_key(changed_eval.base) == tok_key
+    assert changed_eval.metrics_key(changed_eval.base) != metric_key
+    train_shard = Path(original.train_shards[0])
+    train_shard.write_bytes(train_shard.read_bytes().replace(b"fixture", b"changed"))
+    changed_train = Run(cfg)
+    assert changed_train.tok_key(changed_train.base) != tok_key
 
 
 def test_renyi_bounds():

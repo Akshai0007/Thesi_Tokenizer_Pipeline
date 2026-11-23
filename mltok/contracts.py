@@ -200,6 +200,10 @@ class Selector(Plugin):
 
 
 # --------------------------------------------------------------------------- store
+class StoreAccessError(RuntimeError):
+    """A safe-to-display storage error with no credentials or server response body."""
+
+
 class Store(Plugin):
     """WHERE CHECKPOINTS GO (and where a restart restores from).
 
@@ -217,6 +221,9 @@ class Store(Plugin):
 
     #: False for the no-op store (the contract check then skips the round-trip test)
     enabled = True
+    # Optional capability: revision(create=False), list_at(revision),
+    # fetch_at(relative_path, revision, staging_directory), push_at(files, message, parent).
+    verified_snapshots = False
     #: optional dict used by the contract check; "__TMP__" is replaced by a temp directory
     example_params = None
 

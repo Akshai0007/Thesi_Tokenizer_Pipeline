@@ -1,0 +1,54 @@
+{
+  "identity": "malayalam-morphology-review-seeds-v1",
+  "provenance": "Research-authored elicitation seeds. Forms, grouping and category assignments await independent review.",
+  "groups": {
+    "chillu_representations": {
+      "avan": ["അവൻ", "അവന്\u200d"], "mahal": ["മഹൽ", "മഹല്\u200d"],
+      "vayal": ["വയൽ", "വയല്\u200d"]
+    },
+    "virama_and_conjuncts": {
+      "sakthi": ["ശക്തി", "ശക്തിയുടെ"], "sradha": ["ശ്രദ്ധ", "ശ്രദ്ധയോടെ"],
+      "grantham": ["ഗ്രന്ഥം", "ഗ്രന്ഥത്തിന്റെ"]
+    },
+    "samvruthokaram": {
+      "kandu": ["കണ്ട്", "കണ്ടു്"], "paranju": ["പറഞ്ഞ്", "പറഞ്ഞു്"],
+      "naadu": ["നാട്", "നാടു്"]
+    },
+    "noun_inflections": {
+      "veedu": ["വീടുകൾ", "വീടുകളുടെ"], "kilikal": ["കിളികൾ", "കിളികളുടെ"],
+      "kannukal": ["കണ്ണുകൾ", "കണ്ണുകൾക്ക്"]
+    },
+    "verb_inflections": {
+      "varu": ["വരുന്നു", "വന്നിരുന്നു", "വരുമായിരുന്നു"],
+      "ezhuth": ["എഴുതി", "എഴുതിയില്ല", "എഴുതിക്കൊണ്ടിരുന്നു"]
+    },
+    "case_suffixes": {
+      "malayil": ["മലയിൽ", "മലയിൽനിന്ന്"], "amma": ["അമ്മയെ", "അമ്മയോട്"],
+      "kayyal": ["കയ്യാൽ", "കൈയുടെ"]
+    },
+    "productive_agglutination": {
+      "avarkku": ["അവർക്കും", "അവർക്കൊക്കെ"], "varunnavar": ["വരുന്നവർക്ക്", "വന്നവർക്കുപോലും"],
+      "pookkal": ["പൂക്കളോടൊപ്പം", "പൂക്കൾക്കുവേണ്ടി"]
+    },
+    "sandhi": {
+      "thiruvonam": ["തിരുവോണം", "ഓണാഘോഷം"], "vidya": ["വിദ്യാലയം", "വിദ്യാഭ്യാസം"],
+      "deva": ["ദേവാലയം", "ദേവേന്ദ്രൻ"]
+    },
+    "gemination": {
+      "kadal": ["കടൽത്തീരം", "കടൽപ്പാലം"], "mazha": ["മഴത്തുള്ളി", "മഴപ്പാട്ട്"],
+      "puzha": ["പുഴക്കര", "പുഴപ്പാലം"]
+    },
+    "compounds": {
+      "nila": ["നിലാവെളിച്ചം", "നിലാമുറ്റം"], "katha": ["കഥാപുസ്തകം", "കഥാരചന"],
+      "malayaala": ["മലയാളഭാഷ", "മലയാളസാഹിത്യം"]
+    },
+    "loanwords": {
+      "bus": ["ബസ്സുകൾ", "ബസ്സിൽ"], "phone": ["ഫോണിന്", "ഫോണിലൂടെ"],
+      "computer": ["കമ്പ്യൂട്ടറുകൾ", "കമ്പ്യൂട്ടറിൽ"]
+    },
+    "rare_and_regional": {
+      "regional_questions": ["എന്തൂട്ടാണ്", "എന്തരുമില്ല"], "regional_address": ["ഇജ്ജ്", "ഓള്"],
+      "rare_register": ["നിഷ്പ്രഭമായി", "അനിർവചനീയത"]
+    }
+  }
+}

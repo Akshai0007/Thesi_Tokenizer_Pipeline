@@ -133,7 +133,7 @@ Standard result keys other plugins may rely on: `fertility`, `bytes_per_token`, 
 
 Config: `store: {type: hf_hub, repo: user/name, private: true, prefix: kaggle}` (default `none`) and
 `sync: {min_interval_s: 120, ckpt_push_interval_s: 900, restore: true, include_cache: true, include_checkpoints: true, include_data: false}`.
-The Hugging Face token is read **only from the environment** (`HF_TOKEN`); it cannot be put in a config file and is masked in notebook logs.
+The Hub client accepts credentials from the environment or the Hugging Face CLI credential store. Keep token values out of configuration files.
 
 | Level | What is saved | When | How a restart uses it |
 |---|---|---|---|
@@ -142,7 +142,13 @@ The Hugging Face token is read **only from the environment** (`HF_TOKEN`); it ca
 | cleaned data | shards | only with `sync.include_data: true` (can be GBs) | otherwise re-ingest + re-clean; cleaning is deterministic, so cache keys still match |
 
 * A store failure (network, token, rate limit) is logged and the files stay queued; the run continues. It is retried at the next flush.
-* The `hf_hub` store writes only under its `prefix` folder and creates the repo private if missing; other files in the repo are never touched.
+* The `hf_hub` store defaults to private repositories and checks the actual visibility before writing. Authenticate on an approved terminal using the interactive `hf auth login` prompt, or inject `HF_TOKEN` (or the configured `token_env`) through a secret provider. Keep token values out of command arguments, configuration, notebooks and logs. Hub authentication and permission failures are reported separately from missing snapshot artifacts.
+* Hub snapshots name blobs by SHA-256 under the configured prefix. Unchanged blobs, including retained checkpoint generations, are shared across manifests. Each manifest records the experiment name, configuration and corpus fingerprints, artifact paths, byte sizes, hashes, and the commit from which the artifacts were read back and verified. The completion manifest is written in a later commit, guarded by the expected parent revision. A failed upload leaves previous snapshots intact. Re-run `mltok push -c CONFIG` to verify and publish from the local tree after a restart.
+* `mltok restore -c CONFIG --what run` chooses the latest compatible verified snapshot. Use `--snapshot ID` to select one explicitly or `--what all` when one manifest contains both run and cleaned data. An artifact is read from the manifest's pinned revision and verified before any destination is installed. Use fresh destination directories when local contents differ. A two-directory installation has a local journal, so a retry completes the same snapshot. A restored run records its corpus fingerprint and checks it before training. Use `--what data` to restore a standalone corpus snapshot for a fresh run.
+* Legacy Hub files at mutable paths remain in place. Import those files into a separate local directory using an explicit trusted export, validate the checkpoint and experiment provenance, then publish from that tree if appropriate. Automatic Hub restore considers only verified manifests. Stores that implement only the original `push` and `pull` interface retain legacy behavior.
+* Automatic verified restore stops the run on an access or integrity error. An absent snapshot or an absent requested scope is reported explicitly. A data-only snapshot never substitutes for a combined run-and-data restore.
+* Tokenizer, metric, baseline, and proxy cache keys include the ordered contents of the corpus shards they use. Artifacts created under the earlier filename-and-size keys remain available for historical inspection. New experiments compute results under content-based keys. Use a fresh run name if the existing selection and reports also need to remain in place.
+* `mltok snapshot-cleanup-plan -c CONFIG --retain 2` is read-only. It shows exact older manifest paths for **review**, with an empty deletion list. Every snapshot and blob remains protected. Remote deletion and automatic history squashing are disabled. Failed uploads can leave unreferenced blobs and distinct checkpoint bytes still consume storage. Any future deletion requires explicit approval and a repository-wide reference and recovery check.
 * Not checkpointed (honest limits): **mid-way through one BPE training** and **mid-way through word counting of one shard** — those are minutes-scale units that are simply redone. Everything before and after them is saved.
 * The current and previous proxy checkpoint files remain available after result publication. A verified local result is reused on retry and queued again for sync. There is no automatic checkpoint retirement. Future cleanup requires approval and verified replacements and backups.
 * Proxy artifact names include a key for corpus contents, evaluation sample size, model, execution settings, and runtime versions. Historical unkeyed files are preserved for review. The runner starts a separate keyed experiment because the old result identity did not establish compatibility. Legacy checkpoint loading remains available when the training engine is given the checkpoint explicitly.
@@ -158,6 +164,7 @@ The Hugging Face token is read **only from the environment** (`HF_TOKEN`); it ca
 
 ## 10. Sync details learned from a real run
 * Pushes run in a **background thread**; training never waits on the network. Stage ends, errors and exits use `flush(force=True)` and wait.
+* For Hub backups, only a `verified remote snapshot` message indicates successful backup. A failed snapshot leaves local artifacts intact and is retried on forced shutdown or manual push. Parallel proxy workers write locally and the parent publishes the combined state after the workers join. Single-process runs can publish intermediate checkpoints in the background. Large backups require local staging space and read-back bandwidth.
 * Background checkpoint pushes wait for a full `ckpt_push_interval_s` (default 900 s). Forced stage-end and worker-exit flushes bypass this interval.
 * A file modified while it is uploading stays queued and is re-pushed.
 * `proxy_summary.json` stores per-variant seed statistics; the freeze checklist uses the **standard error of the difference** between two seed-averaged BPBs (>= 2 required, 2-3 labelled borderline).

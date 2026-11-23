@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import gzip
+import hashlib
 import multiprocessing as mp
 import unicodedata
 from collections import Counter
@@ -21,7 +22,7 @@ def open_text(path, mode: str = "rt"):
 def iter_docs(path) -> Iterator[tuple[str, str]]:
     """Yield (text, source). `.jsonl[.gz]` -> {"text","src"}; `.txt` -> one doc per line."""
     p = str(path)
-    jsonl = ".jsonl" in p
+    jsonl = Path(p).name.endswith((".jsonl", ".jsonl.gz"))
     with open_text(p) as f:
         for line in f:
             if jsonl:
@@ -36,11 +37,16 @@ def iter_docs(path) -> Iterator[tuple[str, str]]:
                     yield line, "txt"
 
 
+def is_shard(path) -> bool:
+    return Path(path).name.endswith((".jsonl", ".jsonl.gz", ".txt"))
+
+
 def list_shards(d) -> list[str]:
     d = Path(d)
     if d.is_file():
         return [str(d)]
-    return [str(p) for p in sorted(d.rglob("*")) if p.is_file() and (".jsonl" in p.name or p.name.endswith(".txt"))]
+    return [str(p) for p in sorted(d.rglob("*"))
+            if p.is_file() and is_shard(p) and not any(part.startswith(".") for part in p.relative_to(d).parts)]
 
 
 def iter_texts(paths: Iterable[str], limit_bytes: int = 0) -> Iterator[str]:
@@ -55,13 +61,17 @@ def iter_texts(paths: Iterable[str], limit_bytes: int = 0) -> Iterator[str]:
 
 
 def data_fingerprint(paths: list[str]) -> str:
-    """Cheap, stable fingerprint of a shard set (names + sizes)."""
-    import hashlib
-
-    h = hashlib.sha1()
-    for p in sorted(paths):
-        h.update(f"{Path(p).name}:{Path(p).stat().st_size};".encode())
-    return h.hexdigest()[:12]
+    """Fingerprint the ordered shard contents, independent of gzip metadata."""
+    digests = []
+    for path in paths:
+        digest = hashlib.sha256()
+        opener = gzip.open if str(path).endswith(".gz") else open
+        with opener(path, "rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+        format_name = "jsonl" if Path(path).name.endswith((".jsonl", ".jsonl.gz")) else "text"
+        digests.append((format_name, digest.hexdigest()))
+    return hashlib.sha256(json.dumps(digests).encode("ascii")).hexdigest()
 
 
 # ----------------------------------------------------------------------- word statistics

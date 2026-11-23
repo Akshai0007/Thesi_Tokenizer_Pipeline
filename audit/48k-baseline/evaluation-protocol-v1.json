@@ -1,0 +1,65 @@
+{
+  "identity": "malayalam-eval-protocol-v1",
+  "status": "protocol fixed for review; no replacement corpus has been collected, adjudicated or frozen",
+  "historical_reference": {
+    "documents": 22120,
+    "legacy_shard_name_size_fingerprint": "c1321250cd78",
+    "published_metrics_remain_historical": true
+  },
+  "panels": {
+    "natural_text": {
+      "documents": 2400,
+      "target_per_domain": {
+        "news": 400, "literature": 400, "encyclopedic": 400,
+        "technical": 400, "conversation_and_regional": 400, "malayalam_english": 400
+      },
+      "candidate_requirements": [
+        "Explicit permission or a verified reusable license for each source and record",
+        "Source revision, stable source ID, license evidence and acquisition time",
+        "No overlap with tokenizer or proxy training inputs after canonical exact and near-duplicate review",
+        "Document boundaries retained; no mechanically shortened documents counted as independent"
+      ]
+    },
+    "orthography": {
+      "target_reviewed_cases": 240,
+      "separate_from_natural_aggregate": true,
+      "strata": ["chillus", "vowel signs", "virama and conjuncts", "joiners and samvruthokaram",
+                 "literal marker/control spellings", "mixed script and byte fallback"],
+      "measure": "boundary_offsets_v2 on both raw and frozen lexical-canonical views, plus per-category fidelity"
+    },
+    "morphology": {
+      "target_reviewed_forms": 240,
+      "target_minimum_groups": 80,
+      "separate_from_natural_aggregate": true,
+      "annotators": 2,
+      "adjudication": "Disagreements reviewed separately. Keep unresolved cases as a coverage stratum; exclude them from forced gold scoring.",
+      "current_annotation_queue_status": "no independently validated boundaries"
+    }
+  },
+  "selection": {
+    "near_duplicate": "NFC plus whitespace collapse for leakage screening only. Candidate groups derived from source ancestry and character five-gram Jaccard at or above 0.85, with deterministic candidate generation and exact verification of candidate pairs.",
+    "stable_ranking": "SHA-256 of UTF-8 protocol ID, a newline, and frozen group identifier; rank by unsigned digest bytes and stable ID as tie-break",
+    "grouping": "Keep duplicate clusters, shared-source document ancestry and morphological families intact. Partition before any model tuning.",
+    "natural_panel_sampling": "Visit ranked groups within each domain; accept groups that fit the fixed quota, using pinned stable document order within groups. Publish shortages before evaluation rather than substituting domains.",
+    "frozen_record": "Canonical UTF-8 JSONL with LF, sorted keys, fixed row order, final newline, per-document SHA-256 over exact UTF-8 raw text. Manifest records exact shard byte SHA-256 and sizes, ordering, source counts, raw/canonical byte counts, normalizer hash, Unicode/regex versions, annotation revisions and license constraints.",
+    "freeze_gate": "Two maintainers verify manifest, split separation, source coverage and artifact hashes. Assign a new dataset identity to any later change. Publish manifest and aggregate results separately from restricted document content."
+  },
+  "modeling_comparisons": {
+    "vocabulary_size": 48000,
+    "arms": [
+      {"id": "A", "recipe": "immutable published 48K model; historical reference and fresh evaluation only"},
+      {"id": "A0", "recipe": "matched 48K codepoint MLBPE control for all causal comparisons"},
+      {"id": "B", "recipe": "48K BPE initialized with Unicode extended grapheme clusters and declared fallback; morphology disabled"},
+      {"id": "C", "recipe": "B plus Malayalam-specific orthographic protection; morphology disabled"},
+      {"id": "D0", "recipe": "same C implementation and analysis inputs with every morphological weight zero"},
+      {"id": "D", "recipe": "C with only verified, surface-aligned confidence-weighted morphological constraints"}
+    ],
+    "budgets": [
+      {"id": "fixed_source_bytes", "rule": "Use the identical manifest-ordered canonical UTF-8 document set and source-byte exposure for each arm. Log consumed and predicted tokens, optimizer steps, and computation."},
+      {"id": "fixed_training_tokens", "rule": "Use the same ordered training stream and exact number of non-padding predicted tokens including consistently defined EOS accounting. Log full and partial document exposure separately; derive byte coverage from verified offsets, marking ambiguous partial coverage rather than estimating it from average bytes/token."}
+    ],
+    "common_controls": "Fix architecture, effective context, optimizer, schedule, seeds, train/eval identities, special token IDs and canonical fidelity policy. Record actual physical GPU identity and exclude GPU 7.",
+    "outcomes": "Primary BPB is summed held-out bits over the same canonical UTF-8 bytes. Score identical held-out documents, include a preregistered BOS/EOS policy, never average document BPBs without byte weights. Also report fertility, raw/canonical fidelity, both boundary types, annotation coverage, compute, embeddings, non-embedding and total parameters, source bytes and context byte span.",
+    "decision_rule": "Require zero fidelity regressions on designated exact probes. Report paired document and seed results. Before unblinding, ratify 0.005 BPB as the proposed noninferiority margin for candidate minus A0 and set minimum linguistic effect sizes on reviewed panels. A BPB superiority claim requires paired uncertainty supporting a lower BPB; a boundary gain alone is not a model gain."
+  }
+}

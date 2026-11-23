@@ -136,7 +136,12 @@ def fingerprint(kind: str, spec) -> str:
     s = spec_of(spec)
     cls = plugin_class(kind, s["type"])
     src = Path(cls._plugin_file).read_bytes() if cls._plugin_file else b""
-    blob = src + json.dumps(s, sort_keys=True, default=str).encode()
+    dependencies = getattr(cls, "fingerprint_dependencies", None)
+    params = json.dumps(s, sort_keys=True, default=str).encode()
+    if dependencies is not None:
+        blob = src.replace(b"\r\n", b"\n") + params + b"\0" + json.dumps(dependencies(), sort_keys=True).encode()
+    else:
+        blob = src + params
     return hashlib.sha1(blob).hexdigest()[:16]
 
 

@@ -1,0 +1,63 @@
+{
+  "corpus": "authored diagnostic fixtures, not a representative or historical benchmark",
+  "measurement": {
+    "vocab_size": 48000,
+    "docs": 54,
+    "words": 286,
+    "bytes": 7165,
+    "tokens": 609,
+    "fertility": 2.129370629370629,
+    "bytes_per_token": 11.765188834154351,
+    "chars_per_token": 4.402298850574713,
+    "renyi_eff": 0.3779015906412038,
+    "vocab_used": 0.009833333333333333,
+    "unk_rate": 0.0,
+    "tok_per_sec": 212383.06610127212,
+    "fertility_by_source": {
+      "news_style": 1.2926829268292683,
+      "literary_style": 1.7142857142857142,
+      "encyclopedic_style": 1.9333333333333333,
+      "technical_style": 1.9189189189189189,
+      "conversation_style": 1.5333333333333334,
+      "regional_register_probes": 2.1,
+      "code_mixing_and_loanwords": 1.8918918918918919,
+      "rare_and_complex_words": 2.739130434782609,
+      "numeric_punctuation_and_other_scripts": 4.424242424242424
+    }
+  },
+  "normalized_fidelity": {
+    "roundtrip_ok": 1.0
+  },
+  "stress": {
+    "stress_roundtrip_ok": 1.0
+  },
+  "raw_exact_docs": 54,
+  "throughput": {
+    "unit": "tokens/second",
+    "warmup_batches": 1,
+    "docs_per_batch": 864,
+    "encode_samples": [
+      260570.98854532483,
+      211743.23093892128,
+      278190.16512632504,
+      335931.65532719454,
+      321373.09170600097
+    ],
+    "decode_samples": [
+      1121998.9631328245,
+      1326580.625451001,
+      1248142.6471597734,
+      714249.0631747469,
+      1082967.490850891
+    ],
+    "encode_median": 278190.16512632504,
+    "decode_median": 1121998.9631328245
+  },
+  "long_input": {
+    "chars": 135167,
+    "bytes": 356351,
+    "tokens": 28672,
+    "normalized_exact": true
+  },
+  "original_integrity_rechecked": true
+}

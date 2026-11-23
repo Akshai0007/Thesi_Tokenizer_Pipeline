@@ -1,0 +1,573 @@
+{
+  "arms": {
+    "A": {
+      "fallback_by_domain": {
+        "code_mixing_and_loanwords": {
+          "absent_unit_bytes": 182,
+          "observed_byte_ids": 346,
+          "pruned_unit_bytes": 164
+        },
+        "conversation_style": {
+          "absent_unit_bytes": 96,
+          "observed_byte_ids": 294,
+          "pruned_unit_bytes": 198
+        },
+        "encyclopedic_style": {
+          "absent_unit_bytes": 174,
+          "observed_byte_ids": 438,
+          "pruned_unit_bytes": 264
+        },
+        "literary_style": {
+          "absent_unit_bytes": 183,
+          "observed_byte_ids": 432,
+          "pruned_unit_bytes": 249
+        },
+        "news_style": {
+          "absent_unit_bytes": 198,
+          "observed_byte_ids": 474,
+          "pruned_unit_bytes": 276
+        },
+        "numeric_punctuation_and_other_scripts": {
+          "absent_unit_bytes": 241,
+          "observed_byte_ids": 323,
+          "pruned_unit_bytes": 82
+        },
+        "rare_and_complex_words": {
+          "absent_unit_bytes": 219,
+          "observed_byte_ids": 426,
+          "pruned_unit_bytes": 207
+        },
+        "regional_register_probes": {
+          "absent_unit_bytes": 107,
+          "observed_byte_ids": 203,
+          "pruned_unit_bytes": 96
+        },
+        "technical_style": {
+          "absent_unit_bytes": 231,
+          "observed_byte_ids": 487,
+          "pruned_unit_bytes": 256
+        }
+      },
+      "fidelity": {
+        "bytes_per_token": 1.6594202898550725,
+        "canonical_bytes": 229,
+        "canonical_words": 13,
+        "fallback_rate": 0.7681159420289855,
+        "fertility": 10.615384615384615,
+        "mom_akshara_breaks": 5,
+        "mom_akshara_breaks_per_1000_reference_sites": 277.77777777777777,
+        "mom_akshara_reference_sites": 18,
+        "mom_byte_fallback_ids": 106,
+        "mom_canonical_equal": 11,
+        "mom_canonicalized_docs": 2,
+        "mom_docs": 11,
+        "mom_egc_breaks": 5,
+        "mom_egc_breaks_per_1000_reference_sites": 277.77777777777777,
+        "mom_egc_reference_sites": 18,
+        "mom_eligible": 9,
+        "mom_grammar_breaks": 5,
+        "mom_ids": 138,
+        "mom_offset_exclusions": 115,
+        "mom_raw_equal": 9,
+        "mom_surface_available": true
+      },
+      "identity": {
+        "arm": "A",
+        "configuration": {
+          "fingerprint": "7b0b10a6b0ff120a",
+          "spec": {
+            "alphabet_coverage": 0.99999,
+            "morphology_penalty_milli": 0,
+            "require_full_vocabulary": false,
+            "segmenter": "codepoint",
+            "type": "mom_bpe"
+          }
+        },
+        "driver_sha256": "a7a854700f7c67eaedd6421009dfc5638cd7953d1155b9a6aa897ecec1662ffc",
+        "fidelity_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+        "fixtures_sha256": "a712126a68d444ad31a86a7da40a10e58c4b61b223d112a7591c58a874aa69d1",
+        "metric": "70139b2e171d9f7d",
+        "normalizer": "bccfa8669a7e8528",
+        "pretokenizer": "dbb6a78fb100dd2e",
+        "scope": "ENGINEERING_DIAGNOSTIC_ONLY",
+        "target_vocab": 288,
+        "training_fingerprint": "352935106a2ef1db6ed2bb64ada080cc97a9751a9e90dea0ced15a6d1963e114"
+      },
+      "natural_probes": {
+        "bytes_per_token": 1.546180405697022,
+        "canonical_bytes": 7165,
+        "canonical_words": 286,
+        "fallback_rate": 0.7386706948640483,
+        "fertility": 16.202797202797203,
+        "mom_akshara_breaks": 228,
+        "mom_akshara_breaks_per_1000_reference_sites": 288.2427307206068,
+        "mom_akshara_reference_sites": 791,
+        "mom_byte_fallback_ids": 3423,
+        "mom_canonical_equal": 54,
+        "mom_canonicalized_docs": 0,
+        "mom_docs": 54,
+        "mom_egc_breaks": 228,
+        "mom_egc_breaks_per_1000_reference_sites": 288.2427307206068,
+        "mom_egc_reference_sites": 791,
+        "mom_eligible": 354,
+        "mom_grammar_breaks": 228,
+        "mom_ids": 4634,
+        "mom_offset_exclusions": 4035,
+        "mom_raw_equal": 54,
+        "mom_surface_available": true
+      },
+      "orthography": {
+        "bytes_per_token": 1.5046296296296295,
+        "canonical_bytes": 650,
+        "canonical_words": 57,
+        "fallback_rate": 0.7384259259259259,
+        "fertility": 7.578947368421052,
+        "mom_akshara_breaks": 15,
+        "mom_akshara_breaks_per_1000_reference_sites": 468.75,
+        "mom_akshara_reference_sites": 32,
+        "mom_byte_fallback_ids": 319,
+        "mom_canonical_equal": 26,
+        "mom_canonicalized_docs": 5,
+        "mom_docs": 26,
+        "mom_egc_breaks": 16,
+        "mom_egc_breaks_per_1000_reference_sites": 533.3333333333334,
+        "mom_egc_reference_sites": 30,
+        "mom_eligible": 17,
+        "mom_grammar_breaks": 15,
+        "mom_ids": 432,
+        "mom_offset_exclusions": 361,
+        "mom_raw_equal": 21,
+        "mom_surface_available": true
+      },
+      "reference": {
+        "checkpoint_generations": 13,
+        "fit_wall_seconds": 0.14286280001397245,
+        "model_sha256": "944a30a1ee445bc5155871c132a0ce775f5ab5813c70ca4e92ef746b997a666d",
+        "process_peak_rss_bytes": 298156032,
+        "scope": "ENGINEERING_DIAGNOSTIC_ONLY",
+        "training": {
+          "abstained_morphology_forms": 0,
+          "canonical_bytes": 3456,
+          "documents": 32,
+          "initial_unit_coverage": 0.6823529411764706,
+          "n_merges": 13,
+          "n_seeded": 0,
+          "occupied_vocab": 288,
+          "raw_bytes": 3456,
+          "resumed_merges": 0,
+          "stop_reason": "vocab_reached",
+          "supported_morphology_forms": 0,
+          "train_seconds": 0.1,
+          "word_mass_covered": 1.0,
+          "word_types_used": 24
+        }
+      },
+      "result_sha256": "3c23c65dee4b97331accb6c52f5a5f8c94ee0f091c67a60be0e7d1978ebfdeed",
+      "resume_and_reload_exact": true,
+      "resumed": {
+        "checkpoint_generations": 13,
+        "fit_wall_seconds": 0.1602028000052087,
+        "model_sha256": "944a30a1ee445bc5155871c132a0ce775f5ab5813c70ca4e92ef746b997a666d",
+        "process_peak_rss_bytes": 298156032,
+        "scope": "ENGINEERING_DIAGNOSTIC_ONLY",
+        "training": {
+          "abstained_morphology_forms": 0,
+          "canonical_bytes": 3456,
+          "documents": 32,
+          "initial_unit_coverage": 0.6823529411764706,
+          "n_merges": 13,
+          "n_seeded": 0,
+          "occupied_vocab": 288,
+          "raw_bytes": 3456,
+          "resumed_merges": 1,
+          "stop_reason": "vocab_reached",
+          "supported_morphology_forms": 0,
+          "train_seconds": 0.1,
+          "word_mass_covered": 1.0,
+          "word_types_used": 24
+        }
+      },
+      "target": 288
+    },
+    "B": {
+      "fallback_by_domain": {
+        "code_mixing_and_loanwords": {
+          "absent_unit_bytes": 515,
+          "observed_byte_ids": 548,
+          "pruned_unit_bytes": 33
+        },
+        "conversation_style": {
+          "absent_unit_bytes": 561,
+          "observed_byte_ids": 612,
+          "pruned_unit_bytes": 51
+        },
+        "encyclopedic_style": {
+          "absent_unit_bytes": 780,
+          "observed_byte_ids": 861,
+          "pruned_unit_bytes": 81
+        },
+        "literary_style": {
+          "absent_unit_bytes": 777,
+          "observed_byte_ids": 843,
+          "pruned_unit_bytes": 66
+        },
+        "news_style": {
+          "absent_unit_bytes": 969,
+          "observed_byte_ids": 1041,
+          "pruned_unit_bytes": 72
+        },
+        "numeric_punctuation_and_other_scripts": {
+          "absent_unit_bytes": 376,
+          "observed_byte_ids": 451,
+          "pruned_unit_bytes": 75
+        },
+        "rare_and_complex_words": {
+          "absent_unit_bytes": 810,
+          "observed_byte_ids": 903,
+          "pruned_unit_bytes": 93
+        },
+        "regional_register_probes": {
+          "absent_unit_bytes": 413,
+          "observed_byte_ids": 419,
+          "pruned_unit_bytes": 6
+        },
+        "technical_style": {
+          "absent_unit_bytes": 891,
+          "observed_byte_ids": 937,
+          "pruned_unit_bytes": 46
+        }
+      },
+      "fidelity": {
+        "bytes_per_token": 1.1683673469387754,
+        "canonical_bytes": 229,
+        "canonical_words": 13,
+        "fallback_rate": 0.8520408163265306,
+        "fertility": 15.076923076923077,
+        "mom_akshara_breaks": 0,
+        "mom_akshara_breaks_per_1000_reference_sites": 0.0,
+        "mom_akshara_reference_sites": 18,
+        "mom_byte_fallback_ids": 167,
+        "mom_canonical_equal": 11,
+        "mom_canonicalized_docs": 2,
+        "mom_docs": 11,
+        "mom_egc_breaks": 0,
+        "mom_egc_breaks_per_1000_reference_sites": 0.0,
+        "mom_egc_reference_sites": 18,
+        "mom_eligible": 0,
+        "mom_grammar_breaks": 0,
+        "mom_ids": 196,
+        "mom_offset_exclusions": 175,
+        "mom_raw_equal": 9,
+        "mom_surface_available": true
+      },
+      "identity": {
+        "arm": "B",
+        "configuration": {
+          "fingerprint": "61e0e7a6d3761246",
+          "spec": {
+            "alphabet_coverage": 0.99999,
+            "morphology_penalty_milli": 0,
+            "require_full_vocabulary": false,
+            "segmenter": "grapheme",
+            "type": "mom_bpe"
+          }
+        },
+        "driver_sha256": "a7a854700f7c67eaedd6421009dfc5638cd7953d1155b9a6aa897ecec1662ffc",
+        "fidelity_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+        "fixtures_sha256": "a712126a68d444ad31a86a7da40a10e58c4b61b223d112a7591c58a874aa69d1",
+        "metric": "70139b2e171d9f7d",
+        "normalizer": "bccfa8669a7e8528",
+        "pretokenizer": "dbb6a78fb100dd2e",
+        "scope": "ENGINEERING_DIAGNOSTIC_ONLY",
+        "target_vocab": 288,
+        "training_fingerprint": "352935106a2ef1db6ed2bb64ada080cc97a9751a9e90dea0ced15a6d1963e114"
+      },
+      "natural_probes": {
+        "bytes_per_token": 1.0340597488815124,
+        "canonical_bytes": 7165,
+        "canonical_words": 286,
+        "fallback_rate": 0.9546832154712079,
+        "fertility": 24.227272727272727,
+        "mom_akshara_breaks": 0,
+        "mom_akshara_breaks_per_1000_reference_sites": 0.0,
+        "mom_akshara_reference_sites": 791,
+        "mom_byte_fallback_ids": 6615,
+        "mom_canonical_equal": 54,
+        "mom_canonicalized_docs": 0,
+        "mom_docs": 54,
+        "mom_egc_breaks": 0,
+        "mom_egc_breaks_per_1000_reference_sites": 0.0,
+        "mom_egc_reference_sites": 791,
+        "mom_eligible": 3,
+        "mom_grammar_breaks": 0,
+        "mom_ids": 6929,
+        "mom_offset_exclusions": 6836,
+        "mom_raw_equal": 54,
+        "mom_surface_available": true
+      },
+      "orthography": {
+        "bytes_per_token": 1.0466988727858293,
+        "canonical_bytes": 650,
+        "canonical_words": 57,
+        "fallback_rate": 0.9146537842190016,
+        "fertility": 10.894736842105264,
+        "mom_akshara_breaks": 0,
+        "mom_akshara_breaks_per_1000_reference_sites": 0.0,
+        "mom_akshara_reference_sites": 32,
+        "mom_byte_fallback_ids": 568,
+        "mom_canonical_equal": 26,
+        "mom_canonicalized_docs": 5,
+        "mom_docs": 26,
+        "mom_egc_breaks": 0,
+        "mom_egc_breaks_per_1000_reference_sites": 0.0,
+        "mom_egc_reference_sites": 30,
+        "mom_eligible": 0,
+        "mom_grammar_breaks": 0,
+        "mom_ids": 621,
+        "mom_offset_exclusions": 582,
+        "mom_raw_equal": 21,
+        "mom_surface_available": true
+      },
+      "reference": {
+        "checkpoint_generations": 7,
+        "fit_wall_seconds": 0.060228099988307804,
+        "model_sha256": "c2b5b9eaed5b62656611bbb2d432f6e933f3ce594bb148b2d7564182cac19319",
+        "process_peak_rss_bytes": 298500096,
+        "scope": "ENGINEERING_DIAGNOSTIC_ONLY",
+        "training": {
+          "abstained_morphology_forms": 0,
+          "canonical_bytes": 3456,
+          "documents": 32,
+          "initial_unit_coverage": 0.5510204081632653,
+          "n_merges": 7,
+          "n_seeded": 0,
+          "occupied_vocab": 282,
+          "raw_bytes": 3456,
+          "resumed_merges": 0,
+          "stop_reason": "no_pairs_left",
+          "supported_morphology_forms": 0,
+          "train_seconds": 0.0,
+          "word_mass_covered": 1.0,
+          "word_types_used": 24
+        }
+      },
+      "result_sha256": "64f081788deb1917efaa09cb496ceecf5796606905ca8a9c2d8ae4dd472f8ac2",
+      "resume_and_reload_exact": true,
+      "resumed": {
+        "checkpoint_generations": 7,
+        "fit_wall_seconds": 0.08507970001664944,
+        "model_sha256": "c2b5b9eaed5b62656611bbb2d432f6e933f3ce594bb148b2d7564182cac19319",
+        "process_peak_rss_bytes": 298500096,
+        "scope": "ENGINEERING_DIAGNOSTIC_ONLY",
+        "training": {
+          "abstained_morphology_forms": 0,
+          "canonical_bytes": 3456,
+          "documents": 32,
+          "initial_unit_coverage": 0.5510204081632653,
+          "n_merges": 7,
+          "n_seeded": 0,
+          "occupied_vocab": 282,
+          "raw_bytes": 3456,
+          "resumed_merges": 1,
+          "stop_reason": "no_pairs_left",
+          "supported_morphology_forms": 0,
+          "train_seconds": 0.1,
+          "word_mass_covered": 1.0,
+          "word_types_used": 24
+        }
+      },
+      "target": 288
+    },
+    "C": {
+      "fallback_by_domain": {
+        "code_mixing_and_loanwords": {
+          "absent_unit_bytes": 515,
+          "observed_byte_ids": 548,
+          "pruned_unit_bytes": 33
+        },
+        "conversation_style": {
+          "absent_unit_bytes": 561,
+          "observed_byte_ids": 612,
+          "pruned_unit_bytes": 51
+        },
+        "encyclopedic_style": {
+          "absent_unit_bytes": 780,
+          "observed_byte_ids": 861,
+          "pruned_unit_bytes": 81
+        },
+        "literary_style": {
+          "absent_unit_bytes": 777,
+          "observed_byte_ids": 843,
+          "pruned_unit_bytes": 66
+        },
+        "news_style": {
+          "absent_unit_bytes": 969,
+          "observed_byte_ids": 1041,
+          "pruned_unit_bytes": 72
+        },
+        "numeric_punctuation_and_other_scripts": {
+          "absent_unit_bytes": 376,
+          "observed_byte_ids": 451,
+          "pruned_unit_bytes": 75
+        },
+        "rare_and_complex_words": {
+          "absent_unit_bytes": 810,
+          "observed_byte_ids": 903,
+          "pruned_unit_bytes": 93
+        },
+        "regional_register_probes": {
+          "absent_unit_bytes": 413,
+          "observed_byte_ids": 419,
+          "pruned_unit_bytes": 6
+        },
+        "technical_style": {
+          "absent_unit_bytes": 891,
+          "observed_byte_ids": 937,
+          "pruned_unit_bytes": 46
+        }
+      },
+      "fidelity": {
+        "bytes_per_token": 1.1683673469387754,
+        "canonical_bytes": 229,
+        "canonical_words": 13,
+        "fallback_rate": 0.8520408163265306,
+        "fertility": 15.076923076923077,
+        "mom_akshara_breaks": 0,
+        "mom_akshara_breaks_per_1000_reference_sites": 0.0,
+        "mom_akshara_reference_sites": 18,
+        "mom_byte_fallback_ids": 167,
+        "mom_canonical_equal": 11,
+        "mom_canonicalized_docs": 2,
+        "mom_docs": 11,
+        "mom_egc_breaks": 0,
+        "mom_egc_breaks_per_1000_reference_sites": 0.0,
+        "mom_egc_reference_sites": 18,
+        "mom_eligible": 0,
+        "mom_grammar_breaks": 0,
+        "mom_ids": 196,
+        "mom_offset_exclusions": 175,
+        "mom_raw_equal": 9,
+        "mom_surface_available": true
+      },
+      "identity": {
+        "arm": "C",
+        "configuration": {
+          "fingerprint": "21635795d38617c2",
+          "spec": {
+            "alphabet_coverage": 0.99999,
+            "morphology_penalty_milli": 0,
+            "require_full_vocabulary": false,
+            "segmenter": "akshara",
+            "type": "mom_bpe"
+          }
+        },
+        "driver_sha256": "a7a854700f7c67eaedd6421009dfc5638cd7953d1155b9a6aa897ecec1662ffc",
+        "fidelity_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+        "fixtures_sha256": "a712126a68d444ad31a86a7da40a10e58c4b61b223d112a7591c58a874aa69d1",
+        "metric": "70139b2e171d9f7d",
+        "normalizer": "bccfa8669a7e8528",
+        "pretokenizer": "dbb6a78fb100dd2e",
+        "scope": "ENGINEERING_DIAGNOSTIC_ONLY",
+        "target_vocab": 288,
+        "training_fingerprint": "352935106a2ef1db6ed2bb64ada080cc97a9751a9e90dea0ced15a6d1963e114"
+      },
+      "natural_probes": {
+        "bytes_per_token": 1.0340597488815124,
+        "canonical_bytes": 7165,
+        "canonical_words": 286,
+        "fallback_rate": 0.9546832154712079,
+        "fertility": 24.227272727272727,
+        "mom_akshara_breaks": 0,
+        "mom_akshara_breaks_per_1000_reference_sites": 0.0,
+        "mom_akshara_reference_sites": 791,
+        "mom_byte_fallback_ids": 6615,
+        "mom_canonical_equal": 54,
+        "mom_canonicalized_docs": 0,
+        "mom_docs": 54,
+        "mom_egc_breaks": 0,
+        "mom_egc_breaks_per_1000_reference_sites": 0.0,
+        "mom_egc_reference_sites": 791,
+        "mom_eligible": 3,
+        "mom_grammar_breaks": 0,
+        "mom_ids": 6929,
+        "mom_offset_exclusions": 6836,
+        "mom_raw_equal": 54,
+        "mom_surface_available": true
+      },
+      "orthography": {
+        "bytes_per_token": 1.0466988727858293,
+        "canonical_bytes": 650,
+        "canonical_words": 57,
+        "fallback_rate": 0.9146537842190016,
+        "fertility": 10.894736842105264,
+        "mom_akshara_breaks": 0,
+        "mom_akshara_breaks_per_1000_reference_sites": 0.0,
+        "mom_akshara_reference_sites": 32,
+        "mom_byte_fallback_ids": 568,
+        "mom_canonical_equal": 26,
+        "mom_canonicalized_docs": 5,
+        "mom_docs": 26,
+        "mom_egc_breaks": 0,
+        "mom_egc_breaks_per_1000_reference_sites": 0.0,
+        "mom_egc_reference_sites": 30,
+        "mom_eligible": 0,
+        "mom_grammar_breaks": 0,
+        "mom_ids": 621,
+        "mom_offset_exclusions": 582,
+        "mom_raw_equal": 21,
+        "mom_surface_available": true
+      },
+      "reference": {
+        "checkpoint_generations": 7,
+        "fit_wall_seconds": 0.10151780000887811,
+        "model_sha256": "d082b671aff4eecc6d4e40eeaec527cadb0834d9da490646b3281c5515ed4a49",
+        "process_peak_rss_bytes": 297160704,
+        "scope": "ENGINEERING_DIAGNOSTIC_ONLY",
+        "training": {
+          "abstained_morphology_forms": 0,
+          "canonical_bytes": 3456,
+          "documents": 32,
+          "initial_unit_coverage": 0.5510204081632653,
+          "n_merges": 7,
+          "n_seeded": 0,
+          "occupied_vocab": 282,
+          "raw_bytes": 3456,
+          "resumed_merges": 0,
+          "stop_reason": "no_pairs_left",
+          "supported_morphology_forms": 0,
+          "train_seconds": 0.1,
+          "word_mass_covered": 1.0,
+          "word_types_used": 24
+        }
+      },
+      "result_sha256": "5a90529052baeef627b7ecc5f961babf94faefa0e503b5d70e9a43ebf2dde024",
+      "resume_and_reload_exact": true,
+      "resumed": {
+        "checkpoint_generations": 7,
+        "fit_wall_seconds": 0.08844680001493543,
+        "model_sha256": "d082b671aff4eecc6d4e40eeaec527cadb0834d9da490646b3281c5515ed4a49",
+        "process_peak_rss_bytes": 297160704,
+        "scope": "ENGINEERING_DIAGNOSTIC_ONLY",
+        "training": {
+          "abstained_morphology_forms": 0,
+          "canonical_bytes": 3456,
+          "documents": 32,
+          "initial_unit_coverage": 0.5510204081632653,
+          "n_merges": 7,
+          "n_seeded": 0,
+          "occupied_vocab": 282,
+          "raw_bytes": 3456,
+          "resumed_merges": 1,
+          "stop_reason": "no_pairs_left",
+          "supported_morphology_forms": 0,
+          "train_seconds": 0.1,
+          "word_mass_covered": 1.0,
+          "word_types_used": 24
+        }
+      },
+      "target": 288
+    }
+  },
+  "scope": "ENGINEERING_DIAGNOSTIC_ONLY",
+  "source": "repository-authored non-production TRAIN fixtures; four distinct texts repeated eight times"
+}

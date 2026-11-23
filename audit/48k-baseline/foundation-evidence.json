@@ -1,0 +1,1165 @@
+{
+  "baseline_revision": "cff0d31c84b598436087f21cc8183021993831e1",
+  "baseline_sha256": "2f4b7e8b0706007f7ab3f0b8b2cc1b169094072c334585dabc4081d455e69ff5",
+  "fixture_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+  "boundary_reference_sha256": "ea42e125e0288d7c9768b7f9ba2357431568fba50f782303477217e320c13758",
+  "legacy_structure_on_authored_ordinary_fixtures": {
+    "mark_start_rate": 0.007594936708860759,
+    "akshara_break_rate": 0.05925925925925926
+  },
+  "boundary_audit_v1_on_authored_ordinary_fixtures": {
+    "boundary_audit_available": true,
+    "boundary_docs": 54,
+    "boundary_token_transitions": 555,
+    "boundary_byte_or_special_transitions_excluded": 24,
+    "boundary_ambiguous_offset_transitions_excluded": 0,
+    "boundary_malayalam_boundaries": 133,
+    "boundary_akshara_violations": 6,
+    "boundary_egc_violations": 6,
+    "boundary_rules_disagree": 0,
+    "boundary_malayalam_initial_tokens": 395,
+    "boundary_combining_mark_starts": 3,
+    "boundary_akshara_rate": 0.045112781954887216,
+    "boundary_egc_rate": 0.045112781954887216,
+    "boundary_mark_start_rate": 0.007594936708860759,
+    "boundary_akshara_by_kind": {
+      "after_virama": 6
+    },
+    "boundary_egc_by_kind": {
+      "after_virama": 6
+    }
+  },
+  "boundary_offsets_v2": {
+    "ordinary_raw": {
+      "v2": {
+        "offset_v2_available": true,
+        "offset_v2_native_unit": "codepoint",
+        "offset_v2_docs": 54,
+        "offset_v2_transitions": 555,
+        "offset_v2_eligible": 133,
+        "offset_v2_special_excluded": 0,
+        "offset_v2_byte_fallback_excluded": 24,
+        "offset_v2_ambiguous_offsets_excluded": 0,
+        "offset_v2_outside_malayalam": 398,
+        "offset_v2_akshara_breaks": 6,
+        "offset_v2_egc_breaks": 6,
+        "offset_v2_references_disagree": 0,
+        "offset_v2_akshara_after_virama": 6,
+        "offset_v2_akshara_rate": 0.045112781954887216,
+        "offset_v2_egc_rate": 0.045112781954887216,
+        "offset_v2_examples": [
+          {
+            "source": "encyclopedic_style",
+            "text": "പ്രകാശസംശ്ലേഷണത്തിലൂടെ സസ്യങ്ങൾ രാസോർജം സംഭരിക്കുന്നു.",
+            "character_offset": 10,
+            "utf8_offset": 30,
+            "native_offsets": [
+              [
+                8,
+                10
+              ],
+              [
+                10,
+                12
+              ]
+            ],
+            "tokens": [
+              "ശ്",
+              "ലേ"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "regional_register_probes",
+            "text": "എന്തൂട്ടാ കാര്യം, പറയെടാ.",
+            "character_offset": 3,
+            "utf8_offset": 9,
+            "native_offsets": [
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                5
+              ]
+            ],
+            "tokens": [
+              "▁എന്",
+              "തൂ"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "regional_register_probes",
+            "text": "എന്തര് വേണം? ഇങ്ങോട്ട് വാ.",
+            "character_offset": 3,
+            "utf8_offset": 9,
+            "native_offsets": [
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                6
+              ]
+            ],
+            "tokens": [
+              "▁എന്",
+              "തര്"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "rare_and_complex_words",
+            "text": "നിഷ്കർഷാപൂർവം പരിശോധിച്ച ഗ്രന്ഥം പുനഃപ്രസിദ്ധീകരിച്ചു.",
+            "character_offset": 4,
+            "utf8_offset": 12,
+            "native_offsets": [
+              [
+                0,
+                4
+              ],
+              [
+                4,
+                6
+              ]
+            ],
+            "tokens": [
+              "▁നിഷ്",
+              "കർ"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "rare_and_complex_words",
+            "text": "പ്രത്യുത്പന്നമതിത്വം ചില സന്ദർഭങ്ങളിൽ വലിയ ഗുണമാണ്.",
+            "character_offset": 9,
+            "utf8_offset": 27,
+            "native_offsets": [
+              [
+                7,
+                9
+              ],
+              [
+                9,
+                13
+              ]
+            ],
+            "tokens": [
+              "ത്",
+              "പന്ന"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "numeric_punctuation_and_other_scripts",
+            "text": "൧൨൩, 2026-11-22, 3.14159: ഇവ സംഖ്യകളാണ്.",
+            "character_offset": 33,
+            "utf8_offset": 51,
+            "native_offsets": [
+              [
+                31,
+                33
+              ],
+              [
+                33,
+                35
+              ]
+            ],
+            "tokens": [
+              "ഖ്",
+              "യക"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          }
+        ]
+      },
+      "equivalent_explicit_utf8_offsets": true
+    },
+    "ordinary_canonical": {
+      "v2": {
+        "offset_v2_available": true,
+        "offset_v2_native_unit": "codepoint",
+        "offset_v2_docs": 54,
+        "offset_v2_transitions": 555,
+        "offset_v2_eligible": 133,
+        "offset_v2_special_excluded": 0,
+        "offset_v2_byte_fallback_excluded": 24,
+        "offset_v2_ambiguous_offsets_excluded": 0,
+        "offset_v2_outside_malayalam": 398,
+        "offset_v2_akshara_breaks": 6,
+        "offset_v2_egc_breaks": 6,
+        "offset_v2_references_disagree": 0,
+        "offset_v2_akshara_after_virama": 6,
+        "offset_v2_akshara_rate": 0.045112781954887216,
+        "offset_v2_egc_rate": 0.045112781954887216,
+        "offset_v2_examples": [
+          {
+            "source": "encyclopedic_style",
+            "text": "പ്രകാശസംശ്ലേഷണത്തിലൂടെ സസ്യങ്ങൾ രാസോർജം സംഭരിക്കുന്നു.",
+            "character_offset": 10,
+            "utf8_offset": 30,
+            "native_offsets": [
+              [
+                8,
+                10
+              ],
+              [
+                10,
+                12
+              ]
+            ],
+            "tokens": [
+              "ശ്",
+              "ലേ"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "regional_register_probes",
+            "text": "എന്തൂട്ടാ കാര്യം, പറയെടാ.",
+            "character_offset": 3,
+            "utf8_offset": 9,
+            "native_offsets": [
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                5
+              ]
+            ],
+            "tokens": [
+              "▁എന്",
+              "തൂ"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "regional_register_probes",
+            "text": "എന്തര് വേണം? ഇങ്ങോട്ട് വാ.",
+            "character_offset": 3,
+            "utf8_offset": 9,
+            "native_offsets": [
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                6
+              ]
+            ],
+            "tokens": [
+              "▁എന്",
+              "തര്"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "rare_and_complex_words",
+            "text": "നിഷ്കർഷാപൂർവം പരിശോധിച്ച ഗ്രന്ഥം പുനഃപ്രസിദ്ധീകരിച്ചു.",
+            "character_offset": 4,
+            "utf8_offset": 12,
+            "native_offsets": [
+              [
+                0,
+                4
+              ],
+              [
+                4,
+                6
+              ]
+            ],
+            "tokens": [
+              "▁നിഷ്",
+              "കർ"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "rare_and_complex_words",
+            "text": "പ്രത്യുത്പന്നമതിത്വം ചില സന്ദർഭങ്ങളിൽ വലിയ ഗുണമാണ്.",
+            "character_offset": 9,
+            "utf8_offset": 27,
+            "native_offsets": [
+              [
+                7,
+                9
+              ],
+              [
+                9,
+                13
+              ]
+            ],
+            "tokens": [
+              "ത്",
+              "പന്ന"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "numeric_punctuation_and_other_scripts",
+            "text": "൧൨൩, 2026-11-22, 3.14159: ഇവ സംഖ്യകളാണ്.",
+            "character_offset": 33,
+            "utf8_offset": 51,
+            "native_offsets": [
+              [
+                31,
+                33
+              ],
+              [
+                33,
+                35
+              ]
+            ],
+            "tokens": [
+              "ഖ്",
+              "യക"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          }
+        ]
+      },
+      "equivalent_explicit_utf8_offsets": true
+    },
+    "unicode_probes_raw": {
+      "v2": {
+        "offset_v2_available": true,
+        "offset_v2_native_unit": "codepoint",
+        "offset_v2_docs": 26,
+        "offset_v2_transitions": 106,
+        "offset_v2_eligible": 26,
+        "offset_v2_special_excluded": 2,
+        "offset_v2_byte_fallback_excluded": 9,
+        "offset_v2_ambiguous_offsets_excluded": 18,
+        "offset_v2_outside_malayalam": 51,
+        "offset_v2_akshara_breaks": 11,
+        "offset_v2_egc_breaks": 13,
+        "offset_v2_references_disagree": 2,
+        "offset_v2_akshara_after_virama": 5,
+        "offset_v2_akshara_rate": 0.4230769230769231,
+        "offset_v2_egc_rate": 0.5,
+        "offset_v2_examples": [
+          {
+            "source": "conjuncts",
+            "text": "ക്ഷ്മം സ്ത്രം വിദ്യാർത്ഥി ശാസ്ത്രം",
+            "character_offset": 2,
+            "utf8_offset": 6,
+            "native_offsets": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                4
+              ]
+            ],
+            "tokens": [
+              "▁ക്",
+              "ഷ്"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "conjuncts",
+            "text": "ക്ഷ്മം സ്ത്രം വിദ്യാർത്ഥി ശാസ്ത്രം",
+            "character_offset": 4,
+            "utf8_offset": 12,
+            "native_offsets": [
+              [
+                2,
+                4
+              ],
+              [
+                4,
+                6
+              ]
+            ],
+            "tokens": [
+              "ഷ്",
+              "മം"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "conjuncts",
+            "text": "ക്ഷ്മം സ്ത്രം വിദ്യാർത്ഥി ശാസ്ത്രം",
+            "character_offset": 9,
+            "utf8_offset": 25,
+            "native_offsets": [
+              [
+                6,
+                9
+              ],
+              [
+                9,
+                13
+              ]
+            ],
+            "tokens": [
+              "▁സ്",
+              "ത്രം"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "conjunct_zwj",
+            "text": "ക്‍ഷ",
+            "character_offset": 3,
+            "utf8_offset": 9,
+            "native_offsets": [
+              [
+                2,
+                3
+              ],
+              [
+                3,
+                4
+              ]
+            ],
+            "tokens": [
+              "ൿ",
+              "ഷ"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "conjunct_zwnj",
+            "text": "ക്‌ഷ",
+            "character_offset": 2,
+            "utf8_offset": 6,
+            "native_offsets": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "tokens": [
+              "▁ക്",
+              "‌"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "chillu_context_zwnj",
+            "text": "ന്‌റ",
+            "character_offset": 2,
+            "utf8_offset": 6,
+            "native_offsets": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "tokens": [
+              "▁ന്",
+              "‌"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "candrabindu",
+            "text": "കഁ കഀ",
+            "character_offset": 4,
+            "utf8_offset": 10,
+            "native_offsets": [
+              [
+                2,
+                4
+              ],
+              [
+                4,
+                5
+              ]
+            ],
+            "tokens": [
+              "▁ക",
+              "ഀ"
+            ],
+            "akshara_break": false,
+            "egc_break": true
+          },
+          {
+            "source": "dot_reph",
+            "text": "ൎക കൎക",
+            "character_offset": 1,
+            "utf8_offset": 3,
+            "native_offsets": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "tokens": [
+              "ൎ",
+              "ക"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "dot_reph",
+            "text": "ൎക കൎക",
+            "character_offset": 5,
+            "utf8_offset": 13,
+            "native_offsets": [
+              [
+                4,
+                5
+              ],
+              [
+                5,
+                6
+              ]
+            ],
+            "tokens": [
+              "ൎ",
+              "ക"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "archaic_characters",
+            "text": "ഄഩഺൟൠൡൢൣൔൕൖ൹",
+            "character_offset": 6,
+            "utf8_offset": 18,
+            "native_offsets": [
+              [
+                5,
+                6
+              ],
+              [
+                6,
+                7
+              ]
+            ],
+            "tokens": [
+              "ൡ",
+              "ൢ"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "archaic_characters",
+            "text": "ഄഩഺൟൠൡൢൣൔൕൖ൹",
+            "character_offset": 7,
+            "utf8_offset": 21,
+            "native_offsets": [
+              [
+                6,
+                7
+              ],
+              [
+                7,
+                8
+              ]
+            ],
+            "tokens": [
+              "ൢ",
+              "ൣ"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "malformed_repeated_signs",
+            "text": "കാി ക്്",
+            "character_offset": 2,
+            "utf8_offset": 6,
+            "native_offsets": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "tokens": [
+              "▁കാ",
+              "ി"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "malformed_repeated_signs",
+            "text": "കാി ക്്",
+            "character_offset": 6,
+            "utf8_offset": 16,
+            "native_offsets": [
+              [
+                3,
+                6
+              ],
+              [
+                6,
+                7
+              ]
+            ],
+            "tokens": [
+              "▁ക്",
+              "്"
+            ],
+            "akshara_break": false,
+            "egc_break": true
+          }
+        ]
+      },
+      "equivalent_explicit_utf8_offsets": true
+    },
+    "unicode_probes_canonical": {
+      "v2": {
+        "offset_v2_available": true,
+        "offset_v2_native_unit": "codepoint",
+        "offset_v2_docs": 26,
+        "offset_v2_transitions": 106,
+        "offset_v2_eligible": 31,
+        "offset_v2_special_excluded": 2,
+        "offset_v2_byte_fallback_excluded": 9,
+        "offset_v2_ambiguous_offsets_excluded": 10,
+        "offset_v2_outside_malayalam": 54,
+        "offset_v2_akshara_breaks": 10,
+        "offset_v2_egc_breaks": 12,
+        "offset_v2_references_disagree": 2,
+        "offset_v2_akshara_after_virama": 5,
+        "offset_v2_akshara_rate": 0.3225806451612903,
+        "offset_v2_egc_rate": 0.3870967741935484,
+        "offset_v2_examples": [
+          {
+            "source": "conjuncts",
+            "text": "ക്ഷ്മം സ്ത്രം വിദ്യാർത്ഥി ശാസ്ത്രം",
+            "character_offset": 2,
+            "utf8_offset": 6,
+            "native_offsets": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                4
+              ]
+            ],
+            "tokens": [
+              "▁ക്",
+              "ഷ്"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "conjuncts",
+            "text": "ക്ഷ്മം സ്ത്രം വിദ്യാർത്ഥി ശാസ്ത്രം",
+            "character_offset": 4,
+            "utf8_offset": 12,
+            "native_offsets": [
+              [
+                2,
+                4
+              ],
+              [
+                4,
+                6
+              ]
+            ],
+            "tokens": [
+              "ഷ്",
+              "മം"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "conjuncts",
+            "text": "ക്ഷ്മം സ്ത്രം വിദ്യാർത്ഥി ശാസ്ത്രം",
+            "character_offset": 9,
+            "utf8_offset": 25,
+            "native_offsets": [
+              [
+                6,
+                9
+              ],
+              [
+                9,
+                13
+              ]
+            ],
+            "tokens": [
+              "▁സ്",
+              "ത്രം"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "conjunct_zwnj",
+            "text": "ക്‌ഷ",
+            "character_offset": 2,
+            "utf8_offset": 6,
+            "native_offsets": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "tokens": [
+              "▁ക്",
+              "‌"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "chillu_context_zwnj",
+            "text": "ന്‌റ",
+            "character_offset": 2,
+            "utf8_offset": 6,
+            "native_offsets": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "tokens": [
+              "▁ന്",
+              "‌"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "candrabindu",
+            "text": "കഁ കഀ",
+            "character_offset": 4,
+            "utf8_offset": 10,
+            "native_offsets": [
+              [
+                2,
+                4
+              ],
+              [
+                4,
+                5
+              ]
+            ],
+            "tokens": [
+              "▁ക",
+              "ഀ"
+            ],
+            "akshara_break": false,
+            "egc_break": true
+          },
+          {
+            "source": "dot_reph",
+            "text": "ൎക കൎക",
+            "character_offset": 1,
+            "utf8_offset": 3,
+            "native_offsets": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "tokens": [
+              "ൎ",
+              "ക"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "dot_reph",
+            "text": "ൎക കൎക",
+            "character_offset": 5,
+            "utf8_offset": 13,
+            "native_offsets": [
+              [
+                4,
+                5
+              ],
+              [
+                5,
+                6
+              ]
+            ],
+            "tokens": [
+              "ൎ",
+              "ക"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "archaic_characters",
+            "text": "ഄഩഺൟൠൡൢൣൔൕൖ൹",
+            "character_offset": 6,
+            "utf8_offset": 18,
+            "native_offsets": [
+              [
+                5,
+                6
+              ],
+              [
+                6,
+                7
+              ]
+            ],
+            "tokens": [
+              "ൡ",
+              "ൢ"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "archaic_characters",
+            "text": "ഄഩഺൟൠൡൢൣൔൕൖ൹",
+            "character_offset": 7,
+            "utf8_offset": 21,
+            "native_offsets": [
+              [
+                6,
+                7
+              ],
+              [
+                7,
+                8
+              ]
+            ],
+            "tokens": [
+              "ൢ",
+              "ൣ"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "malformed_repeated_signs",
+            "text": "കാി ക്്",
+            "character_offset": 2,
+            "utf8_offset": 6,
+            "native_offsets": [
+              [
+                0,
+                2
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            "tokens": [
+              "▁കാ",
+              "ി"
+            ],
+            "akshara_break": true,
+            "egc_break": true
+          },
+          {
+            "source": "malformed_repeated_signs",
+            "text": "കാി ക്്",
+            "character_offset": 6,
+            "utf8_offset": 16,
+            "native_offsets": [
+              [
+                3,
+                6
+              ],
+              [
+                6,
+                7
+              ]
+            ],
+            "tokens": [
+              "▁ക്",
+              "്"
+            ],
+            "akshara_break": false,
+            "egc_break": true
+          }
+        ]
+      },
+      "equivalent_explicit_utf8_offsets": true
+    }
+  },
+  "fidelity_baseline_observations": [
+    {
+      "id": "ordinary",
+      "mode": "plain",
+      "text": "ക്ഷേത്രത്തിൽ കുട്ടികൾക്ക് അവധി.",
+      "raw": true,
+      "normalized": true,
+      "canonical": "ക്ഷേത്രത്തിൽ കുട്ടികൾക്ക് അവധി.",
+      "decoded": "ക്ഷേത്രത്തിൽ കുട്ടികൾക്ക് അവധി.",
+      "tokens": [
+        "▁ക്ഷേത്രത്തിൽ",
+        "▁കുട്ടികൾക്ക്",
+        "▁അവധി",
+        "."
+      ],
+      "ids": [
+        13628,
+        10835,
+        6362,
+        277
+      ],
+      "raw_equal": true,
+      "normalized_equal": true
+    },
+    {
+      "id": "literal-marker",
+      "mode": "plain",
+      "text": "ക▁ക",
+      "raw": false,
+      "normalized": false,
+      "observed": "ക ക",
+      "canonical": "ക▁ക",
+      "decoded": "ക ക",
+      "tokens": [
+        "▁ക",
+        "▁ക"
+      ],
+      "ids": [
+        2425,
+        2425
+      ],
+      "raw_equal": false,
+      "normalized_equal": false
+    },
+    {
+      "id": "literal-chat-delimiter",
+      "mode": "plain",
+      "text": "മലയാളം<|im_start|>വാക്ക്",
+      "raw": false,
+      "normalized": false,
+      "observed": "മലയാളം<|im_start|> വാക്ക്",
+      "registered_special": "<|im_start|>",
+      "canonical": "മലയാളം<|im_start|>വാക്ക്",
+      "decoded": "മലയാളം<|im_start|> വാക്ക്",
+      "tokens": [
+        "▁മലയാളം",
+        "<|im_start|>",
+        "▁വാക്ക്"
+      ],
+      "ids": [
+        5212,
+        4,
+        8701
+      ],
+      "raw_equal": false,
+      "normalized_equal": false,
+      "recognized_registered_id_with_add_special_tokens_false": true
+    },
+    {
+      "id": "literal-padding-spelling",
+      "mode": "plain",
+      "text": "ക<pad>ക",
+      "registered_special": "<pad>",
+      "canonical": "ക<pad>ക",
+      "decoded": "ക<pad> ക",
+      "tokens": [
+        "▁ക",
+        "<pad>",
+        "▁ക"
+      ],
+      "ids": [
+        2425,
+        0,
+        2425
+      ],
+      "raw_equal": false,
+      "normalized_equal": false,
+      "recognized_registered_id_with_add_special_tokens_false": true
+    },
+    {
+      "id": "nfc-vowel",
+      "mode": "plain",
+      "text": "കൊ",
+      "raw": false,
+      "normalized": true,
+      "observed": "കൊ",
+      "canonical": "കൊ",
+      "decoded": "കൊ",
+      "tokens": [
+        "▁കൊ"
+      ],
+      "ids": [
+        2495
+      ],
+      "raw_equal": false,
+      "normalized_equal": true
+    },
+    {
+      "id": "legacy-chillu",
+      "mode": "plain",
+      "text": "ന്‍",
+      "raw": false,
+      "normalized": true,
+      "observed": "ൻ",
+      "canonical": "ൻ",
+      "decoded": "ൻ",
+      "tokens": [
+        "▁ൻ"
+      ],
+      "ids": [
+        35437
+      ],
+      "raw_equal": false,
+      "normalized_equal": true
+    },
+    {
+      "id": "zero-width-space-rule",
+      "mode": "plain",
+      "text": "ക​ക",
+      "raw": false,
+      "normalized": true,
+      "observed": "കക",
+      "canonical": "കക",
+      "decoded": "കക",
+      "tokens": [
+        "▁ക",
+        "ക"
+      ],
+      "ids": [
+        2425,
+        379
+      ],
+      "raw_equal": false,
+      "normalized_equal": true
+    },
+    {
+      "id": "explicit-zwnj",
+      "mode": "plain",
+      "text": "ക്‌ഷ",
+      "raw": true,
+      "normalized": true,
+      "canonical": "ക്‌ഷ",
+      "decoded": "ക്‌ഷ",
+      "tokens": [
+        "▁ക്",
+        "‌",
+        "ഷ"
+      ],
+      "ids": [
+        2548,
+        478,
+        413
+      ],
+      "raw_equal": true,
+      "normalized_equal": true
+    },
+    {
+      "id": "leading-and-trailing-spaces",
+      "mode": "plain",
+      "text": "  മലയാളം\tഭാഷ  ",
+      "raw": true,
+      "normalized": true,
+      "canonical": "  മലയാളം\tഭാഷ  ",
+      "decoded": "  മലയാളം\tഭാഷ  ",
+      "tokens": [
+        "▁",
+        "▁",
+        "▁മലയാളം",
+        "\t",
+        "ഭാഷ",
+        "▁",
+        "▁"
+      ],
+      "ids": [
+        263,
+        263,
+        5212,
+        359,
+        6475,
+        263,
+        263
+      ],
+      "raw_equal": true,
+      "normalized_equal": true
+    },
+    {
+      "id": "empty",
+      "mode": "plain",
+      "text": "",
+      "raw": true,
+      "normalized": true,
+      "canonical": "",
+      "decoded": "",
+      "tokens": [],
+      "ids": [],
+      "raw_equal": true,
+      "normalized_equal": true
+    },
+    {
+      "id": "caller-inserted-delimiter",
+      "mode": "trusted_control_probe",
+      "text": "<|im_start|>",
+      "registered_special": "<|im_start|>",
+      "raw": true,
+      "normalized": true,
+      "canonical": "<|im_start|>",
+      "decoded": "<|im_start|>",
+      "tokens": [
+        "<|im_start|>"
+      ],
+      "ids": [
+        4
+      ],
+      "raw_equal": true,
+      "normalized_equal": true,
+      "recognized_registered_id_with_add_special_tokens_false": true
+    }
+  ],
+  "protocol_sha256": "1ff56f1a584073b3d9eaa965b6d44f179f7322e1758c9afc47d04a0a7a340167"
+}
