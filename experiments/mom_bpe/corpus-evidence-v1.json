@@ -1,0 +1,1617 @@
+{
+  "acquisition_date": "2026-11-23",
+  "authored_diagnostic_manifest": {
+    "dataset_fingerprint": "ae6e30401c1dc9b792912df608c58af5a841d7e27716ffd716b2241641ee85fc",
+    "measurements": {
+      "heldout_proposal": {
+        "canonical_utf8_bytes": 377,
+        "domain:engineering": 4,
+        "raw_utf8_bytes": 377,
+        "rows": 4,
+        "source:authored_fixture": 4
+      },
+      "train": {
+        "canonical_utf8_bytes": 432,
+        "domain:engineering": 4,
+        "raw_utf8_bytes": 432,
+        "rows": 4,
+        "source:authored_fixture": 4
+      },
+      "validation": {
+        "canonical_utf8_bytes": 863,
+        "domain:engineering": 5,
+        "raw_utf8_bytes": 863,
+        "rows": 5,
+        "source:authored_fixture": 5
+      }
+    },
+    "recipe_sha256": "e46bf3aebd9306decddcfd24d317536f8045e5dceb03b67800f1a35aa4b8114d",
+    "splits": {
+      "heldout_proposal": {
+        "file": "heldout_proposal.jsonl",
+        "rows": 4,
+        "sha256": "093559702b76ed10b49585a368ffb57a9350f4c9bd65a3e789873d3c9be7a77d",
+        "size": 1633
+      },
+      "train": {
+        "file": "train.jsonl",
+        "rows": 4,
+        "sha256": "1fd1790cf555ce30f37a00b4c6a968e179419048f319a82f36b86c0d67697865",
+        "size": 1606
+      },
+      "validation": {
+        "file": "validation.jsonl",
+        "rows": 5,
+        "sha256": "7503bd407091b8ffe02adf32353f8485d21af99b9956b78eae3805aac98ca12e",
+        "size": 2376
+      }
+    },
+    "status": "ENGINEERING_DIAGNOSTIC_ONLY",
+    "verified_freeze": false
+  },
+  "authored_diagnostic_recipe": {
+    "code_sha256": {
+      "corpus_materialize.py": "3f85493d754059ddb2636e5a6c46777c6f78068d49e98776913dfad25faa41e9",
+      "corpus_overlap.py": "f47bd950669146ae25184e14393ac877b1e57f2450e1d1c0ef0953d8ba1ec0e0"
+    },
+    "fixture_sha256": "a8df808d746778f2e162af3f47f9a6ec3d078fbe62ba6378f4499b47bd4d23a3",
+    "mode": "diagnostic",
+    "normalizer": "bccfa8669a7e8528",
+    "raw_byte_budget": 4096,
+    "source": "existing project-authored engineering fixtures"
+  },
+  "bounded_workstation_run": {
+    "immutable_replay_verified": true,
+    "index_bytes_after_close": 4972544,
+    "peak_rss_bytes": 331169792,
+    "wall_seconds": 30.473688600002788
+  },
+  "classification": "aggregate QA and public metadata with no source texts or document selections",
+  "final_acquisition_code_sha256": {
+    "corpus_acquire.py": "06e8707d49131c7f77ed7849579e59f6268f420c2e0b2ab1f2bbb12323ae7b02",
+    "sangraha_pages.py": "a609a3ae124629ef7a72b98384956899de5b5dd22f69a19af45bd162ff6199fc"
+  },
+  "native_indiccorp_malayalam": {
+    "git_lfs_sha256": "6cabf584599c5bce318ab7449e2209685abcbb820b6763353d9bfda2cb949036",
+    "path": "data/ml.txt",
+    "size": 26319980640,
+    "source": "https://huggingface.co/api/datasets/ai4bharat/IndicCorpV2/tree/2d7285e6ce14fdb3fb2449c9f89427b9f582ac3f/data"
+  },
+  "parquet_replay": {
+    "fineweb2": {
+      "hub": {
+        "id": "HuggingFaceFW/fineweb-2",
+        "sha": "af9c13333eb981300149d5ca60a8e9d659b276b9"
+      },
+      "parquet": {
+        "parquet_files": [
+          {
+            "config": "mal_Mlym",
+            "dataset": "HuggingFaceFW/fineweb-2",
+            "filename": "0000.parquet",
+            "size": 4839367922,
+            "split": "train",
+            "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-2/resolve/refs%2Fconvert%2Fparquet/mal_Mlym/train/0000.parquet"
+          },
+          {
+            "config": "mal_Mlym",
+            "dataset": "HuggingFaceFW/fineweb-2",
+            "filename": "0001.parquet",
+            "size": 1075973726,
+            "split": "train",
+            "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-2/resolve/refs%2Fconvert%2Fparquet/mal_Mlym/train/0001.parquet"
+          }
+        ]
+      },
+      "viewer": {
+        "size_metadata": {
+          "config": "mal_Mlym",
+          "dataset": "HuggingFaceFW/fineweb-2",
+          "estimated_num_rows": null,
+          "num_bytes_memory": 37375879090,
+          "num_bytes_parquet_files": 5915341648,
+          "num_columns": 11,
+          "num_rows": 3322526,
+          "split": "train"
+        },
+        "viewer_conversion_revision": "a092823f5cba550080cb8e56451fc9ac5def625c"
+      },
+      "viewer_row_http_statuses": [
+        502,
+        502,
+        502,
+        502,
+        502,
+        502
+      ]
+    },
+    "indiccorp": {
+      "hub": {
+        "id": "ai4bharat/IndicCorpV2",
+        "sha": "2d7285e6ce14fdb3fb2449c9f89427b9f582ac3f"
+      },
+      "parquet": {
+        "parquet_files": [
+          {
+            "config": "indiccorp_v2",
+            "dataset": "ai4bharat/IndicCorpV2",
+            "filename": "0000.parquet",
+            "size": 207122487,
+            "split": "mal_Mlym",
+            "url": "https://huggingface.co/datasets/ai4bharat/IndicCorpV2/resolve/refs%2Fconvert%2Fparquet/indiccorp_v2/partial-mal_Mlym/0000.parquet"
+          },
+          {
+            "config": "indiccorp_v2",
+            "dataset": "ai4bharat/IndicCorpV2",
+            "filename": "0001.parquet",
+            "size": 207038631,
+            "split": "mal_Mlym",
+            "url": "https://huggingface.co/datasets/ai4bharat/IndicCorpV2/resolve/refs%2Fconvert%2Fparquet/indiccorp_v2/partial-mal_Mlym/0001.parquet"
+          },
+          {
+            "config": "indiccorp_v2",
+            "dataset": "ai4bharat/IndicCorpV2",
+            "filename": "0002.parquet",
+            "size": 207081501,
+            "split": "mal_Mlym",
+            "url": "https://huggingface.co/datasets/ai4bharat/IndicCorpV2/resolve/refs%2Fconvert%2Fparquet/indiccorp_v2/partial-mal_Mlym/0002.parquet"
+          },
+          {
+            "config": "indiccorp_v2",
+            "dataset": "ai4bharat/IndicCorpV2",
+            "filename": "0003.parquet",
+            "size": 207207177,
+            "split": "mal_Mlym",
+            "url": "https://huggingface.co/datasets/ai4bharat/IndicCorpV2/resolve/refs%2Fconvert%2Fparquet/indiccorp_v2/partial-mal_Mlym/0003.parquet"
+          },
+          {
+            "config": "indiccorp_v2",
+            "dataset": "ai4bharat/IndicCorpV2",
+            "filename": "0004.parquet",
+            "size": 207042395,
+            "split": "mal_Mlym",
+            "url": "https://huggingface.co/datasets/ai4bharat/IndicCorpV2/resolve/refs%2Fconvert%2Fparquet/indiccorp_v2/partial-mal_Mlym/0004.parquet"
+          },
+          {
+            "config": "indiccorp_v2",
+            "dataset": "ai4bharat/IndicCorpV2",
+            "filename": "0005.parquet",
+            "size": 207110013,
+            "split": "mal_Mlym",
+            "url": "https://huggingface.co/datasets/ai4bharat/IndicCorpV2/resolve/refs%2Fconvert%2Fparquet/indiccorp_v2/partial-mal_Mlym/0005.parquet"
+          },
+          {
+            "config": "indiccorp_v2",
+            "dataset": "ai4bharat/IndicCorpV2",
+            "filename": "0006.parquet",
+            "size": 207007985,
+            "split": "mal_Mlym",
+            "url": "https://huggingface.co/datasets/ai4bharat/IndicCorpV2/resolve/refs%2Fconvert%2Fparquet/indiccorp_v2/partial-mal_Mlym/0006.parquet"
+          },
+          {
+            "config": "indiccorp_v2",
+            "dataset": "ai4bharat/IndicCorpV2",
+            "filename": "0007.parquet",
+            "size": 207154696,
+            "split": "mal_Mlym",
+            "url": "https://huggingface.co/datasets/ai4bharat/IndicCorpV2/resolve/refs%2Fconvert%2Fparquet/indiccorp_v2/partial-mal_Mlym/0007.parquet"
+          },
+          {
+            "config": "indiccorp_v2",
+            "dataset": "ai4bharat/IndicCorpV2",
+            "filename": "0008.parquet",
+            "size": 207072227,
+            "split": "mal_Mlym",
+            "url": "https://huggingface.co/datasets/ai4bharat/IndicCorpV2/resolve/refs%2Fconvert%2Fparquet/indiccorp_v2/partial-mal_Mlym/0008.parquet"
+          },
+          {
+            "config": "indiccorp_v2",
+            "dataset": "ai4bharat/IndicCorpV2",
+            "filename": "0009.parquet",
+            "size": 126587943,
+            "split": "mal_Mlym",
+            "url": "https://huggingface.co/datasets/ai4bharat/IndicCorpV2/resolve/refs%2Fconvert%2Fparquet/indiccorp_v2/partial-mal_Mlym/0009.parquet"
+          }
+        ]
+      },
+      "viewer": {
+        "size_metadata": {
+          "config": "indiccorp_v2",
+          "dataset": "ai4bharat/IndicCorpV2",
+          "estimated_num_rows": 48130424,
+          "num_bytes_memory": 5015296562,
+          "num_bytes_parquet_files": 1990425055,
+          "num_columns": 1,
+          "num_rows": 12492007,
+          "split": "mal_Mlym"
+        },
+        "viewer_conversion_revision": "38663accdfc4415721449b045976e10309019703"
+      },
+      "viewer_row_http_statuses": [
+        503,
+        503,
+        503,
+        503,
+        503,
+        503
+      ]
+    },
+    "sangraha": {
+      "hub": {
+        "id": "ai4bharat/sangraha",
+        "sha": "8b813c3f62d37b2fa174d68c31e8b35ae2fe85e8"
+      },
+      "parquet": {
+        "parquet_files": [
+          {
+            "config": "verified",
+            "dataset": "ai4bharat/sangraha",
+            "filename": "0000.parquet",
+            "size": 334268766,
+            "split": "mal",
+            "url": "https://huggingface.co/datasets/ai4bharat/sangraha/resolve/refs%2Fconvert%2Fparquet/verified/partial-mal/0000.parquet"
+          },
+          {
+            "config": "verified",
+            "dataset": "ai4bharat/sangraha",
+            "filename": "0001.parquet",
+            "size": 486346371,
+            "split": "mal",
+            "url": "https://huggingface.co/datasets/ai4bharat/sangraha/resolve/refs%2Fconvert%2Fparquet/verified/partial-mal/0001.parquet"
+          },
+          {
+            "config": "verified",
+            "dataset": "ai4bharat/sangraha",
+            "filename": "0002.parquet",
+            "size": 333721022,
+            "split": "mal",
+            "url": "https://huggingface.co/datasets/ai4bharat/sangraha/resolve/refs%2Fconvert%2Fparquet/verified/partial-mal/0002.parquet"
+          },
+          {
+            "config": "verified",
+            "dataset": "ai4bharat/sangraha",
+            "filename": "0003.parquet",
+            "size": 333473525,
+            "split": "mal",
+            "url": "https://huggingface.co/datasets/ai4bharat/sangraha/resolve/refs%2Fconvert%2Fparquet/verified/partial-mal/0003.parquet"
+          },
+          {
+            "config": "verified",
+            "dataset": "ai4bharat/sangraha",
+            "filename": "0004.parquet",
+            "size": 335438698,
+            "split": "mal",
+            "url": "https://huggingface.co/datasets/ai4bharat/sangraha/resolve/refs%2Fconvert%2Fparquet/verified/partial-mal/0004.parquet"
+          },
+          {
+            "config": "verified",
+            "dataset": "ai4bharat/sangraha",
+            "filename": "0005.parquet",
+            "size": 333725006,
+            "split": "mal",
+            "url": "https://huggingface.co/datasets/ai4bharat/sangraha/resolve/refs%2Fconvert%2Fparquet/verified/partial-mal/0005.parquet"
+          }
+        ]
+      },
+      "viewer": {
+        "size_metadata": {
+          "config": "verified",
+          "dataset": "ai4bharat/sangraha",
+          "estimated_num_rows": 5514860,
+          "num_bytes_memory": 5871264062,
+          "num_bytes_parquet_files": 2156973388,
+          "num_columns": 3,
+          "num_rows": 1127460,
+          "split": "mal"
+        },
+        "viewer_conversion_revision": "c368e730c0be9dce05466a62a57f3b1011fe0dba"
+      },
+      "viewer_row_http_statuses": [
+        500,
+        500,
+        502,
+        500,
+        500,
+        502
+      ]
+    },
+    "smc": {
+      "hub": {
+        "id": "smcproject/ml-wiki-sentences",
+        "sha": "02c1f40dd46b024173b69acee235982e444a2bd4"
+      },
+      "parquet": {
+        "parquet_files": [
+          {
+            "config": "default",
+            "dataset": "smcproject/ml-wiki-sentences",
+            "filename": "0000.parquet",
+            "size": 252131623,
+            "split": "train",
+            "url": "https://huggingface.co/datasets/smcproject/ml-wiki-sentences/resolve/refs%2Fconvert%2Fparquet/default/train/0000.parquet"
+          }
+        ]
+      },
+      "viewer": {
+        "size_metadata": {
+          "config": "default",
+          "dataset": "smcproject/ml-wiki-sentences",
+          "estimated_num_rows": null,
+          "num_bytes_memory": 970900694,
+          "num_bytes_parquet_files": 252131623,
+          "num_columns": 5,
+          "num_rows": 2250217,
+          "split": "train"
+        },
+        "viewer_conversion_revision": "7e26ae641e17a795236f2f2d4d2865f3d2811063"
+      },
+      "viewer_row_http_statuses": [
+        503,
+        503,
+        503,
+        503,
+        503,
+        503
+      ]
+    }
+  },
+  "provisional_screen_pass_by_proposed_partition": {
+    "heldout_proposal": 26,
+    "train": 231,
+    "validation": 30
+  },
+  "public_capture_totals": {
+    "canonical_utf8_bytes": 2230935,
+    "captured_rows": 332,
+    "raw_utf8_bytes": 2232489,
+    "successful_range_payload_bytes": 54757902
+  },
+  "public_source_captures": {
+    "fineweb2": {
+      "bytes": 606762,
+      "config": "mal_Mlym",
+      "downloaded_bytes": 16727238,
+      "failed_reads": [],
+      "field": "text",
+      "files": [
+        {
+          "path": "mal_Mlym/train/0000.parquet",
+          "ranges": [
+            {
+              "end": 4839367921,
+              "sha256": "71971cea3d75ea550fb8600641f951e805fac998d4ad3acc016cfe7dd1bb8d0b",
+              "start": 4839302386
+            },
+            {
+              "end": 4839367913,
+              "sha256": "a759a769c5f9a0a07ad37ef1764413291b304395be68b114a92e443143675931",
+              "start": 4832214126
+            },
+            {
+              "end": 3327442582,
+              "sha256": "1e0f4995feecdd743fa45ca3b744b3265baab0304889010d4138e6fc2b0f53b4",
+              "start": 3325798128
+            },
+            {
+              "end": 4832214046,
+              "sha256": "30f857733386f1bd53e99fc759afcfcdad4321b7a75468314454c3fa7c72f46a",
+              "start": 4830546116
+            },
+            {
+              "end": 1750384688,
+              "sha256": "a4124f3fdb5009f676c12639ddc6ce59a09ae2e58261193ffe579cf227f5a5f7",
+              "start": 1748653147
+            },
+            {
+              "end": 2657611,
+              "sha256": "fa009d1f839a77862589db450bd46722b6e43649a8fd5c9588ba71953cc5db61",
+              "start": 4
+            }
+          ],
+          "row_groups_used": [
+            1785,
+            2677,
+            892,
+            0
+          ],
+          "size": 4839367922
+        },
+        {
+          "path": "mal_Mlym/train/0001.parquet",
+          "ranges": [
+            {
+              "end": 1075973725,
+              "sha256": "8aeaa5f5904326bc52fa59f80d716b050a92d9d9753581a0289490f07b35862a",
+              "start": 1075908190
+            },
+            {
+              "end": 1075973717,
+              "sha256": "21e275332eff2ada5ce2eb7144e2958eacc88a1e54563fa157ca619f712dba38",
+              "start": 1074232876
+            }
+          ],
+          "row_groups_used": [],
+          "size": 1075973726
+        }
+      ],
+      "mode": "bounded pointer-pinned Parquet ranges; disjoint positions within decoded row groups",
+      "repo": "HuggingFaceFW/fineweb-2",
+      "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+      "rows": 64,
+      "sha256": "bda577ba0a375775d10c2c8af55f93b073417ba79a476585a28774e125926b85",
+      "size_metadata": {
+        "config": "mal_Mlym",
+        "dataset": "HuggingFaceFW/fineweb-2",
+        "estimated_num_rows": null,
+        "num_bytes_memory": 37375879090,
+        "num_bytes_parquet_files": 5915341648,
+        "num_columns": 11,
+        "num_rows": 3322526,
+        "split": "train"
+      },
+      "source": "fineweb2",
+      "split": "train",
+      "storage_revision": "a092823f5cba550080cb8e56451fc9ac5def625c"
+    },
+    "hplt": {
+      "bytes": 2677038,
+      "config": "mal_Mlym",
+      "downloaded_bytes": 6291456,
+      "field": "text",
+      "map_url": "https://data.hplt-project.org/three/sorted/mal_Mlym.map",
+      "mode": "up to 14 initial rows per quality-sorted shard; biased to each shard prefix",
+      "pages": [
+        {
+          "content_range": "bytes 0-1048575/88684182",
+          "decoded_records": 14,
+          "etag": "\"5493696-63bdf0af77800\"",
+          "last_modified": "Fri, 08 Aug 2025 18:50:08 GMT",
+          "payload_bytes": 1048576,
+          "sha256": "a240b49bc5f52e36a49bfbd8cf25a9b7812d7015ed6156cdf0bd5071a607501e",
+          "shard": "https://data.hplt-project.org/three/sorted/mal_Mlym/10_1.jsonl.zst",
+          "status": 206
+        },
+        {
+          "content_range": "bytes 0-1048575/557941143",
+          "decoded_records": 14,
+          "etag": "\"21418197-63bdf0af77800\"",
+          "last_modified": "Fri, 08 Aug 2025 18:50:08 GMT",
+          "payload_bytes": 1048576,
+          "sha256": "481bd019394e2595e3b40dc9eea7ee291949294296e360a3c5a532e244442296",
+          "shard": "https://data.hplt-project.org/three/sorted/mal_Mlym/5_1.jsonl.zst",
+          "status": 206
+        },
+        {
+          "content_range": "bytes 0-1048575/748452170",
+          "decoded_records": 14,
+          "etag": "\"2c9c794a-63bdf0af77800\"",
+          "last_modified": "Fri, 08 Aug 2025 18:50:08 GMT",
+          "payload_bytes": 1048576,
+          "sha256": "f874e6f062e31d0e13931907427a66cfc80688e0e4fe218b6c130428c9f4e6f2",
+          "shard": "https://data.hplt-project.org/three/sorted/mal_Mlym/6_1.jsonl.zst",
+          "status": 206
+        },
+        {
+          "content_range": "bytes 0-1048575/1688357614",
+          "decoded_records": 14,
+          "etag": "\"64a24aee-63bdf0af77800\"",
+          "last_modified": "Fri, 08 Aug 2025 18:50:08 GMT",
+          "payload_bytes": 1048576,
+          "sha256": "636b95aac47b6b8b956de6e6148f35452b25deb3e5446a7c7f5c0c5c64fa2727",
+          "shard": "https://data.hplt-project.org/three/sorted/mal_Mlym/7_1.jsonl.zst",
+          "status": 206
+        },
+        {
+          "content_range": "bytes 0-1048575/3977976560",
+          "decoded_records": 14,
+          "etag": "\"ed1b1af0-63bdf0af77800\"",
+          "last_modified": "Fri, 08 Aug 2025 18:50:08 GMT",
+          "payload_bytes": 1048576,
+          "sha256": "640ec532d8a29edda867098e340bf0c65696dc451aa7ff9747e3bd11db0bc7c8",
+          "shard": "https://data.hplt-project.org/three/sorted/mal_Mlym/8_1.jsonl.zst",
+          "status": 206
+        },
+        {
+          "content_range": "bytes 0-1048575/3668745681",
+          "decoded_records": 14,
+          "etag": "\"daac9dd1-63bdf0af77800\"",
+          "last_modified": "Fri, 08 Aug 2025 18:50:08 GMT",
+          "payload_bytes": 1048576,
+          "sha256": "ee8f658f0c1ca216b130a5531984d22f007a72fbb2d6686146c06504dd8634cc",
+          "shard": "https://data.hplt-project.org/three/sorted/mal_Mlym/9_1.jsonl.zst",
+          "status": 206
+        }
+      ],
+      "repo": "HPLT/HPLT3.0",
+      "revision": "release-3.0:1a17c4abd7d6c2ea9d231071a4a02465cdc942ce8758dd6b253d8cde46f736e7",
+      "rows": 84,
+      "sha256": "db5c658e64ee1ca5e2438099596047ff3adb1a2db1dcbe60c91a221e777977de",
+      "source": "hplt",
+      "split": "sorted"
+    },
+    "indiccorp": {
+      "bytes": 88367,
+      "config": "indiccorp_v2",
+      "downloaded_bytes": 4141496,
+      "failed_reads": [],
+      "field": "text",
+      "files": [
+        {
+          "path": "indiccorp_v2/partial-mal_Mlym/0000.parquet",
+          "ranges": [
+            {
+              "end": 207122486,
+              "sha256": "2679ef4b2d0100ac77fa3c722d9f1ebdf90bf1bab307a976c955544012b5a065",
+              "start": 207056951
+            },
+            {
+              "end": 207122478,
+              "sha256": "b41b7e33cca03a8c3e9d92bee47f8c5413a55947876dfbf560a915b4a1755f38",
+              "start": 206225334
+            },
+            {
+              "end": 205371511,
+              "sha256": "69d9efb95de3a1ef4e6a7870097209f78f36b752c383ecd25a5a9839ecf3718c",
+              "start": 205253276
+            },
+            {
+              "end": 68784059,
+              "sha256": "0fff0cf5e13eee91f4ba62904240c59f23e4c3320c7b555aada17e7176ecabdd",
+              "start": 68637248
+            },
+            {
+              "end": 137088103,
+              "sha256": "6bb361d22bd780277a43f1fa1ccf3457a0e187e234b343259dd50b713e037273",
+              "start": 136938638
+            },
+            {
+              "end": 169082,
+              "sha256": "35207277abf6ca7b07bdb654383a8c933a402ef5a9b97939284e1132dd36cb65",
+              "start": 4
+            }
+          ],
+          "row_groups_used": [
+            1307,
+            436,
+            872,
+            0
+          ],
+          "size": 207122487
+        },
+        {
+          "path": "indiccorp_v2/partial-mal_Mlym/0005.parquet",
+          "ranges": [
+            {
+              "end": 207110012,
+              "sha256": "b3b4cf63116e426d845c02daaa0e6b1497d8c7b1e0842efd9b8709a46149f0e0",
+              "start": 207044477
+            },
+            {
+              "end": 207110004,
+              "sha256": "dadfdebbe7a990064f0f90c0386e7370062e2450d566c44229968b11e7cee274",
+              "start": 206227192
+            },
+            {
+              "end": 205378007,
+              "sha256": "fd6500fb1dfa0989ceceaae2e8dbc8b9a4d77dad5ca52899f861ec7ec22765fb",
+              "start": 205347586
+            },
+            {
+              "end": 68616696,
+              "sha256": "0f06b01631fe7240b0b04c4f22a9bd59be1df40d8966b8291466acebf3de9646",
+              "start": 68463497
+            },
+            {
+              "end": 161155,
+              "sha256": "c107ae8b4badd3fd9ef664b124012d1990c467bae26d78bb941eaa51be8cd13c",
+              "start": 4
+            },
+            {
+              "end": 137074565,
+              "sha256": "ed05a1ae589d375218c7634aea35593d9956728d5b67293481411a5fa31f5337",
+              "start": 136909842
+            }
+          ],
+          "row_groups_used": [
+            1307,
+            436,
+            0,
+            872
+          ],
+          "size": 207110013
+        },
+        {
+          "path": "indiccorp_v2/partial-mal_Mlym/0009.parquet",
+          "ranges": [
+            {
+              "end": 126587942,
+              "sha256": "edc42fdd64e64c5422ad7f0027f946b6dba16fd41fe8160810fccccd56101b88",
+              "start": 126522407
+            },
+            {
+              "end": 126587934,
+              "sha256": "0e2de7ef393aeee9d8430cb96e8e4fd57bd9bbc6613693d1d939e27323414aff",
+              "start": 126026382
+            },
+            {
+              "end": 125491351,
+              "sha256": "030afa473a2d8e7e7d2a0f712341f998807e9a1c5e33dbb45423ec262a7d2d6c",
+              "start": 125441292
+            },
+            {
+              "end": 147597,
+              "sha256": "aa4652888c7c53c44e80ae698a0bdaae5da17bc0af9e9ca80e5013998ccafc8c",
+              "start": 4
+            },
+            {
+              "end": 83542414,
+              "sha256": "505cdb81d23eb0188abd2537fc3ff72122279bb754a4672036276664427d3aa4",
+              "start": 83393827
+            },
+            {
+              "end": 41911250,
+              "sha256": "61d8ab3dfaa613845ee573df7a3e3341f568a68c7b56da5d07652b9970e41c3f",
+              "start": 41747207
+            }
+          ],
+          "row_groups_used": [
+            798,
+            0,
+            532,
+            266
+          ],
+          "size": 126587943
+        }
+      ],
+      "mode": "bounded pointer-pinned Parquet ranges; disjoint positions within decoded row groups",
+      "repo": "ai4bharat/IndicCorpV2",
+      "revision": "2d7285e6ce14fdb3fb2449c9f89427b9f582ac3f",
+      "rows": 96,
+      "sha256": "273d0b6c67caf8e769923f2a77fc062696ae61b4eb77fb2bd0371806494fa5a9",
+      "size_metadata": {
+        "config": "indiccorp_v2",
+        "dataset": "ai4bharat/IndicCorpV2",
+        "estimated_num_rows": 48130424,
+        "num_bytes_memory": 5015296562,
+        "num_bytes_parquet_files": 1990425055,
+        "num_columns": 1,
+        "num_rows": 12492007,
+        "split": "mal_Mlym"
+      },
+      "source": "indiccorp",
+      "split": "mal_Mlym",
+      "storage_revision": "38663accdfc4415721449b045976e10309019703"
+    },
+    "sangraha": {
+      "bytes": 309617,
+      "config": "verified",
+      "downloaded_bytes": 12611917,
+      "field": "text",
+      "files": [
+        {
+          "aligned_initial_rows": 1024,
+          "path": "verified/mal/data-0.parquet",
+          "ranges": [
+            {
+              "end": 333917915,
+              "sha256": "c1d52e8af7e79422eaa1d6f8d762c07fcf53af4d6cbd413be95a7998e3e69264",
+              "start": 333917908
+            },
+            {
+              "end": 333917907,
+              "sha256": "1924038f219eb572393f5732029b24e43d94805b187e8d3734a37d1e68ac1f8d",
+              "start": 333915978
+            },
+            {
+              "end": 9106289,
+              "sha256": "43611d528101fde037e9bf35cb2e0d7be5ca05ed91101a2693af0e5a641aadf6",
+              "start": 7009138
+            },
+            {
+              "end": 2097155,
+              "sha256": "f6a1371a2e413ba1399db010320332b07c4c2798169a2ee7a9e3ce89b682cac5",
+              "start": 4
+            },
+            {
+              "end": 333915899,
+              "sha256": "ff8c68943e73976d41aea351df15c74364ff3386a91df7c6e0d6724aaf69cb43",
+              "start": 333908992
+            }
+          ],
+          "size": 333917916
+        },
+        {
+          "aligned_initial_rows": 1024,
+          "path": "verified/mal/data-25.parquet",
+          "ranges": [
+            {
+              "end": 333352462,
+              "sha256": "96a56f8cd8ffb632ed85c09473717fb5f7a84f53baeb8c312f969ef66132e116",
+              "start": 333352455
+            },
+            {
+              "end": 333352454,
+              "sha256": "8b5fcc75f82643fe84225047cbd56130eb05e9525dda8064869d157dc24bbfda",
+              "start": 333347888
+            },
+            {
+              "end": 9113199,
+              "sha256": "68663804d564a06665cf64b9c61ab35aca82c333b8c5e02287769c415271f780",
+              "start": 7016048
+            },
+            {
+              "end": 2097155,
+              "sha256": "ec9ad075ecb1b27db6014370a5101cd2b7febba647be8d84cc38ca1cf45b817c",
+              "start": 4
+            },
+            {
+              "end": 333347809,
+              "sha256": "5cf18b54489db5868e64ef005b9d7fff66748ca2af29af6e083b264a5cf083ee",
+              "start": 333340831
+            }
+          ],
+          "size": 333352463
+        },
+        {
+          "aligned_initial_rows": 1024,
+          "path": "verified/mal/data-9.parquet",
+          "ranges": [
+            {
+              "end": 333655880,
+              "sha256": "8de7b682266e1b21b4c834d23f2b5207e60431c9cc4d4a1c16201a925c739df5",
+              "start": 333655873
+            },
+            {
+              "end": 333655872,
+              "sha256": "94a18d6a1bba91a25d8c7a7f49dee6b5ff24ed7cb6614be147b605c52fdf831e",
+              "start": 333653946
+            },
+            {
+              "end": 9103094,
+              "sha256": "cc2cf2e9537f99f94ee37c9db53e368ff31d099c5ff1ce499e28ab009fbb7bed",
+              "start": 7005943
+            },
+            {
+              "end": 2097155,
+              "sha256": "b206ccf5bb1317dbe1e1d25d8329163889bd9245ff5c994f1d1252d8be54b860",
+              "start": 4
+            },
+            {
+              "end": 333653867,
+              "sha256": "36ba945dbea44b4b24a4fb558cdf9b4b66ab4fa6bbd7acc675132f280875fa39",
+              "start": 333647198
+            }
+          ],
+          "size": 333655881
+        }
+      ],
+      "mode": "first independently decodable data page aligned across three fields on each of three pinned shards",
+      "parsing_resources": [
+        {
+          "name": "thriftpy2",
+          "sha256": "cefcb2f6f8b12c00054c6f942dd2323a53b48b8b6862312d03b677dcf0d4a6da",
+          "url": "https://files.pythonhosted.org/packages/f8/3a/d983b26df17583a3cc865a9e1737bb8faacfa1e16e3ed17353ef48847e6b/thriftpy2-0.5.2.tar.gz",
+          "version": "0.5.2"
+        },
+        {
+          "name": "ply",
+          "sha256": "096f9b8350b65ebd2fd1346b12452efe5b9607f7482813ffca50c22722a807ce",
+          "url": "https://files.pythonhosted.org/packages/a3/58/35da89ee790598a0700ea49b2a66594140f44dec458c07e8e3d4979137fc/ply-3.11-py2.py3-none-any.whl",
+          "version": "3.11"
+        },
+        {
+          "name": "apache-parquet-format",
+          "sha256": "f3152ab8a2574c96f4b0ea3df7694f9170e6a6c18eb9888505115f9acd5e54ce",
+          "url": "https://raw.githubusercontent.com/apache/parquet-format/apache-parquet-format-2.10.0/src/main/thrift/parquet.thrift",
+          "version": "2.10.0"
+        }
+      ],
+      "repo": "ai4bharat/sangraha",
+      "revision": "8b813c3f62d37b2fa174d68c31e8b35ae2fe85e8",
+      "rows": 72,
+      "sha256": "555622bd8aabdfb1ef926792364d0786e5a208cb0209b0f84d9245bb581cf8dc",
+      "source": "sangraha",
+      "split": "mal",
+      "storage_revision": "8b813c3f62d37b2fa174d68c31e8b35ae2fe85e8",
+      "subset_file_count": 37,
+      "subset_parquet_bytes": 12170327689
+    },
+    "smc": {
+      "bytes": 8536,
+      "config": "default",
+      "downloaded_bytes": 14985795,
+      "failed_reads": [],
+      "field": "sentence",
+      "files": [
+        {
+          "path": "default/train/0000.parquet",
+          "ranges": [
+            {
+              "end": 252131622,
+              "sha256": "62d1dc9b503ec0225f1773130cd7b488d2bab3a64815cf032a26e49dbfebd786",
+              "start": 252066087
+            },
+            {
+              "end": 237249159,
+              "sha256": "1953d2f95bbfa9c0caf8d662ecfdee3b0a6a5128369ddd6474d4b1144e3cbfca",
+              "start": 237158371
+            },
+            {
+              "end": 252127863,
+              "sha256": "a7b0b67983718292c6d38449b99e1f6deae0e1da993679200a61b36ece2afd55",
+              "start": 237298394
+            }
+          ],
+          "row_groups_used": [
+            2
+          ],
+          "size": 252131623
+        }
+      ],
+      "mode": "bounded pointer-pinned Parquet ranges; disjoint positions within decoded row groups",
+      "repo": "smcproject/ml-wiki-sentences",
+      "revision": "02c1f40dd46b024173b69acee235982e444a2bd4",
+      "rows": 16,
+      "sha256": "2e56082eb5197592154c099f1a00c999ae01ab08d9ff170eea7be0d084ebe165",
+      "size_metadata": {
+        "config": "default",
+        "dataset": "smcproject/ml-wiki-sentences",
+        "estimated_num_rows": null,
+        "num_bytes_memory": 970900694,
+        "num_bytes_parquet_files": 252131623,
+        "num_columns": 5,
+        "num_rows": 2250217,
+        "split": "train"
+      },
+      "source": "smc",
+      "split": "train",
+      "storage_revision": "7e26ae641e17a795236f2f2d4d2865f3d2811063"
+    }
+  },
+  "quality_report": {
+    "by_source": {
+      "fineweb2": {
+        "characters": {
+          "maximum": 59761,
+          "median": 1785,
+          "minimum": 523,
+          "p10": 793,
+          "p90": 5558
+        },
+        "document_url_host_count": 54,
+        "documents": 64,
+        "language_assessed_documents": 64,
+        "language_windows_by_top_label": {
+          "en": 1,
+          "ml": 191
+        },
+        "latin_letter_share": 0.029569769463790533,
+        "malayalam_letter_share": 0.9703112559144115,
+        "malayalam_types": 11625,
+        "malayalam_word_tokens": 20534,
+        "ml_confidence": {
+          "maximum": 0.9997709393501282,
+          "median": 0.999474028746287,
+          "minimum": 0.7565128107865652,
+          "p10": 0.9991660515467325,
+          "p90": 0.9996565779050192
+        },
+        "ml_confidence_mean": 0.9948609286608795,
+        "morphological_sample": {
+          "adjudicated_analyses": 0,
+          "analyzer_tags": [
+            "accusative",
+            "adj",
+            "adv-clause-rp-past",
+            "adv-clause-rp-present",
+            "aff",
+            "causative-voice",
+            "cnj",
+            "coordinative",
+            "cvb-adv-part-absolute",
+            "cvb-adv-part-conditional",
+            "cvb-adv-part-future",
+            "cvb-adv-part-past",
+            "cvb-adv-part-simul",
+            "dative",
+            "dem",
+            "deriv",
+            "eng",
+            "future",
+            "genitive",
+            "imperative-mood",
+            "indeclinable",
+            "locative",
+            "n",
+            "n-v-compound",
+            "neg",
+            "np",
+            "passive-voice",
+            "past",
+            "permissive-mood",
+            "pl",
+            "postp",
+            "present",
+            "prn",
+            "promissive-mood",
+            "purposive-mood",
+            "qn",
+            "quantifier",
+            "sanskrit",
+            "simple-perfect-aspect",
+            "sociative",
+            "v"
+          ],
+          "multiple_reading_types": 54,
+          "recognized_types": 84,
+          "types_examined": 150
+        },
+        "raw_byte_distribution": {
+          "maximum": 161645,
+          "median": 4741,
+          "minimum": 1306,
+          "p10": 2177,
+          "p90": 15176
+        },
+        "screening_flagged_documents": {
+          "low_malayalam_script_share": 2,
+          "repeated_virama": 1,
+          "unattached_ml_marks": 6,
+          "weak_independent_language_evidence": 1
+        },
+        "shared_token_budget": 129,
+        "single_occurrence_types": 8933,
+        "totals": {
+          "atomic_chillus": 2851,
+          "canonical_bytes": 575556,
+          "canonical_changed": 0,
+          "chars": 211577,
+          "control_chars": 0,
+          "historical_chars": 0,
+          "html_hits": 0,
+          "latin_letters": 3231,
+          "legacy_chillu_patterns": 0,
+          "letters": 109267,
+          "malayalam_letters": 106023,
+          "raw_bytes": 575556,
+          "repeated_line_hits": 6,
+          "repeated_virama": 1,
+          "replacement_chars": 0,
+          "screening_pass_docs": 55,
+          "synthetic_proxy_hits": 0,
+          "unattached_ml_marks": 11,
+          "url_hits": 1,
+          "virama": 29585,
+          "zwj": 0,
+          "zwnj": 0
+        },
+        "types_at_shared_budget": 112,
+        "types_not_observed_in_other_captures": 8122,
+        "unique_type_panel_caveat": "Measured within unequal bounded captures; not a corpus population claim.",
+        "upstream_register_argmax": {},
+        "upstream_subsource_count": 0
+      },
+      "hplt": {
+        "characters": {
+          "maximum": 63194,
+          "median": 1970,
+          "minimum": 572,
+          "p10": 808,
+          "p90": 12862
+        },
+        "document_url_host_count": 62,
+        "documents": 84,
+        "language_assessed_documents": 84,
+        "language_windows_by_top_label": {
+          "ml": 252
+        },
+        "latin_letter_share": 0.020026137282967205,
+        "malayalam_letter_share": 0.9799738627170328,
+        "malayalam_types": 21899,
+        "malayalam_word_tokens": 47989,
+        "ml_confidence": {
+          "maximum": 0.9997579455375671,
+          "median": 0.9993815422058105,
+          "minimum": 0.9969260692596436,
+          "p10": 0.9987781047821045,
+          "p90": 0.999666154384613
+        },
+        "ml_confidence_mean": 0.999259086118804,
+        "morphological_sample": {
+          "adjudicated_analyses": 0,
+          "analyzer_tags": [
+            "ablative",
+            "accusative",
+            "adj",
+            "adv-clause-rp-past",
+            "adv-clause-rp-present",
+            "adv-clause-rp-present-neg",
+            "aff",
+            "cardinal",
+            "causative-voice",
+            "cnj",
+            "conditional-mood",
+            "coordinative",
+            "cvb-adv-part-absolute",
+            "cvb-adv-part-conditional",
+            "cvb-adv-part-future",
+            "cvb-adv-part-past",
+            "cvb-adv-part-simul",
+            "dative",
+            "dem",
+            "deriv",
+            "eng",
+            "future",
+            "genitive",
+            "imperative-mood",
+            "indeclinable",
+            "interrogative",
+            "locative",
+            "n",
+            "n-v-compound",
+            "neg",
+            "neutral",
+            "np",
+            "ones",
+            "passive-voice",
+            "past",
+            "perlative",
+            "permissive-mood",
+            "pl",
+            "postp",
+            "present",
+            "prn",
+            "purposive-mood",
+            "qn",
+            "quantifier",
+            "sanskrit",
+            "sociative",
+            "v",
+            "vocative"
+          ],
+          "multiple_reading_types": 62,
+          "recognized_types": 92,
+          "types_examined": 150
+        },
+        "raw_byte_distribution": {
+          "maximum": 173619,
+          "median": 4858,
+          "minimum": 1474,
+          "p10": 2157,
+          "p90": 35394
+        },
+        "screening_flagged_documents": {
+          "low_malayalam_script_share": 2,
+          "repeated_virama": 2,
+          "unattached_ml_marks": 9
+        },
+        "shared_token_budget": 129,
+        "single_occurrence_types": 15867,
+        "totals": {
+          "atomic_chillus": 9762,
+          "canonical_bytes": 1277536,
+          "canonical_changed": 0,
+          "chars": 469097,
+          "control_chars": 0,
+          "historical_chars": 0,
+          "html_hits": 0,
+          "latin_letters": 4827,
+          "legacy_chillu_patterns": 0,
+          "letters": 241035,
+          "malayalam_letters": 236208,
+          "raw_bytes": 1277536,
+          "repeated_line_hits": 22,
+          "repeated_virama": 5,
+          "replacement_chars": 0,
+          "screening_pass_docs": 73,
+          "synthetic_proxy_hits": 0,
+          "unattached_ml_marks": 21,
+          "url_hits": 2,
+          "virama": 63575,
+          "zwj": 0,
+          "zwnj": 0
+        },
+        "types_at_shared_budget": 96,
+        "types_not_observed_in_other_captures": 17579,
+        "unique_type_panel_caveat": "Measured within unequal bounded captures; not a corpus population claim.",
+        "upstream_register_argmax": {
+          "ID": 1,
+          "IN": 6,
+          "MT": 6,
+          "NA": 54,
+          "OP": 15,
+          "SP": 2
+        },
+        "upstream_subsource_count": 0
+      },
+      "indiccorp": {
+        "characters": {
+          "maximum": 1994,
+          "median": 265,
+          "minimum": 8,
+          "p10": 37,
+          "p90": 562
+        },
+        "document_url_host_count": 0,
+        "documents": 96,
+        "language_assessed_documents": 86,
+        "language_windows_by_top_label": {
+          "ml": 116
+        },
+        "latin_letter_share": 0.0009194426762854516,
+        "malayalam_letter_share": 0.9990805573237146,
+        "malayalam_types": 2222,
+        "malayalam_word_tokens": 2768,
+        "ml_confidence": {
+          "maximum": 0.9999588131904602,
+          "median": 0.9993345141410828,
+          "minimum": 0.9923323392868042,
+          "p10": 0.9990096092224121,
+          "p90": 0.9996883273124695
+        },
+        "ml_confidence_mean": 0.9992639295352522,
+        "morphological_sample": {
+          "adjudicated_analyses": 0,
+          "analyzer_tags": [
+            "accusative",
+            "adj",
+            "adv-clause-rp-past",
+            "adv-clause-rp-present",
+            "adv-clause-rp-present-neg",
+            "aff",
+            "cardinal",
+            "causative-voice",
+            "cnj",
+            "coordinative",
+            "cvb-adv-part-absolute",
+            "cvb-adv-part-conditional",
+            "cvb-adv-part-future",
+            "cvb-adv-part-past",
+            "cvb-adv-part-simul",
+            "dative",
+            "dem",
+            "deriv",
+            "eng",
+            "future",
+            "genitive",
+            "imperative-mood",
+            "indeclinable",
+            "locative",
+            "masculine",
+            "n",
+            "n-v-compound",
+            "neg",
+            "neutral",
+            "np",
+            "ones",
+            "passive-voice",
+            "past",
+            "pl",
+            "postp",
+            "present",
+            "prn",
+            "purposive-mood",
+            "qn",
+            "quantifier",
+            "remote-perfect-aspect",
+            "sanskrit",
+            "sociative",
+            "v",
+            "vocative"
+          ],
+          "multiple_reading_types": 67,
+          "recognized_types": 108,
+          "types_examined": 150
+        },
+        "raw_byte_distribution": {
+          "maximum": 5522,
+          "median": 734,
+          "minimum": 22,
+          "p10": 95,
+          "p90": 1533
+        },
+        "screening_flagged_documents": {
+          "short_language_evidence": 10,
+          "unattached_ml_marks": 3,
+          "weak_independent_language_evidence": 10
+        },
+        "shared_token_budget": 129,
+        "single_occurrence_types": 1916,
+        "totals": {
+          "atomic_chillus": 416,
+          "canonical_bytes": 76200,
+          "canonical_changed": 51,
+          "chars": 28122,
+          "control_chars": 0,
+          "historical_chars": 0,
+          "html_hits": 0,
+          "latin_letters": 13,
+          "legacy_chillu_patterns": 428,
+          "letters": 14139,
+          "malayalam_letters": 14126,
+          "raw_bytes": 77754,
+          "repeated_line_hits": 0,
+          "repeated_virama": 0,
+          "replacement_chars": 0,
+          "screening_pass_docs": 83,
+          "synthetic_proxy_hits": 0,
+          "unattached_ml_marks": 6,
+          "url_hits": 0,
+          "virama": 3903,
+          "zwj": 433,
+          "zwnj": 80
+        },
+        "types_at_shared_budget": 118,
+        "types_not_observed_in_other_captures": 1217,
+        "unique_type_panel_caveat": "Measured within unequal bounded captures; not a corpus population claim.",
+        "upstream_register_argmax": {},
+        "upstream_subsource_count": 0
+      },
+      "sangraha": {
+        "characters": {
+          "maximum": 5922,
+          "median": 1162,
+          "minimum": 244,
+          "p10": 600,
+          "p90": 2838
+        },
+        "document_url_host_count": 0,
+        "documents": 72,
+        "language_assessed_documents": 72,
+        "language_windows_by_top_label": {
+          "ml": 206
+        },
+        "latin_letter_share": 0.01094479317559955,
+        "malayalam_letter_share": 0.9890552068244004,
+        "malayalam_types": 6749,
+        "malayalam_word_tokens": 10858,
+        "ml_confidence": {
+          "maximum": 0.9998199542363485,
+          "median": 0.999496579170227,
+          "minimum": 0.9982963999112447,
+          "p10": 0.999243974685669,
+          "p90": 0.9996505777041117
+        },
+        "ml_confidence_mean": 0.9994487591363765,
+        "morphological_sample": {
+          "adjudicated_analyses": 0,
+          "analyzer_tags": [
+            "accusative",
+            "adj",
+            "adv-clause-rp-past",
+            "adv-clause-rp-present",
+            "aff",
+            "causative-voice",
+            "cnj",
+            "cont-perfect-aspect",
+            "coordinative",
+            "cvb-adv-part-absolute",
+            "cvb-adv-part-conditional",
+            "cvb-adv-part-future",
+            "cvb-adv-part-past",
+            "dative",
+            "dem",
+            "deriv",
+            "eng",
+            "feminine",
+            "future",
+            "genitive",
+            "indeclinable",
+            "interrogative",
+            "locative",
+            "masculine",
+            "n",
+            "n-v-compound",
+            "neg",
+            "neutral",
+            "np",
+            "past",
+            "permissive-mood",
+            "pl",
+            "postp",
+            "present",
+            "prn",
+            "purposive-mood",
+            "qn",
+            "quantifier",
+            "sanskrit",
+            "v"
+          ],
+          "multiple_reading_types": 77,
+          "recognized_types": 106,
+          "types_examined": 150
+        },
+        "raw_byte_distribution": {
+          "maximum": 16304,
+          "median": 3188,
+          "minimum": 672,
+          "p10": 1630,
+          "p90": 7844
+        },
+        "screening_flagged_documents": {
+          "low_malayalam_script_share": 1,
+          "repeated_virama": 1,
+          "unattached_ml_marks": 5
+        },
+        "shared_token_budget": 129,
+        "single_occurrence_types": 5155,
+        "totals": {
+          "atomic_chillus": 1770,
+          "canonical_bytes": 298025,
+          "canonical_changed": 0,
+          "chars": 108846,
+          "control_chars": 0,
+          "historical_chars": 0,
+          "html_hits": 0,
+          "latin_letters": 612,
+          "legacy_chillu_patterns": 0,
+          "letters": 55917,
+          "malayalam_letters": 55305,
+          "raw_bytes": 298025,
+          "repeated_line_hits": 3,
+          "repeated_virama": 1,
+          "replacement_chars": 0,
+          "screening_pass_docs": 65,
+          "synthetic_proxy_hits": 0,
+          "unattached_ml_marks": 8,
+          "url_hits": 0,
+          "virama": 15340,
+          "zwj": 0,
+          "zwnj": 0
+        },
+        "types_at_shared_budget": 103,
+        "types_not_observed_in_other_captures": 4066,
+        "unique_type_panel_caveat": "Measured within unequal bounded captures; not a corpus population claim.",
+        "upstream_register_argmax": {},
+        "upstream_subsource_count": 2
+      },
+      "smc": {
+        "characters": {
+          "maximum": 199,
+          "median": 73,
+          "minimum": 8,
+          "p10": 15,
+          "p90": 158
+        },
+        "document_url_host_count": 1,
+        "documents": 16,
+        "language_assessed_documents": 12,
+        "language_windows_by_top_label": {
+          "ml": 12
+        },
+        "latin_letter_share": 0.05524079320113314,
+        "malayalam_letter_share": 0.9121813031161473,
+        "malayalam_types": 124,
+        "malayalam_word_tokens": 129,
+        "ml_confidence": {
+          "maximum": 0.9995872378349304,
+          "median": 0.9988420605659485,
+          "minimum": 0.9868151545524597,
+          "p10": 0.998111367225647,
+          "p90": 0.9993836879730225
+        },
+        "ml_confidence_mean": 0.9979344556728998,
+        "morphological_sample": {
+          "adjudicated_analyses": 0,
+          "analyzer_tags": [
+            "adj",
+            "adv-clause-rp-past",
+            "adv-clause-rp-present",
+            "aff",
+            "allative",
+            "cardinal",
+            "causative-voice",
+            "cnj",
+            "compulsive-mood-neg",
+            "conditional-mood",
+            "coordinative",
+            "cvb-adv-part-absolute",
+            "cvb-adv-part-conditional",
+            "cvb-adv-part-past",
+            "dative",
+            "dem",
+            "deriv",
+            "eng",
+            "future",
+            "genitive",
+            "imperative-mood",
+            "indeclinable",
+            "instrumental",
+            "locative",
+            "n",
+            "n-v-compound",
+            "neg",
+            "neutral",
+            "np",
+            "ones",
+            "past",
+            "pl",
+            "postp",
+            "present",
+            "prn",
+            "purposive-mood",
+            "qn",
+            "quantifier",
+            "sanskrit",
+            "v",
+            "vocative"
+          ],
+          "multiple_reading_types": 55,
+          "recognized_types": 94,
+          "types_examined": 124
+        },
+        "raw_byte_distribution": {
+          "maximum": 533,
+          "median": 204,
+          "minimum": 8,
+          "p10": 43,
+          "p90": 429
+        },
+        "screening_flagged_documents": {
+          "low_malayalam_script_share": 2,
+          "short_language_evidence": 4,
+          "weak_independent_language_evidence": 4
+        },
+        "shared_token_budget": 129,
+        "single_occurrence_types": 119,
+        "totals": {
+          "atomic_chillus": 27,
+          "canonical_bytes": 3618,
+          "canonical_changed": 0,
+          "chars": 1365,
+          "control_chars": 0,
+          "historical_chars": 0,
+          "html_hits": 0,
+          "latin_letters": 39,
+          "legacy_chillu_patterns": 0,
+          "letters": 706,
+          "malayalam_letters": 644,
+          "raw_bytes": 3618,
+          "repeated_line_hits": 0,
+          "repeated_virama": 0,
+          "replacement_chars": 0,
+          "screening_pass_docs": 11,
+          "synthetic_proxy_hits": 0,
+          "unattached_ml_marks": 0,
+          "url_hits": 1,
+          "virama": 176,
+          "zwj": 0,
+          "zwnj": 7
+        },
+        "types_at_shared_budget": 124,
+        "types_not_observed_in_other_captures": 63,
+        "unique_type_panel_caveat": "Measured within unequal bounded captures; not a corpus population claim.",
+        "upstream_register_argmax": {},
+        "upstream_subsource_count": 0
+      }
+    },
+    "identity": "malayalam-source-study-v1",
+    "overlap": [],
+    "proposal": {
+      "file": "proposed-layout.jsonl",
+      "rows": 332,
+      "sha256": "87ad1b501ff0613230f47c102a0576eb59effd2fe6191bf8385c8175d925a798",
+      "size": 522793
+    },
+    "recipe_sha256": "0cbedfefcf8cb60a951ede396f395af8683563ceb43a5e9e8925eaf17f23c8e8",
+    "status": "SOURCE_DIAGNOSTIC_ONLY",
+    "verified_freeze": false
+  },
+  "resources": {
+    "fasttext": {
+      "model_bytes": 938013,
+      "model_documentation": "https://fasttext.cc/docs/en/language-identification.html",
+      "model_license": "CC-BY-SA-3.0",
+      "model_sha256": "8f3472cfe8738a7b6099e8e999c3cbfae0dcd15696aac7d7738a8039db603e83",
+      "model_url": "https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.ftz",
+      "wheel_filename": "fasttext_wheel-0.9.2-cp312-cp312-win_amd64.whl",
+      "wheel_sha256": "8a0cc9e92377d27835a71862c68782e70c9bbd2a666a1a51b2c8261fc9892470",
+      "wheel_url": "https://files.pythonhosted.org/packages/d3/e1/5c1880859a122a57793d13685af6451bcb67be90bf74549bcf042c2ade6b/fasttext_wheel-0.9.2-cp312-cp312-win_amd64.whl"
+    },
+    "morphology": {
+      "sha256": "f6eb3d3fb73fdc7e1f422d5a0b14e20e33fc736d4a830e4395213577611dfa72",
+      "versions": {
+        "mlmorph": "1.4.3",
+        "sfst": "1.10.0"
+      }
+    },
+    "pyarrow": "26.0.0",
+    "python": "3.12.0",
+    "regex": "2026.9.29",
+    "requests": "2.32.3",
+    "sangraha_parquet": [
+      {
+        "name": "thriftpy2",
+        "sha256": "cefcb2f6f8b12c00054c6f942dd2323a53b48b8b6862312d03b677dcf0d4a6da",
+        "url": "https://files.pythonhosted.org/packages/f8/3a/d983b26df17583a3cc865a9e1737bb8faacfa1e16e3ed17353ef48847e6b/thriftpy2-0.5.2.tar.gz",
+        "version": "0.5.2"
+      },
+      {
+        "name": "ply",
+        "sha256": "096f9b8350b65ebd2fd1346b12452efe5b9607f7482813ffca50c22722a807ce",
+        "url": "https://files.pythonhosted.org/packages/a3/58/35da89ee790598a0700ea49b2a66594140f44dec458c07e8e3d4979137fc/ply-3.11-py2.py3-none-any.whl",
+        "version": "3.11"
+      },
+      {
+        "name": "apache-parquet-format",
+        "sha256": "f3152ab8a2574c96f4b0ea3df7694f9170e6a6c18eb9888505115f9acd5e54ce",
+        "url": "https://raw.githubusercontent.com/apache/parquet-format/apache-parquet-format-2.10.0/src/main/thrift/parquet.thrift",
+        "version": "2.10.0"
+      }
+    ],
+    "unicode": "15.0.0"
+  },
+  "sangraha_stale_conversion": [
+    {
+      "failure": "Unexpected response to a pinned Parquet range: HTTP 404",
+      "path": "verified/partial-mal/0000.parquet"
+    },
+    {
+      "failure": "Unexpected response to a pinned Parquet range: HTTP 404",
+      "path": "verified/partial-mal/0003.parquet"
+    },
+    {
+      "failure": "Unexpected response to a pinned Parquet range: HTTP 404",
+      "path": "verified/partial-mal/0005.parquet"
+    }
+  ],
+  "schema": "mom-corpus-source-evidence-v1",
+  "status": "SOURCE_DIAGNOSTIC_ONLY",
+  "study_recipe": {
+    "approval": "SOURCE_DIAGNOSTIC_ONLY",
+    "baseline_protocol_sha256": "1ff56f1a584073b3d9eaa965b6d44f179f7322e1758c9afc47d04a0a7a340167",
+    "code_sha256": {
+      "corpus_build.py": "8e9f5806dcdfa9e9e6c6ffbb3aad6c3710edd0a788e165307003f3599e55e8fa",
+      "corpus_overlap.py": "f47bd950669146ae25184e14393ac877b1e57f2450e1d1c0ef0953d8ba1ec0e0",
+      "corpus_quality.py": "3c637c37545c59c80cff356ccbad8dd762cf17c13579bd14886a557ce155bf77"
+    },
+    "components": {
+      "filter": {
+        "callable": "experiments.mom_bpe.corpus_build.provisional_filter",
+        "code_sha256": "8e9f5806dcdfa9e9e6c6ffbb3aad6c3710edd0a788e165307003f3599e55e8fa"
+      },
+      "overlap": {
+        "callable": "experiments.mom_bpe.corpus_overlap.DuplicateIndex",
+        "code_sha256": "f47bd950669146ae25184e14393ac877b1e57f2450e1d1c0ef0953d8ba1ec0e0"
+      },
+      "quality": {
+        "callable": "experiments.mom_bpe.corpus_quality.profile",
+        "code_sha256": "3c637c37545c59c80cff356ccbad8dd762cf17c13579bd14886a557ce155bf77"
+      },
+      "sampling": {
+        "callable": "experiments.mom_bpe.corpus_build.sample_partition",
+        "code_sha256": "8e9f5806dcdfa9e9e6c6ffbb3aad6c3710edd0a788e165307003f3599e55e8fa"
+      },
+      "source": {
+        "callable": "experiments.mom_bpe.corpus_build.capture_rows",
+        "code_sha256": "8e9f5806dcdfa9e9e6c6ffbb3aad6c3710edd0a788e165307003f3599e55e8fa"
+      }
+    },
+    "index_only": false,
+    "near_duplicate": {
+      "candidate_generation": "exact prefix bound, verified sets",
+      "gram_size": 5,
+      "jaccard_percent": 85,
+      "view": "NFC + whitespace collapse"
+    },
+    "normalizer": {
+      "terminal_chillu": true,
+      "type": "ml_conservative"
+    },
+    "normalizer_fingerprint": "bccfa8669a7e8528",
+    "regex_version": "2026.9.29",
+    "schema": "malayalam-source-study-v1",
+    "screening": {
+      "min_letters": 20,
+      "min_malayalam_letter_share": 0.7,
+      "min_ml_score": 0.8
+    },
+    "unicode_version": "15.0.0"
+  },
+  "unreviewed_proposal_counts": {
+    "heldout_proposal": 29,
+    "train": 269,
+    "validation": 34
+  },
+  "verified_freeze": false
+}
