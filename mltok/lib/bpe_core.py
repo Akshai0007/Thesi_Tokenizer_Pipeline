@@ -19,6 +19,7 @@ from .marker import SP
 KEY_BITS = 21
 KEY_MASK = (1 << KEY_BITS) - 1
 BLOCK = KEY_MASK  # id for characters outside the alphabet (never merged; byte fallback at inference)
+CONFIDENCE_SCALE = 1000
 
 DEFAULT_SPECIALS = [
     "<pad>", "<s>", "</s>", "<unk>", "<|im_start|>", "<|im_end|>", "<|endoftext|>",
@@ -47,6 +48,9 @@ def train_bpe(
     max_word_types: int = 0,
     boundaries: dict[str, tuple[int, ...]] | None = None,
     boundary_lambda: float = 0.0,
+    initial_units: Callable[[str], list[str]] | None = None,
+    boundary_weights: dict[str, dict[int, int]] | None = None,
+    penalty_milli: int = 0,
     log_every: int = 2000,
     log=print,
 ) -> BPEResult:
@@ -67,20 +71,28 @@ def train_bpe(
 
     seqs: list[list[int]] = []
     freqs: list[int] = []
-    flags: list[list[bool] | None] = []
+    flags: list[list[int] | None] = []
     for w, c in items:
-        seqs.append([tok2id.get(ch, BLOCK) for ch in w])
+        units = list(w) if initial_units is None else initial_units(w)
+        seqs.append([tok2id.get(ch, BLOCK) for ch in units])
         freqs.append(c)
         fl = None
-        if boundaries:
+        if penalty_milli and boundary_weights and w in boundary_weights:
+            offsets = boundary_weights[w]
+            pos = 0
+            fl = []
+            for unit in units:
+                fl.append(offsets.get(pos, 0))
+                pos += len(unit)
+        elif boundaries:
             bset = boundaries.get(w.lstrip(SP))
             if bset:
                 shift = len(w) - len(w.lstrip(SP))
-                fl = [False] * len(w)
+                fl = [0] * len(w)
                 for o in bset:
                     j = o + shift
                     if 0 < j < len(w):
-                        fl[j] = True
+                        fl[j] = 1
         flags.append(fl)
 
     valid_cache: dict[int, bool] = {}
@@ -116,7 +128,7 @@ def train_bpe(
             else:
                 ws.add(wi)
             if fl is not None and fl[j + 1]:
-                cross[k] = cross.get(k, 0) + f
+                cross[k] = cross.get(k, 0) + f * fl[j + 1]
 
     lam = boundary_lambda
 
@@ -124,6 +136,8 @@ def train_bpe(
         v = stats.get(k, 0)
         if v <= 0:
             return 0
+        if penalty_milli:
+            return v * CONFIDENCE_SCALE**2 - penalty_milli * cross.get(k, 0)
         if lam and k in cross:
             return v - lam * cross[k]
         return v
@@ -149,9 +163,9 @@ def train_bpe(
                 if kk in stats:
                     stats[kk] -= f
                     if fl is not None and fl[j + 1]:
-                        cross[kk] = cross.get(kk, 0) - f
+                        cross[kk] = cross.get(kk, 0) - f * fl[j + 1]
             ns: list[int] = []
-            nfl: list[bool] | None = [] if fl is not None else None
+            nfl: list[int] | None = [] if fl is not None else None
             j = 0
             while j < n:
                 if j + 1 < n and s[j] == a and s[j + 1] == b:
@@ -178,7 +192,7 @@ def train_bpe(
                 else:
                     ws.add(wi)
                 if nfl is not None and nfl[j + 1]:
-                    cross[kk] = cross.get(kk, 0) + f
+                    cross[kk] = cross.get(kk, 0) + f * nfl[j + 1]
                 if x == nid or y == nid:
                     touched.add(kk)
         stats.pop(k, None)
@@ -222,6 +236,14 @@ def train_bpe(
             cur = score(k)
             if cur <= 0:
                 continue
+            if (initial_units is not None or penalty_milli) and stats[k] < min_pair_count:
+                continue
+            if initial_units is not None:
+                a, b = k >> KEY_BITS, k & KEY_MASK
+                # Reusing an earlier symbol can expose an earlier-ranked pair
+                # after its training step. Keep the emitted rank replay exact.
+                if tok_list[a] + tok_list[b] in tok2id:
+                    continue
             if -negsc != cur:
                 heapq.heappush(heap, (-cur, k))
                 continue
@@ -235,7 +257,7 @@ def train_bpe(
             stop_reason = "no_pairs_left"
             break
         k, cur = best
-        if cur < min_pair_count:
+        if initial_units is None and not penalty_milli and cur < min_pair_count:
             stop_reason = f"min_pair_count<{min_pair_count}"
             break
         a, b = k >> KEY_BITS, k & KEY_MASK
@@ -302,7 +324,11 @@ def build_tokenizer(
 
 def reference_encode_word(word: str, rank: dict[tuple[str, str], int]) -> list[str]:
     """Slow, obviously-correct BPE encoder used by tests to cross-check HF."""
-    syms = list(word)
+    return merge_units(list(word), rank)
+
+
+def merge_units(units: list[str], rank: dict[tuple[str, str], int]) -> list[str]:
+    syms = units.copy()
     while True:
         best = None
         for i in range(len(syms) - 1):

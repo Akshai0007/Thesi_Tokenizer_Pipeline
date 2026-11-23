@@ -1,0 +1,11 @@
+{
+  "schema": "mom-surface-alignments-v1",
+  "qualification": "synthetic diagnostic rules with simulated reviewer identifiers, never use as research labels",
+  "forms": {
+    "പൂക്കൾ": [{"operation": "affix", "parts": ["പൂ", "ക്കൾ"], "analysis": "പൂ<n><pl>", "confidence_milli": 900, "reviewers": ["fixture-A", "fixture-B"]}],
+    "കടൽക്കര": [{"operation": "gemination", "parts": ["കടൽ", "കര"], "surface_parts": ["കടൽ", "ക്കര"], "analysis": "കടൽ<n><adj>കര<n>", "confidence_milli": 750, "reviewers": ["fixture-A", "fixture-B"]}],
+    "ക്ഷേത്രോത്സവം": [{"operation": "sandhi", "parts": ["ക്ഷേത്രം", "ഉത്സവം"], "confidence_milli": 900, "reviewers": ["fixture-A", "fixture-B"]}],
+    "വീട്ടിൽ": [{"operation": "stem_mutation", "parts": ["വീട്", "ഇൽ"], "surface_parts": ["വീ", "ട്ടിൽ"], "analysis": "വീട്<n><locative>", "confidence_milli": 600, "reviewers": ["fixture-A", "fixture-B"]}],
+    "കുട്ടികൾക്കും": [{"operation": "agglutination", "parts": ["കുട്ടി", "കൾ", "ക്കും"], "analysis": "കുട്ടി<n><pl><dative>ഉം<cnj>", "confidence_milli": 800, "reviewers": ["fixture-A", "fixture-B"]}]
+  }
+}

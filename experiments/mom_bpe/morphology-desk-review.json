@@ -1,0 +1,22 @@
+{
+  "status": "source-assisted desk review of Malayalam forms, not independently adjudicated and never a training-label artifact",
+  "grammar": [
+    "https://www.languageinindia.com/nov2012/ravisankarmalayalamgrammar.pdf",
+    "https://www.mdpi.com/2226-471X/8/1/29",
+    "https://aclanthology.org/W19-6801/"
+  ],
+  "forms": [
+    {"text": "കിളികൾ", "context": "കിളികൾ പറന്നു.", "reading": "കിളി<n><pl>", "operation": "affix", "parts": ["കിളി", "കൾ"], "offsets": [4], "reason": "The bird stem is unchanged before the plural suffix."},
+    {"text": "കുടകൾ", "context": "കടയിൽ കുടകൾ വിൽക്കുന്നു.", "reading": "കുട<n><pl>", "operation": "affix", "parts": ["കുട", "കൾ"], "offsets": [3], "reason": "The umbrella stem and plural ending are overt."},
+    {"text": "കസേരകൾ", "context": "മുറിയിൽ കസേരകൾ ഉണ്ട്.", "reading": "കസേര<n><pl>", "operation": "affix", "parts": ["കസേര", "കൾ"], "offsets": [4], "reason": "The chair stem is unchanged before the plural ending."},
+    {"text": "വീടുകൾ", "context": "അവിടെ വീടുകൾ പണിയുന്നു.", "reading": "വീട്<n><pl>", "operation": "stem_mutation", "parts": ["വീട്", "കൾ"], "surface_parts": ["വീടു", "കൾ"], "offsets": [4], "reason": "The final consonant retains its stem affiliation; the surface stem ends in u before -kaḷ."},
+    {"text": "പൂച്ചയിൽ", "context": "പൂച്ചയിൽ ഈ രോഗം കാണാം.", "reading": "പൂച്ച<n><locative>", "operation": "sandhi", "parts": ["പൂച്ച", "ഇൽ"], "surface_parts": ["പൂച്ച", "യിൽ"], "offsets": [5], "reason": "The y linker is included with the surface locative so the split leaves the word stem intact."},
+    {"text": "കടകളിൽ", "context": "കടകളിൽ തിരക്കുണ്ട്.", "reading": "കട<n><pl><locative>", "operation": "agglutination", "parts": ["കട", "കൾ", "ഇൽ"], "surface_parts": ["കട", "കള", "ിൽ"], "offsets": null, "reason": "The locative vowel sign belongs to ളി in the written form. This complete three-part projection must abstain."},
+    {"text": "മീനുകൾ", "context": "കുളത്തിൽ മീനുകൾ ഉണ്ട്.", "offsets": null, "reason": "The pinned analyzer has no reading. The absence does not invalidate the observed form."},
+    {"text": "പൂക്കൾ", "context": "പൂക്കൾ വിരിഞ്ഞു.", "offsets": null, "reason": "The pinned reading list includes plural and another analysis. The current word-level join does not disambiguate context."},
+    {"text": "കടൽക്കര", "context": "ഞങ്ങൾ കടൽക്കര കണ്ടു.", "offsets": null, "reason": "The reading list includes an opaque noun and distinct compound readings. A plausible split does not resolve all candidates."},
+    {"text": "ക്ഷേത്രോത്സവം", "context": "ക്ഷേത്രോത്സവം തുടങ്ങി.", "offsets": null, "reason": "The transducer returns no reading and the vowel junction is fused."},
+    {"text": "വീട്ടിൽ", "context": "അവൾ വീട്ടിൽ ഉണ്ടായിരുന്നു.", "offsets": null, "reason": "An exact locative lemma reading exists among several. The old synthetic വീ|ട്ടിൽ split also moves written stem material to the suffix and is unsuitable as a linguistic label."},
+    {"text": "കുട്ടികൾക്കും", "context": "കുട്ടികൾക്കും ഭക്ഷണം കിട്ടി.", "offsets": null, "reason": "The word admits multiple analyzer readings. The dative and additive parts also share a fused written junction."}
+  ]
+}

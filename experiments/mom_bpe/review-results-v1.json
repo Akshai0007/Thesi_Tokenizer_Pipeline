@@ -1,0 +1,460 @@
+{
+  "morphology_desk_review": {
+    "compiled_transducer_sha256": "f6eb3d3fb73fdc7e1f422d5a0b14e20e33fc736d4a830e4395213577611dfa72",
+    "compiled_transducer_size": 18619083,
+    "dependencies": {
+      "mlmorph": "1.4.3",
+      "sfst": "1.10.0"
+    },
+    "input_sha256": "e5226185b93c2596bace434c376a5a28d467f44892a2adfbbd468d2cf89c20a4",
+    "results": [
+      {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 148,
+            "reading": "കിളി<n><pl>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl"
+                ],
+                "root": "കിളി"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": [
+          4
+        ],
+        "generated_exact_surface": true,
+        "observed_offsets": [
+          4
+        ],
+        "text": "കിളികൾ",
+        "training_boundary_offsets": []
+      },
+      {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 144,
+            "reading": "കുട<n><pl>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl"
+                ],
+                "root": "കുട"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": [
+          3
+        ],
+        "generated_exact_surface": true,
+        "observed_offsets": [
+          3
+        ],
+        "text": "കുടകൾ",
+        "training_boundary_offsets": []
+      },
+      {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 148,
+            "reading": "കസേര<n><pl>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl"
+                ],
+                "root": "കസേര"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": [
+          4
+        ],
+        "generated_exact_surface": true,
+        "observed_offsets": [
+          4
+        ],
+        "text": "കസേരകൾ",
+        "training_boundary_offsets": []
+      },
+      {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 148,
+            "reading": "വീട്<n><pl>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl"
+                ],
+                "root": "വീട്"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": [
+          4
+        ],
+        "generated_exact_surface": true,
+        "observed_offsets": [
+          4
+        ],
+        "text": "വീടുകൾ",
+        "training_boundary_offsets": []
+      },
+      {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 170,
+            "reading": "പൂച്ച<n><locative>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "locative"
+                ],
+                "root": "പൂച്ച"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": [
+          5
+        ],
+        "generated_exact_surface": true,
+        "observed_offsets": [
+          5
+        ],
+        "text": "പൂച്ചയിൽ",
+        "training_boundary_offsets": []
+      },
+      {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 193,
+            "reading": "കട<n><pl><locative>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl",
+                  "locative"
+                ],
+                "root": "കട"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": null,
+        "generated_exact_surface": true,
+        "observed_offsets": null,
+        "text": "കടകളിൽ",
+        "training_boundary_offsets": []
+      },
+      {
+        "agreed": true,
+        "candidates": [],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "മീനുകൾ",
+        "training_boundary_offsets": []
+      },
+      {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 140,
+            "reading": "പൂ<n><pl>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl"
+                ],
+                "root": "പൂ"
+              }
+            ]
+          },
+          {
+            "rank": 267,
+            "reading": "പൂ<n><coordinative>അക്കൾ<n>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "coordinative"
+                ],
+                "root": "പൂ"
+              },
+              {
+                "pos": [
+                  "n"
+                ],
+                "root": "അക്കൾ"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "പൂക്കൾ",
+        "training_boundary_offsets": []
+      },
+      {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 125,
+            "reading": "കടൽക്കര<n>",
+            "structured": [
+              {
+                "pos": [
+                  "n"
+                ],
+                "root": "കടൽക്കര"
+              }
+            ]
+          },
+          {
+            "rank": 265,
+            "reading": "കടൽ<n><adj>കര<n>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "adj"
+                ],
+                "root": "കടൽ"
+              },
+              {
+                "pos": [
+                  "n"
+                ],
+                "root": "കര"
+              }
+            ]
+          },
+          {
+            "rank": 300,
+            "reading": "കടൽ<n><adj>കരം<n><adj>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "adj"
+                ],
+                "root": "കടൽ"
+              },
+              {
+                "pos": [
+                  "n",
+                  "adj"
+                ],
+                "root": "കരം"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "കടൽക്കര",
+        "training_boundary_offsets": []
+      },
+      {
+        "agreed": true,
+        "candidates": [],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "ക്ഷേത്രോത്സവം",
+        "training_boundary_offsets": []
+      },
+      {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 134,
+            "reading": "വീട്ടിൽ<np>",
+            "structured": [
+              {
+                "pos": [
+                  "np"
+                ],
+                "root": "വീട്ടിൽ"
+              }
+            ]
+          },
+          {
+            "rank": 166,
+            "reading": "വീട്<n><locative>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "locative"
+                ],
+                "root": "വീട്"
+              }
+            ]
+          },
+          {
+            "rank": 223,
+            "reading": "വീട്ടുക<v><cvb-adv-part-conditional>",
+            "structured": [
+              {
+                "pos": [
+                  "v",
+                  "cvb-adv-part-conditional"
+                ],
+                "root": "വീട്ടുക"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "വീട്ടിൽ",
+        "training_boundary_offsets": []
+      },
+      {
+        "agreed": true,
+        "candidates": [
+          {
+            "rank": 329,
+            "reading": "കുട്ടി<n><pl><dative>ഉം<cnj>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "pl",
+                  "dative"
+                ],
+                "root": "കുട്ടി"
+              },
+              {
+                "pos": [
+                  "cnj"
+                ],
+                "root": "ഉം"
+              }
+            ]
+          },
+          {
+            "rank": 338,
+            "reading": "കുട്ടി<np><pl><dative>ഉം<cnj>",
+            "structured": [
+              {
+                "pos": [
+                  "np",
+                  "pl",
+                  "dative"
+                ],
+                "root": "കുട്ടി"
+              },
+              {
+                "pos": [
+                  "cnj"
+                ],
+                "root": "ഉം"
+              }
+            ]
+          },
+          {
+            "rank": 355,
+            "reading": "കുട്ടി<n><n-v-compound>കൾക്കുക<v><future>",
+            "structured": [
+              {
+                "pos": [
+                  "n",
+                  "n-v-compound"
+                ],
+                "root": "കുട്ടി"
+              },
+              {
+                "pos": [
+                  "v",
+                  "future"
+                ],
+                "root": "കൾക്കുക"
+              }
+            ]
+          },
+          {
+            "rank": 364,
+            "reading": "കുട്ടി<np><n-v-compound>കൾക്കുക<v><future>",
+            "structured": [
+              {
+                "pos": [
+                  "np",
+                  "n-v-compound"
+                ],
+                "root": "കുട്ടി"
+              },
+              {
+                "pos": [
+                  "v",
+                  "future"
+                ],
+                "root": "കൾക്കുക"
+              }
+            ]
+          }
+        ],
+        "expected_offsets": null,
+        "generated_exact_surface": null,
+        "observed_offsets": null,
+        "text": "കുട്ടികൾക്കും",
+        "training_boundary_offsets": []
+      }
+    ]
+  },
+  "prototype_fallback_attribution": {
+    "T0-matched": {
+      "evaluation_units": 153,
+      "fallback_ids": 1631,
+      "fallback_if_all_seen_units_were_selected": 1631,
+      "seen_but_excluded_unit_utf8_bytes": 0,
+      "selected_units": 44,
+      "train_units": 44,
+      "unseen_unit_utf8_bytes": 1631
+    },
+    "T1": {
+      "evaluation_units": 394,
+      "fallback_ids": 6092,
+      "fallback_if_all_seen_units_were_selected": 6092,
+      "seen_but_excluded_unit_utf8_bytes": 0,
+      "selected_units": 49,
+      "train_units": 49,
+      "unseen_unit_utf8_bytes": 6092
+    },
+    "T2": {
+      "evaluation_units": 394,
+      "fallback_ids": 6092,
+      "fallback_if_all_seen_units_were_selected": 6092,
+      "seen_but_excluded_unit_utf8_bytes": 0,
+      "selected_units": 49,
+      "train_units": 49,
+      "unseen_unit_utf8_bytes": 6092
+    }
+  }
+}

@@ -115,6 +115,64 @@ def test_verified_upload_restore_and_idempotent_retry(experiment, tmp_path):
     assert (target / "progress.ckpt").read_bytes() == b"checkpoint A"
 
 
+def test_mom_runner_reloads_custom_encoder_and_proxy_from_verified_snapshot(experiment, tmp_path, monkeypatch):
+    import hashlib
+
+    from mltok import proxy_train
+    from mltok.runner import Run
+
+    hub, store_cfg, _, _, _ = experiment
+    clean = tmp_path / "clean"
+    for split, texts in {"train": ["കിളികൾ കുടകൾ കൊ"] * 3, "eval": ["കുടകൾ കിളികൾ"] * 2}.items():
+        directory = clean / split
+        directory.mkdir(parents=True)
+        (directory / "docs.jsonl").write_bytes(
+            "".join(json.dumps({"text": t}) + "\n" for t in texts).encode())
+    alignment = tmp_path / "review evidence file.json"
+    content = json.dumps({"schema": "mom-surface-alignments-v1", "forms": {
+        "കിളികൾ": [{"parts": ["കിളി", "കൾ"], "operation": "affix",
+                    "reviewers": ["simulated-A", "simulated-B"], "confidence_milli": 800}],
+    }}).encode()
+    alignment.write_bytes(content)
+    cfg = {
+        **store_cfg, "name": "mom", "paths": {"clean": str(clean), "runs": str(tmp_path / "run")},
+        "components": {"normalizer": "ml_conservative", "pretokenizer": "script_runs", "vocab": 320,
+                       "algorithm": {"type": "mom_bpe", "morphology_penalty_milli": 400,
+                                     "alignment_file": str(alignment), "alignment_sha256": hashlib.sha256(content).hexdigest()}},
+        "metrics": ["basic", "mom_surface"],
+        "proxy": {"model": {"type": "gpt", "size": "nano", "n_layer": 1, "n_head": 2, "d_model": 16},
+                  "seq_len": 4, "batch": 8, "gpus": [], "train_mb": 0.001, "eval_mb": 0.001},
+    }
+    run = Run(cfg)
+    label = run.vname(run.base)
+    assert label.startswith("mom_bpe-") and not set(label) & set(':/\\')
+    base, training = run.ensure_tokenizer(run.base)
+    assert training["_artifact_paths"] == ["mom-bpe.json"]
+    metrics = run.ensure_metrics(run.base)
+    assert metrics["mom_canonical_equal"] == 2
+    result = run.ensure_proxy(run.base, 7)
+    assert result["steps"] > 0
+    assert run.sync.flush(force=True)
+    manifests = hub.manifests()
+    assert any(
+        any(f["path"].endswith("/mom-bpe.json") for f in m["snapshot"]["files"])
+        and any(f["path"].endswith(".ckpt") for f in m["snapshot"]["files"])
+        for m in manifests
+    )
+    restored_root = tmp_path / "restore"
+    restored_cfg = {**cfg, "paths": {**cfg["paths"], "runs": str(restored_root)}}
+    # Mirror the CLI, which verifies restoration before Run creates any directories.
+    assert Sync(restored_cfg, restored_root / cfg["name"], clean).restore() > 0
+    recovered = Run(restored_cfg)
+    restored, _ = recovered.ensure_tokenizer(recovered.base)
+    assert restored.encode_batch(["കൊ കിളികൾ <pad>"]) == base.encode_batch(["കൊ കിളികൾ <pad>"])
+    ckpt = run.proxy_path(run.base, 7).with_suffix(".ckpt")
+    assert recovered.proxy_path(recovered.base, 7).with_suffix(".ckpt").read_bytes() == ckpt.read_bytes()
+    monkeypatch.setattr(proxy_train, "train_proxy", lambda *a, **kw: pytest.fail("completed proxy retrained"))
+    assert recovered.ensure_proxy(recovered.base, 7) == result
+    assert recovered.sync.flush(force=True)
+
+
 @pytest.mark.parametrize("phase", ["blob_commit", "verification", "manifest_commit"])
 def test_failed_publication_preserves_prior_snapshot_and_retries(experiment, phase):
     hub, _, root, make, _ = experiment

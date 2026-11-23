@@ -121,7 +121,8 @@ class Run:
         return self._inst[key]
 
     def vname(self, v) -> str:
-        parts = [slug(v["algorithm"]), slug(v["normalizer"])]
+        label = getattr(self.algo_cls(v), "variant_label", slug)
+        parts = [label(v["algorithm"]), slug(v["normalizer"])]
         if v["pretokenizer"]["type"] != "-":
             parts.append(slug(v["pretokenizer"]))
         return "-".join(parts) + f"-v{v['vocab']}"
