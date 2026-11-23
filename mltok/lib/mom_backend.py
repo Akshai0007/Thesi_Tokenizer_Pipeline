@@ -5,6 +5,7 @@ import json
 import unicodedata
 from dataclasses import dataclass
 from itertools import groupby
+from numbers import Integral
 from pathlib import Path
 
 import regex
@@ -19,6 +20,12 @@ from .orthographic_units import UNITIZERS, merge_domains
 
 ARTIFACT = "mom-bpe.json"
 SCHEMA = "mom-bpe-v1"
+# Previous reviewed encoders share the same valid-ID rank replay and grammar.
+_REVIEWED_ENCODER = "4b75e5886aea6ae1291e5170f1a3654c66d99fbc7c4711aee503d121079d022a"
+_REVIEWED_CORES = {
+    "48d2546e2e92cf4ed5b584861654a8bfeed6643a3fd12dde9ffad0c58146876c",
+    "8de216db754e184d06c6eccae14fc346aa2110e5d8d5257dac5f6f2dfb5574b8",
+}
 
 
 def runtime_identity():
@@ -35,6 +42,16 @@ def implementation_identity(*names):
 
 def encoder_identity():
     return implementation_identity("mom_backend.py", "bpe_core.py", "orthographic_units.py", "unicode_ml.py")
+
+
+def compatible_encoder(recorded):
+    current = encoder_identity()
+    if recorded == current:
+        return True
+    return (isinstance(recorded, dict) and recorded.keys() == current.keys()
+            and recorded["mom_backend.py"] == _REVIEWED_ENCODER
+            and recorded["bpe_core.py"] in _REVIEWED_CORES
+            and all(recorded[k] == current[k] for k in ("orthographic_units.py", "unicode_ml.py")))
 
 
 def preprocessing(normalizer, pretokenizer):
@@ -59,7 +76,7 @@ class SurfaceEncoding:
 class MOMBackend(Backend):
     def __init__(self, artifact):
         if (artifact["schema"] != SCHEMA or artifact["runtime"] != runtime_identity()
-                or artifact["encoder"] != encoder_identity()):
+                or not compatible_encoder(artifact["encoder"])):
             raise ValueError("MOM-BPE artifact schema, encoder, or Unicode runtime is incompatible")
         self.artifact = artifact
         self.name = "mom_bpe"
@@ -125,14 +142,20 @@ class MOMBackend(Backend):
         return self.encode_offsets(text).tokens
 
     def decode(self, ids):
+        """Decode allocated IDs. Reserved controls decode to their exact spelling."""
         raw = bytearray()
         for i in ids:
+            if isinstance(i, bool) or not isinstance(i, Integral):
+                raise TypeError("MOM-BPE token IDs must be integers")
+            i = int(i)
+            if not 0 <= i < self.vocab_size:
+                raise ValueError("MOM-BPE token ID is out of range")
+            if i >= len(self._pieces):
+                raise ValueError("MOM-BPE token ID is unallocated")
             if i in self.fallback_ids:
                 raw.append(i - self._byte_start)
-            elif 0 <= i < len(self._pieces):
+            else:
                 raw.extend(self._pieces[i].encode("utf-8"))
-            elif not 0 <= i < self.vocab_size:
-                raise ValueError("MOM-BPE token id is out of range")
         return raw.decode("utf-8", errors="replace")
 
     @classmethod

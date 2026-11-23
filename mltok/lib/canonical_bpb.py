@@ -37,3 +37,40 @@ def canonical_bpb(backend, rows, nll):
     total_nll = math.fsum(document_losses)
     return {"bpb": total_nll / math.log(2) / total_bytes, "canonical_bytes": total_bytes,
             "predicted_tokens": targets_scored, "documents": len(document_ids), "nll_nats": total_nll}
+
+
+class TorchWindowNLL:
+    """Reference scorer with right padding and document-local sliding windows.
+
+    A model supplies logits for each position and accepts a binary attention
+    mask. Only the final real position in each prefix contributes a loss.
+    Positions are local to the truncated window.
+    """
+
+    def __init__(self, model, *, context, pad_id, batch_size=32, device="cpu"):
+        if type(context) is not int or type(batch_size) is not int or min(context, batch_size) < 1:
+            raise ValueError("Context and batch size must be positive integers")
+        self.model, self.context = model, context
+        self.pad_id, self.batch_size, self.device = pad_id, batch_size, device
+
+    def __call__(self, inputs, targets):
+        import torch
+        import torch.nn.functional as functional
+
+        if self.model.training or len(inputs) != len(targets):
+            raise ValueError("Reference scoring requires evaluation mode and aligned inputs")
+        scores = []
+        with torch.inference_mode():
+            for start in range(0, len(inputs), self.batch_size):
+                end = min(start + self.batch_size, len(inputs))
+                windows = [inputs[max(0, i + 1 - self.context):i + 1] for i in range(start, end)]
+                lengths = torch.tensor([len(w) for w in windows], device=self.device)
+                width = max(map(len, windows))
+                ids = torch.tensor([w + [self.pad_id] * (width - len(w)) for w in windows], device=self.device)
+                mask = torch.arange(width, device=self.device) < lengths[:, None]
+                output = self.model(input_ids=ids, attention_mask=mask.long())
+                logits = output if isinstance(output, torch.Tensor) else output.logits
+                chosen = logits[torch.arange(end - start, device=self.device), lengths - 1].float()
+                labels = torch.tensor(targets[start:end], device=self.device)
+                scores.extend(functional.cross_entropy(chosen, labels, reduction="none").tolist())
+        return scores

@@ -196,6 +196,9 @@ def run(plan_path, arm):
                    "fit_attempt_process_peak_rss_bytes": peak_rss_bytes(),
                    "primary_48k_eligible": info["occupied_vocab"] == resolved["vocab_target"]}
             immutable(fit_path, format_json(fit))
+        if not fit["primary_48k_eligible"]:
+            occupied = fit["training"]["occupied_vocab"]
+            raise ValueError(f"Scientific arm occupied {occupied} of 48000 vocabulary slots; evaluation is blocked")
         if result_path.exists():
             result = json.loads(result_path.read_bytes())
             fingerprint = result.pop("result_sha256")

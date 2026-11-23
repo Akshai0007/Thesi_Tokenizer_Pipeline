@@ -147,14 +147,15 @@ def test_bounded_pilot_shares_the_frozen_prefix_and_reuses_each_arm(tmp_path, fr
     assert plan["training_docs"] == 1 and plan["training_canonical_bytes"] == first["canonical_bytes"]
     assert plan["freeze"]["reviewed_morphology_cases"] is None
     for arm in ("A", "B", "C"):
-        result = pilot.run(root / "plan.json", arm)
-        assert result == pilot.run(root / "plan.json", arm)
+        for _ in range(2):
+            with pytest.raises(ValueError, match="evaluation is blocked"):
+                pilot.run(root / "plan.json", arm)
+        result = json.loads((root / arm / "fit.json").read_bytes())
         assert result["identity"]["training_fingerprint"] == plan["training_fingerprint"]
-        assert result["fit"]["training"]["canonical_bytes"] == first["canonical_bytes"]
-        assert result["fit"]["fit_attempt_process_peak_rss_bytes"] > 0
-        assert result["fit"]["primary_48k_eligible"] is False
-        news = result["natural_text"]["by_stratum"]["news"]
-        assert news["mom_canonical_equal"] == 1 and 0 <= news["fallback_rate"] <= 1
+        assert result["training"]["canonical_bytes"] == first["canonical_bytes"]
+        assert result["fit_attempt_process_peak_rss_bytes"] > 0
+        assert result["primary_48k_eligible"] is False
+        assert not (root / arm / "metrics.json").exists()
     (root / "train.jsonl").write_bytes(b"tampered")
     with pytest.raises(ValueError, match="SHA-256"):
         pilot.run(root / "plan.json", "A")
