@@ -1,0 +1,11 @@
+schema: mom-frontends-v1
+arms:
+  F-word:
+    base: {type: word}
+    attach_space: false
+  F-space:
+    base: {type: script_runs, scripts: [Malayalam, Latin]}
+    attach_space: true
+  F-word-space:
+    base: {type: word}
+    attach_space: true
