@@ -278,7 +278,7 @@ def check_inputs(source, arms, *, ledgers, encoders=False):
     return validated
 
 
-def preflight(root, scratch, manifest):
+def preflight(root, scratch, manifest, *, min_free_mib=8192, max_gpu_util_pct=5, allow_shared_gpu=False):
     driver, _ = imports(root / "source")
     import numpy
     import tokenizers
@@ -314,13 +314,16 @@ def preflight(root, scratch, manifest):
         raise ValueError(f"Scratch has {free} free bytes; bundle requires {needed}")
     if torch.version.cuda is None:
         raise ValueError("PyTorch is a CPU-only build")
-    gpu = driver.gpu_preflight(8192)
+    if "max_gpu_util_pct" not in inspect.signature(driver.gpu_preflight).parameters:
+        raise ValueError("The verified source bundle predates configurable GPU admission. Use the updated source.")
+    gpu = driver.gpu_preflight(min_free_mib, max_gpu_util_pct=max_gpu_util_pct, allow_shared_gpu=allow_shared_gpu)
     if not torch.cuda.is_available() or "A100" not in gpu["type"]:
         raise ValueError("An eligible CUDA A100 was not detected")
     return {"python": sys.version.split()[0], "torch": str(torch.__version__), "cuda": torch.version.cuda,
             "numpy": numpy.__version__, "tokenizers": tokenizers.__version__, "yaml": yaml.__version__,
             "plugins": len(driver.registry.describe()), "gpu": gpu, "scratch_free_bytes": free,
-            "scratch_required_bytes": needed}
+            "scratch_required_bytes": needed, "gpu_admission": {"min_free_mib": min_free_mib,
+            "max_gpu_util_pct": max_gpu_util_pct, "allow_shared_gpu": allow_shared_gpu}}
 
 
 def verify_smoke(root, output):
@@ -372,6 +375,9 @@ def main():
         item.add_argument("bundle", type=Path)
         if command == "preflight":
             item.add_argument("--scratch", type=Path, required=True)
+            item.add_argument("--min-free-mib", type=int, default=8192)
+            item.add_argument("--max-gpu-util-pct", type=int, default=5)
+            item.add_argument("--allow-shared-gpu", action="store_true")
         elif command == "smoke-result":
             item.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
@@ -382,7 +388,8 @@ def main():
         manifest = verify_bundle(args.bundle)
         root = args.bundle.resolve()
         if args.command == "preflight":
-            result = preflight(root, args.scratch.absolute(), manifest)
+            result = preflight(root, args.scratch.absolute(), manifest, min_free_mib=args.min_free_mib,
+                               max_gpu_util_pct=args.max_gpu_util_pct, allow_shared_gpu=args.allow_shared_gpu)
         elif args.command == "smoke-result":
             result = verify_smoke(root, args.out.resolve())
         elif args.command == "caches":

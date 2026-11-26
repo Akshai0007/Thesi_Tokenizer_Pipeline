@@ -1,4 +1,5 @@
 import hashlib
+import json
 import math
 import random
 
@@ -7,6 +8,7 @@ import pytest
 import torch
 
 from experiments.mom_bpe import document_proxy as driver
+from experiments.mom_bpe import dgx_resources as resources
 from experiments.mom_bpe.optimization_proxy import RightPaddedGPT
 from experiments.mom_bpe.proxy_blocks import EncodedSplit, blocks, selection, sequences, write_split
 from mltok import registry
@@ -200,8 +202,78 @@ def test_gradient_accumulation_weights_by_targets_with_uneven_microbatches(encod
 
 
 def test_gpu_seven_rejected_before_torch_gpu_access(monkeypatch):
-    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "GPU-dead-beef")
-    monkeypatch.setattr(driver.subprocess, "check_output", lambda *a, **k: "7, GPU-dead-beef, 51200, 0\n")
+    uuid = "GPU-deadbeef-1234-1234-1234-123456789abc"
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", uuid)
+    monkeypatch.setattr(resources.subprocess, "check_output", lambda *a, **k: f"7, {uuid}, 51200, 0\n")
     monkeypatch.setattr(torch.cuda, "device_count", lambda: pytest.fail("touched CUDA"))
     with pytest.raises(ValueError, match="prohibited"):
         driver.gpu_preflight(8192)
+
+
+def test_resource_telemetry_survives_interrupted_cpu_replay(tmp_path, encoded, monkeypatch):
+    torch.set_num_threads(1)
+    data, _, _ = encoded
+    chosen, _ = selection(data, "fixed_source_bytes", 10)
+    planned, progress = driver.schedule(data, chosen, 2, 3, 2)
+    config = {"checkpoint_updates": 1, "optimizer": {"peak_lr": .003, "end_lr": .0003,
+              "warmup_fraction": .05, "clip": 1.0}}
+    identity = {"experiment": "fixture", "implementation": {"driver": resources.PINNED_DRIVER}}
+    observed = {"uuid": "GPU-deadbeef-1234-1234-1234-123456789abc", "physical_index": 1,
+                "free_mib": 9600, "utilization_pct": 4, "other_compute_processes": 0}
+    monkeypatch.setattr(resources, "observe_gpu", lambda _: {**observed, "free_mib": 8600, "utilization_pct": 12})
+
+    class MockCuda:
+        def reset_peak_memory_stats(self, device):
+            assert device == CPU
+
+        def max_memory_allocated(self, device):
+            return 4096
+
+        def max_memory_reserved(self, device):
+            return 8192
+
+    def state():
+        model = tiny_model()
+        return model, torch.optim.AdamW(model.parameters(), lr=.003)
+
+    def attempt():
+        telemetry = resources.ResourceTelemetry(tmp_path, resources.GpuAdmission(), observed, MockCuda(), CPU, {})
+        with telemetry:
+            return driver.train(tmp_path, identity, data, planned, progress, state, config,
+                                "fixed_source_bytes", SPECIALS, CPU, telemetry=telemetry)
+
+    persist = resources.ResourceTelemetry.checkpoint
+
+    def interrupt(telemetry, step, member):
+        persist(telemetry, step, member)
+        raise KeyboardInterrupt()
+
+    with monkeypatch.context() as patch:
+        patch.setattr(resources.ResourceTelemetry, "checkpoint", interrupt)
+        with pytest.raises(KeyboardInterrupt):
+            attempt()
+
+    folder, = (tmp_path / "resource-telemetry").iterdir()
+    prior = {p: p.read_bytes() for p in folder.iterdir()}
+    first, = tmp_path.glob("step-000001-*.pt")
+    original_checkpoint = first.read_bytes()
+    _, _, final = attempt()
+    later, = (p for p in folder.parent.iterdir() if p != folder)
+    assert all(p.read_bytes() == data for p, data in prior.items())
+    assert first.read_bytes() == original_checkpoint
+    assert torch.load(first, weights_only=True)["identity"] == identity
+
+    def read(path):
+        return json.loads(path.read_bytes())
+
+    assert read(folder / "start.json")["initial"] == observed
+    assert read(folder / "end.json")["status"] == "interrupted"
+    assert read(later / "resume.json")["starting_update"] == 1
+    assert read(later / "resume.json")["checkpoint"]["path"] == first.name
+    assert not (later / "update-000001.json").exists()
+    end = read(later / "end.json")
+    assert end["status"] == "training_finished"
+    assert end["gpu"]["free_mib"] == 8600 and end["gpu"]["utilization_pct"] == 12
+    assert end["peak_allocated_bytes"] == 4096 and end["peak_reserved_bytes"] == 8192
+    assert end["training_seconds"] >= read(later / f"update-{len(planned):06d}.json")["training_seconds"]
+    assert read(later / f"update-{len(planned):06d}.json")["checkpoint"] == final

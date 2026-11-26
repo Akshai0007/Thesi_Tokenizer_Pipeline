@@ -76,6 +76,22 @@ done
 
 ## Recovery
 
+### GPU admission and resource records
+
+Use one institution-approved physical `GPU-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` UUID in `CUDA_VISIBLE_DEVICES`. Physical GPU 7 is prohibited. Both `dgx_handoff preflight` and `document_proxy run` accept the same resource options. Pass the same options to both commands.
+
+| Option | Default | Behavior |
+| --- | --- | --- |
+| `--min-free-mib` | `8192` | Rejects a GPU below the specified free memory. |
+| `--max-gpu-util-pct` | `5` | Maximum sampled utilization from 0 through 15 percent. A value above 5 requires explicit shared use. |
+| `--allow-shared-gpu` | Off | Allows other compute processes on the selected UUID when all admission checks pass. |
+
+The default rejects other compute processes. Both modes require a verifiable process listing. The trainer checks again under the run lock just before training. A future institution-approved shared run could pass `--min-free-mib 5120 --max-gpu-util-pct 10 --allow-shared-gpu` to both commands. These are point-in-time checks. Institutional allocation and coordination are still required. The updated handoff preflight needs an updated verified source bundle. Historical bundles remain readable through the archive verification commands.
+
+The trainer writes one immutable `resource-telemetry/<attempt-id>/` directory per CUDA training attempt. The initial record contains admission settings, physical free MiB and utilization percent, the count of other compute processes and operational code hashes. A resume record identifies the starting update and restored checkpoint. Each checkpoint sample and the end record contain physical free MiB and utilization percent, this process's PyTorch peak allocated and reserved bytes, and elapsed training-attempt seconds. The end record describes training completion or interruption before validation. Use the last available record from each attempt to estimate total attempted training time, including replay and checkpoint I/O. An abrupt process loss can leave no end record and a gap after the last durable sample. GPU free memory and utilization are device-wide snapshots. Allocator peaks are process-local. Missing optional counters remain null.
+
+Resource settings and observations live outside the experiment identity, checkpoint and result JSON. The reviewed operational driver retains the pinned scientific driver fingerprint for compatibility, while new resource records retain the actual driver and resource module hashes.
+
 Each generation is published under a fresh digest-bound filename after serialization, flushing, closing and archive verification. The trainer keeps prior generations, including invalid generations for inspection. Resume checks the content, experiment identity, optimizer, schedule, data cursor and exposure ledger, then restores Python, NumPy and Torch RNG states. Final evaluation can resume from the completed training checkpoint and the published result binds that checkpoint to its validation identity. Open readers of older generations cannot block publication of the next generation. The legacy rolling proxy path is separate and retains its known Windows sharing risk.
 
 The deterministic CPU regression checks exact model parameters, optimizer state, RNG state, exposure, training NLL and evaluation after interruption, including recovery when the newest generation is corrupt. GPU reproducibility depends on the pinned environment, hardware, kernels and deterministic settings. GPU execution and development-validation BPB remain pending.

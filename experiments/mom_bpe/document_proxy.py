@@ -9,7 +9,7 @@ import platform
 import random
 import re
 import shutil
-import subprocess
+from contextlib import nullcontext
 from itertools import islice
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -21,6 +21,7 @@ import torch
 import torch.nn.functional as F
 import yaml
 
+from experiments.mom_bpe import dgx_resources
 from experiments.mom_bpe.diagnose import format_json, immutable, sha
 from experiments.mom_bpe.proxy_blocks import (ARMS, MODES, POLICY, EncodedSplit, blocks, member, prepare_cache,
                                                publish, receipt, selection, sequences)
@@ -199,7 +200,7 @@ def restore_generation(out, identity, progress, new_state, device, rate):
     return (*new_state(), 0, 0.0, None)
 
 
-def train(out, identity, split, planned, progress, new_state, config, mode, specials, device):
+def train(out, identity, split, planned, progress, new_state, config, mode, specials, device, *, telemetry=None):
     key = clock_key(mode)
     optimizer_policy = config["optimizer"]
 
@@ -210,6 +211,8 @@ def train(out, identity, split, planned, progress, new_state, config, mode, spec
                 "lr": learning_rate(optimizer_policy, clock, total)}
 
     model, optimizer, start, total_nll, checkpoint = restore_generation(out, identity, progress, new_state, device, rate)
+    if telemetry is not None:
+        telemetry.restored(start, checkpoint)
     model.train()
     local_nll = torch.zeros((), device=device, dtype=torch.float64)
     for step, microbatches in enumerate(planned[start:], start + 1):
@@ -231,25 +234,19 @@ def train(out, identity, split, planned, progress, new_state, config, mode, spec
             checkpoint = save_generation(out, {"identity": identity, "step": step, "exposure": progress[step],
                 "scheduler": scheduler, "rng": rng_state(device), "train_nll_nats": total_nll,
                 "model": model.state_dict(), "optimizer": optimizer.state_dict()})
+            if telemetry is not None:
+                telemetry.checkpoint(step, checkpoint)
             print(f"Checkpointed update {step}/{len(planned)}", flush=True)
     return model, total_nll, checkpoint
 
 
-def gpu_preflight(minimum_mib):
-    if minimum_mib < 1:
-        raise ValueError("Expected positive free GPU memory requirement")
+def gpu_preflight(minimum_mib=8192, *, max_gpu_util_pct=5, allow_shared_gpu=False):
     uuid = os.environ.get("CUDA_VISIBLE_DEVICES", "")
-    if not re.fullmatch(r"GPU-[a-fA-F0-9-]+", uuid):
-        raise ValueError("Set CUDA_VISIBLE_DEVICES to one verified physical GPU UUID")
-    cmd = ["nvidia-smi", "--query-gpu=index,uuid,memory.free,utilization.gpu", "--format=csv,noheader,nounits"]
-    rows = [tuple(part.strip() for part in line.split(",")) for line in subprocess.check_output(cmd, text=True).splitlines()]
-    match = next((entry for entry in rows if entry[1] == uuid), None)
-    if match is None or int(match[0]) == 7 or int(match[2]) < minimum_mib or int(match[3]) > 5:
-        raise ValueError("GPU is prohibited, busy, or has insufficient free memory")
+    observed = dgx_resources.GpuAdmission(minimum_mib, max_gpu_util_pct, allow_shared_gpu).admit(uuid)
     if (os.environ.get("CUBLAS_WORKSPACE_CONFIG") not in (":4096:8", ":16:8") or torch.cuda.device_count() != 1
             or not torch.cuda.is_bf16_supported(including_emulation=False)):
         raise ValueError("Expected one BF16 GPU and deterministic CUBLAS_WORKSPACE_CONFIG")
-    return {"physical_index": int(match[0]), "uuid": uuid, "type": torch.cuda.get_device_name(0),
+    return {"physical_index": observed["physical_index"], "uuid": uuid, "type": torch.cuda.get_device_name(0),
             "capability": list(torch.cuda.get_device_capability(0)), "cuda": torch.version.cuda,
             "cudnn": torch.backends.cudnn.version()}
 
@@ -299,7 +296,10 @@ def fit_cache(args):
 
     registry.load_plugins()
     device = torch.device(args.device)
-    gpu = gpu_preflight(args.min_free_mib) if device.type == "cuda" else None
+    admission = dgx_resources.GpuAdmission(getattr(args, "min_free_mib", 8192), getattr(args, "max_gpu_util_pct", 5),
+                                          getattr(args, "allow_shared_gpu", False))
+    gpu = gpu_preflight(admission.min_free_mib, max_gpu_util_pct=admission.max_gpu_util_pct,
+                        allow_shared_gpu=admission.allow_shared_gpu) if device.type == "cuda" else None
     torch.set_num_threads(args.threads)
     torch.set_float32_matmul_precision("highest")
     torch.use_deterministic_algorithms(True)
@@ -308,7 +308,9 @@ def fit_cache(args):
     if count != 38_799_936 or spec != {"type": "gpt", "n_layer": 7, "n_head": 7, "d_model": 448} or context != 512:
         raise ValueError("Expected the fixed 38.8M GPT architecture")
     policy = config["optimizer"]
-    implementation = {"driver": code_digest(__file__), "blocks": code_digest(blocks.__code__.co_filename),
+    driver_digest = code_digest(__file__)
+    implementation = {"driver": dgx_resources.scientific_driver_digest(driver_digest),
+                      "blocks": code_digest(blocks.__code__.co_filename),
                       "scorer": code_digest(summarize_bpb.__code__.co_filename)}
     identity = {**result_plan, "tokenizer_sha256": enc["tokenizer_sha256"], "manifest_sha256": enc["manifest_sha256"],
                 "parameters": count, "model_plugin": registry.fingerprint("proxy_model", spec), "implementation": implementation,
@@ -327,13 +329,13 @@ def fit_cache(args):
 
     out = args.out.resolve()
     with _lock(out / ".fit.lock"):
-        immutable(out / "identity.json", format_json(identity))
         final = out / "result.json"
         if final.exists():
             result, _ = receipt(final)
             if result["identity"] != identity:
                 raise ValueError("Completed result is incompatible")
             checked_member(out, result["checkpoint"])
+            immutable(out / "identity.json", format_json(identity))
             return result
         # Approximate three FP32 tensors per parameter (weights and two Adam moments).
         interval = config["checkpoint_updates"]
@@ -344,8 +346,19 @@ def fit_cache(args):
         random.seed(config["seed"])
         np.random.seed(config["seed"])
         torch.manual_seed(config["seed"])
-        model, nats, checkpoint = train(out, identity, train_split, planned, progress, new_state, config, args.mode,
-                                        specials, device)
+        telemetry = nullcontext()
+        if gpu:
+            observation = admission.admit(gpu["uuid"])
+            if observation["physical_index"] != gpu["physical_index"]:
+                raise ValueError("Physical GPU assignment changed after preflight")
+            telemetry = dgx_resources.ResourceTelemetry(
+                out, admission, observation, torch.cuda, device,
+                {"driver": driver_digest, "resources": code_digest(dgx_resources.__file__)},
+            )
+        immutable(out / "identity.json", format_json(identity))
+        with telemetry as resources:
+            model, nats, checkpoint = train(out, identity, train_split, planned, progress, new_state, config, args.mode,
+                                            specials, device, telemetry=resources)
         checked_member(out, checkpoint)
         evaluation = score(model, val_split, context, specials, config["microbatch_blocks"], device, bool(gpu))
         result = {"identity": identity, "checkpoint": checkpoint, "training_nll_nats": nats, "evaluation": evaluation}
@@ -373,11 +386,17 @@ def main():
         command.add_argument("--threads", type=int, choices=range(1, 65), default=1)
         command.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
         command.add_argument("--min-free-mib", type=int, default=8192)
+        command.add_argument("--max-gpu-util-pct", type=int, default=5)
+        command.add_argument("--allow-shared-gpu", action="store_true")
     args = parser.parse_args()
     if args.command == "prepare":
         print(prepare_cache(args.manifest, args.tokenizer, args.cache_root, args.arm,
                             train_prefix_bytes=args.train_prefix_bytes))
     else:
+        try:
+            dgx_resources.GpuAdmission(args.min_free_mib, args.max_gpu_util_pct, args.allow_shared_gpu)
+        except ValueError as exc:
+            parser.error(str(exc))
         output = fit_cache(args)
         if args.command == "run":
             output = {k: v for k, v in output["evaluation"].items() if k != "per_document"}
