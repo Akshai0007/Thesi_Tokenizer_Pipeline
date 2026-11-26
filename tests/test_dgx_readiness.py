@@ -19,12 +19,12 @@ def test_notebook_cells_are_independent_and_gated(tmp_path, monkeypatch):
     actions = ["environment", "source", "identity", "inventory", "hashes", "devices", "admission",
                "telemetry", "report", "storage"]
     assert [c["id"] for c in cells] == actions
-    pin = "a" * 40
+    pin = "9b872ffb5a66bdf4d23df58acebbba7e788915d8"
     source = tmp_path / ("resource-source-" + pin)
     helper = source / "experiments/mom_bpe/dgx_readiness.py"
     helper.parent.mkdir(parents=True)
     helper.touch()
-    monkeypatch.setenv("MOM_BPE_RESOURCE_REVISION", pin)
+    monkeypatch.delenv("MOM_BPE_RESOURCE_REVISION", raising=False)
     monkeypatch.setenv("MOM_BPE_READINESS_SESSION", "mock")
     import subprocess
     monkeypatch.setattr(subprocess, "check_output", lambda cmd, **_: pin if "rev-parse" in cmd else "")
