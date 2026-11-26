@@ -1,0 +1,109 @@
+{
+  "bootstrap_helper_sha256": "2141360763bc86c3aafaa7c4a2e66b5ee301a3b1a1d7564a9f10a3b67f4f2a0a",
+  "evidence_receipt_sha256": "1797a247b9e8342bdb56a134146f973e3dd57755310acb8a1798bc1c0c72d453",
+  "input_manifest_sha256": "4266825c1132cb44555313b0b68cd489bbfe55566a508be2a8ed606a0bad7750",
+  "operational_commit": "9b872ffb5a66bdf4d23df58acebbba7e788915d8",
+  "queue": [
+    {
+      "arm": "T5",
+      "budget": 50000000,
+      "forecast": {
+        "canonical_bytes": 49998152,
+        "context_positions": 5383363,
+        "microbatches": 16444,
+        "next_block": 16444,
+        "optimizer_updates": 325,
+        "predicted_eos": 10355,
+        "predicted_tokens": 5383363,
+        "right_padding_positions": 0
+      },
+      "id": "T5-fixed_source_bytes",
+      "mode": "fixed_source_bytes",
+      "output": "runs/dp/t5-t8-seed17-fixed-source-v1/T5",
+      "plan_sha256": "e7ca4eedbbd72817d7a31d8335004dcd4ab11709a53b58f8b2b70cf745f6846b",
+      "seed": 17,
+      "validation": {
+        "canonical_bytes": 999950,
+        "canonical_stream_sha256": "efdeb7e194c1941b8d8124d7060c6f5bfdfdf92a1ff4f833dbc2f4d56702f514",
+        "documents": 186,
+        "split_sha256": "cb6cfc35f75da19b9472b007ed1840b5b1b5adf6d8bffa17c3860ac8e29f65a2"
+      }
+    },
+    {
+      "arm": "T8",
+      "budget": 50000000,
+      "forecast": {
+        "canonical_bytes": 49998152,
+        "context_positions": 5386510,
+        "microbatches": 16443,
+        "next_block": 16443,
+        "optimizer_updates": 325,
+        "predicted_eos": 10355,
+        "predicted_tokens": 5386510,
+        "right_padding_positions": 0
+      },
+      "id": "T8-fixed_source_bytes",
+      "mode": "fixed_source_bytes",
+      "output": "runs/dp/t5-t8-seed17-fixed-source-v1/T8",
+      "plan_sha256": "87b197f9954b1d2f10f65a6e2d3c660a5495426c51a7ff297fc49e7a6c7a2732",
+      "seed": 17,
+      "validation": {
+        "canonical_bytes": 999950,
+        "canonical_stream_sha256": "efdeb7e194c1941b8d8124d7060c6f5bfdfdf92a1ff4f833dbc2f4d56702f514",
+        "documents": 186,
+        "split_sha256": "df6f3645fda59c38087432be78a1a80e6026fcced2e4a1842eb5693b3a0d23cc"
+      }
+    },
+    {
+      "arm": "T5",
+      "budget": 5000000,
+      "forecast": {
+        "canonical_bytes": 46504717,
+        "context_positions": 5000000,
+        "microbatches": 15184,
+        "next_block": 15184,
+        "optimizer_updates": 302,
+        "predicted_eos": 9476,
+        "predicted_tokens": 5000000,
+        "right_padding_positions": 0
+      },
+      "id": "T5-fixed_training_tokens",
+      "mode": "fixed_training_tokens",
+      "output": "runs/dp/t5-t8-seed17-batch-v1/jobs/T5-fixed_training_tokens",
+      "plan_sha256": "d4c7ce984c0c07dd1a5955408de475e9c2574017b92ce349629ba31ba794b7bd",
+      "seed": 17,
+      "validation": {
+        "canonical_bytes": 999950,
+        "canonical_stream_sha256": "efdeb7e194c1941b8d8124d7060c6f5bfdfdf92a1ff4f833dbc2f4d56702f514",
+        "documents": 186,
+        "split_sha256": "cb6cfc35f75da19b9472b007ed1840b5b1b5adf6d8bffa17c3860ac8e29f65a2"
+      }
+    },
+    {
+      "arm": "T8",
+      "budget": 5000000,
+      "forecast": {
+        "canonical_bytes": 46478001,
+        "context_positions": 5000000,
+        "microbatches": 15166,
+        "next_block": 15166,
+        "optimizer_updates": 302,
+        "predicted_eos": 9461,
+        "predicted_tokens": 5000000,
+        "right_padding_positions": 0
+      },
+      "id": "T8-fixed_training_tokens",
+      "mode": "fixed_training_tokens",
+      "output": "runs/dp/t5-t8-seed17-batch-v1/jobs/T8-fixed_training_tokens",
+      "plan_sha256": "3acd4b0575113a6428115bc2cb98786966ae4dd12e1ba717851383fabf4cf11a",
+      "seed": 17,
+      "validation": {
+        "canonical_bytes": 999950,
+        "canonical_stream_sha256": "efdeb7e194c1941b8d8124d7060c6f5bfdfdf92a1ff4f833dbc2f4d56702f514",
+        "documents": 186,
+        "split_sha256": "df6f3645fda59c38087432be78a1a80e6026fcced2e4a1842eb5693b3a0d23cc"
+      }
+    }
+  ],
+  "schema": "mom-dgx-batch-v1"
+}
