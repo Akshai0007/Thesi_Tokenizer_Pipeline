@@ -1,0 +1,381 @@
+{
+  "baseline_revision": "cff0d31c84b598436087f21cc8183021993831e1",
+  "boundary_metrics": {
+    "historical_definition_on_diagnostic_only": {
+      "akshara_break_rate": 0.05925925925925926,
+      "mark_start_rate": 0.007594936708860759
+    },
+    "normalized": {
+      "boundary_akshara_by_kind": {
+        "after_virama": 6
+      },
+      "boundary_akshara_rate": 0.045112781954887216,
+      "boundary_akshara_violations": 6,
+      "boundary_ambiguous_offset_transitions_excluded": 0,
+      "boundary_audit_available": true,
+      "boundary_byte_or_special_transitions_excluded": 24,
+      "boundary_combining_mark_starts": 3,
+      "boundary_docs": 54,
+      "boundary_egc_by_kind": {
+        "after_virama": 6
+      },
+      "boundary_egc_rate": 0.045112781954887216,
+      "boundary_egc_violations": 6,
+      "boundary_malayalam_boundaries": 133,
+      "boundary_malayalam_initial_tokens": 395,
+      "boundary_mark_start_rate": 0.007594936708860759,
+      "boundary_rules_disagree": 0,
+      "boundary_token_transitions": 555
+    },
+    "raw": {
+      "boundary_akshara_by_kind": {
+        "after_virama": 6
+      },
+      "boundary_akshara_rate": 0.045112781954887216,
+      "boundary_akshara_violations": 6,
+      "boundary_ambiguous_offset_transitions_excluded": 0,
+      "boundary_audit_available": true,
+      "boundary_byte_or_special_transitions_excluded": 24,
+      "boundary_combining_mark_starts": 3,
+      "boundary_docs": 54,
+      "boundary_egc_by_kind": {
+        "after_virama": 6
+      },
+      "boundary_egc_rate": 0.045112781954887216,
+      "boundary_egc_violations": 6,
+      "boundary_malayalam_boundaries": 133,
+      "boundary_malayalam_initial_tokens": 395,
+      "boundary_mark_start_rate": 0.007594936708860759,
+      "boundary_rules_disagree": 0,
+      "boundary_token_transitions": 555
+    },
+    "unicode_fixture_normalized": {
+      "boundary_akshara_by_kind": {
+        "after_virama": 3,
+        "before_mark": 3,
+        "joiner_adjacent": 3,
+        "other": 2
+      },
+      "boundary_akshara_rate": 0.34375,
+      "boundary_akshara_violations": 11,
+      "boundary_ambiguous_offset_transitions_excluded": 10,
+      "boundary_audit_available": true,
+      "boundary_byte_or_special_transitions_excluded": 11,
+      "boundary_combining_mark_starts": 12,
+      "boundary_docs": 26,
+      "boundary_egc_by_kind": {
+        "after_virama": 4,
+        "before_mark": 3,
+        "before_modifier": 1,
+        "joiner_adjacent": 3,
+        "other": 2
+      },
+      "boundary_egc_rate": 0.40625,
+      "boundary_egc_violations": 13,
+      "boundary_malayalam_boundaries": 32,
+      "boundary_malayalam_initial_tokens": 88,
+      "boundary_mark_start_rate": 0.13636363636363635,
+      "boundary_rules_disagree": 2,
+      "boundary_token_transitions": 106
+    },
+    "unicode_fixture_raw": {
+      "boundary_akshara_by_kind": {
+        "after_virama": 3,
+        "before_mark": 3,
+        "joiner_adjacent": 4,
+        "other": 2
+      },
+      "boundary_akshara_rate": 0.4444444444444444,
+      "boundary_akshara_violations": 12,
+      "boundary_ambiguous_offset_transitions_excluded": 18,
+      "boundary_audit_available": true,
+      "boundary_byte_or_special_transitions_excluded": 11,
+      "boundary_combining_mark_starts": 12,
+      "boundary_docs": 26,
+      "boundary_egc_by_kind": {
+        "after_virama": 4,
+        "before_mark": 3,
+        "before_modifier": 1,
+        "joiner_adjacent": 4,
+        "other": 2
+      },
+      "boundary_egc_rate": 0.5185185185185185,
+      "boundary_egc_violations": 14,
+      "boundary_malayalam_boundaries": 27,
+      "boundary_malayalam_initial_tokens": 88,
+      "boundary_mark_start_rate": 0.13636363636363635,
+      "boundary_rules_disagree": 2,
+      "boundary_token_transitions": 106
+    }
+  },
+  "boundary_root_causes": {
+    "exact_examples_ending_with_virama": 6,
+    "exact_examples_starting_with_combining_mark": 0,
+    "exact_offset_example_count": 6,
+    "legacy_only_or_indirect_example_count": 2
+  },
+  "corpus_holdout": "final scientific benchmark incomplete",
+  "domains": {
+    "code_mixing_and_loanwords": {
+      "boundary_akshara_violations": 0,
+      "boundary_egc_violations": 0,
+      "boundary_malayalam_boundaries": 3,
+      "bytes": 611,
+      "bytes_per_token": 8.728571428571428,
+      "docs": 6,
+      "fertility": 1.8918918918918919,
+      "roundtrip_ok": 1.0,
+      "tokens": 70,
+      "unk_rate": 0.0,
+      "vocab_used": 0.0012083333333333334,
+      "words": 37
+    },
+    "conversation_style": {
+      "boundary_akshara_violations": 0,
+      "boundary_egc_violations": 0,
+      "boundary_malayalam_boundaries": 7,
+      "bytes": 669,
+      "bytes_per_token": 14.543478260869565,
+      "docs": 6,
+      "fertility": 1.5333333333333334,
+      "roundtrip_ok": 1.0,
+      "tokens": 46,
+      "unk_rate": 0.0,
+      "vocab_used": 0.0008333333333333334,
+      "words": 30
+    },
+    "encyclopedic_style": {
+      "boundary_akshara_violations": 1,
+      "boundary_egc_violations": 1,
+      "boundary_malayalam_boundaries": 22,
+      "bytes": 900,
+      "bytes_per_token": 15.517241379310345,
+      "docs": 6,
+      "fertility": 1.9333333333333333,
+      "roundtrip_ok": 1.0,
+      "tokens": 58,
+      "unk_rate": 0.0,
+      "vocab_used": 0.0010833333333333333,
+      "words": 30
+    },
+    "literary_style": {
+      "boundary_akshara_violations": 0,
+      "boundary_egc_violations": 0,
+      "boundary_malayalam_boundaries": 19,
+      "bytes": 947,
+      "bytes_per_token": 15.783333333333333,
+      "docs": 6,
+      "fertility": 1.7142857142857142,
+      "roundtrip_ok": 1.0,
+      "tokens": 60,
+      "unk_rate": 0.0,
+      "vocab_used": 0.001125,
+      "words": 35
+    },
+    "news_style": {
+      "boundary_akshara_violations": 0,
+      "boundary_egc_violations": 0,
+      "boundary_malayalam_boundaries": 6,
+      "bytes": 1118,
+      "bytes_per_token": 21.09433962264151,
+      "docs": 6,
+      "fertility": 1.2926829268292683,
+      "roundtrip_ok": 1.0,
+      "tokens": 53,
+      "unk_rate": 0.0,
+      "vocab_used": 0.001,
+      "words": 41
+    },
+    "numeric_punctuation_and_other_scripts": {
+      "boundary_akshara_violations": 1,
+      "boundary_egc_violations": 1,
+      "boundary_malayalam_boundaries": 6,
+      "bytes": 491,
+      "bytes_per_token": 3.363013698630137,
+      "docs": 6,
+      "fertility": 4.424242424242424,
+      "roundtrip_ok": 1.0,
+      "tokens": 146,
+      "unk_rate": 0.0,
+      "vocab_used": 0.001979166666666667,
+      "words": 33
+    },
+    "rare_and_complex_words": {
+      "boundary_akshara_violations": 2,
+      "boundary_egc_violations": 2,
+      "boundary_malayalam_boundaries": 34,
+      "bytes": 944,
+      "bytes_per_token": 14.984126984126984,
+      "docs": 6,
+      "fertility": 2.739130434782609,
+      "roundtrip_ok": 1.0,
+      "tokens": 63,
+      "unk_rate": 0.0,
+      "vocab_used": 0.0012083333333333334,
+      "words": 23
+    },
+    "regional_register_probes": {
+      "boundary_akshara_violations": 2,
+      "boundary_egc_violations": 2,
+      "boundary_malayalam_boundaries": 14,
+      "bytes": 439,
+      "bytes_per_token": 10.452380952380953,
+      "docs": 6,
+      "fertility": 2.1,
+      "roundtrip_ok": 1.0,
+      "tokens": 42,
+      "unk_rate": 0.0,
+      "vocab_used": 0.00075,
+      "words": 20
+    },
+    "technical_style": {
+      "boundary_akshara_violations": 0,
+      "boundary_egc_violations": 0,
+      "boundary_malayalam_boundaries": 22,
+      "bytes": 1046,
+      "bytes_per_token": 14.732394366197184,
+      "docs": 6,
+      "fertility": 1.9189189189189189,
+      "roundtrip_ok": 1.0,
+      "tokens": 71,
+      "unk_rate": 0.0,
+      "vocab_used": 0.0012708333333333332,
+      "words": 37
+    }
+  },
+  "fixture_sha256": "a712126a68d444ad31a86a7da40a10e58c4b61b223d112a7591c58a874aa69d1",
+  "historical_scope": {
+    "archive_name_and_size_fingerprint": "c1321250cd78",
+    "comparable_to_current_development_metrics": false,
+    "evaluation_recovered": false,
+    "expected_evaluation_documents": 22120
+  },
+  "measurement_configuration": {
+    "artifact_revision": "cff0d31c84b598436087f21cc8183021993831e1",
+    "diagnostic_corpus_kind": "authored diagnostic fixtures, not a representative or historical benchmark",
+    "document_count": 54,
+    "fixture_sha256": "a712126a68d444ad31a86a7da40a10e58c4b61b223d112a7591c58a874aa69d1",
+    "metric_sources": {
+      "basic": "f9ece63a33c9936fb9c66ec21ae3937d00348212c17b4a976014ef1bd5aa35ff",
+      "boundary_audit": "396a6b20872449579d4b459f86d5540a10dbd8f43f3b1423475cdd3f6adb44bb",
+      "roundtrip": "5611fa96d19fbe80a670b90c8b58f6c9b7745fe747b19245eede40f0f2ee2044",
+      "stress": "06544e91b4c14dd47a38111e9ac26189225f1a9420facde1c114170a7ac004f4",
+      "structure": "0189b961ae54fc9f0d132f4d959af14d515531a7eda111374cfb5e8ff20b63e0"
+    },
+    "script_sha256": "db566230acad914ed8a7a4d452d9e3077720b93467cc552cd2c27493a0f6c0e1",
+    "shared_boundary_source": "ea42e125e0288d7c9768b7f9ba2357431568fba50f782303477217e320c13758",
+    "tokenizer_sha256": "2f4b7e8b0706007f7ab3f0b8b2cc1b169094072c334585dabc4081d455e69ff5",
+    "versions": {
+      "numpy": "2.5.2",
+      "python": "3.12.0",
+      "regex": "2026.9.29",
+      "tokenizers": "0.23.3",
+      "transformers": "5.19.0",
+      "unicode": "15.0.0"
+    }
+  },
+  "morphology": {
+    "authored_diagnostic_metrics": {
+      "manual_f1": 0.10526315789473684,
+      "manual_precision": 0.3333333333333333,
+      "manual_recall": 0.0625
+    },
+    "counts": {
+      "exploratory_matched_boundaries": 1,
+      "exploratory_reference_boundaries": 3,
+      "exploratory_scored_words": 3,
+      "manual_matched_boundaries": 1,
+      "manual_predicted_boundaries": 3,
+      "manual_reference_boundaries": 16,
+      "manual_scored_words": 13,
+      "mlmorph_ambiguous_cases": 11,
+      "mlmorph_analyzed_cases": 21,
+      "unscored_sandhi_or_gemination": 5
+    },
+    "independent_adjudication": false,
+    "qualification": "EXPLORATORY_AUTHORED_AND_ANALYZER_DIAGNOSTICS",
+    "repeated_surface_stem_group_count": 4
+  },
+  "qualification": "AUTHORED_DIAGNOSTICS_ONLY",
+  "schema": "baseline-48k-diagnostic-aggregates-v1",
+  "serialized_model": {
+    "added_token_count": 7,
+    "merge_count": 46411,
+    "model_type": "BPE",
+    "revision": "cff0d31c84b598436087f21cc8183021993831e1",
+    "uses_byte_fallback": true,
+    "vocab_size": 48000
+  },
+  "source_completion_manifest": {
+    "path": "audit/48k-baseline/measurement-v3/COMPLETE.json",
+    "sha256": "197543e77c093164ab9aeb88ee2f152e1ce55d13d3956565286c948bccf46f81",
+    "verified_member_count": 12
+  },
+  "tokenizer_sha256": "2f4b7e8b0706007f7ab3f0b8b2cc1b169094072c334585dabc4081d455e69ff5",
+  "unicode": {
+    "cases": 26,
+    "counts": {
+      "lexical_idempotent": 26,
+      "lexical_output_is_nfc": 26,
+      "normalized_exact": 24,
+      "project_normalizer_matches": 26,
+      "raw_exact": 15
+    },
+    "malformed_outcome_counts": {
+      "rejected": 3,
+      "rejected_by_strict_decode": 1
+    }
+  },
+  "vocabulary": {
+    "counts": {
+      "atomic_chillu_present": 5474,
+      "byte_fallback": 256,
+      "consecutive_vowel_sign_probe": 5,
+      "malayalam_combining_start": 25,
+      "merge_intermediate": 13190,
+      "merge_intermediate_unobserved": 12962,
+      "mixed_malayalam_and_other_letter": 6,
+      "observed_once_on_diagnostic_corpus": 429,
+      "other_script_letter": 2878,
+      "repeated_virama_probe": 2,
+      "special": 7,
+      "unobserved_on_diagnostic_corpus": 47528,
+      "virama_final": 10164
+    },
+    "denominator": 48000,
+    "equivalent_entry_counts": {
+      "declared_lexical_normalization": 0,
+      "nfc": 0
+    },
+    "equivalent_group_counts": {
+      "declared_lexical_normalization": 0,
+      "nfc": 0
+    },
+    "lexical_or_surface_entries": 47737,
+    "merges": {
+      "count": 46411,
+      "duplicate_pair_excess": 0,
+      "error_counts": {
+        "missing_operand": 0,
+        "missing_target": 0,
+        "operand_not_available_at_rank": 0
+      },
+      "unique_outputs": 46411
+    },
+    "percentages_of_full_vocab": {
+      "atomic_chillu_present": 11.404166666666667,
+      "byte_fallback": 0.5333333333333333,
+      "consecutive_vowel_sign_probe": 0.010416666666666666,
+      "malayalam_combining_start": 0.052083333333333336,
+      "merge_intermediate": 27.479166666666668,
+      "merge_intermediate_unobserved": 27.004166666666666,
+      "mixed_malayalam_and_other_letter": 0.0125,
+      "observed_once_on_diagnostic_corpus": 0.89375,
+      "other_script_letter": 5.995833333333334,
+      "repeated_virama_probe": 0.004166666666666667,
+      "special": 0.014583333333333334,
+      "unobserved_on_diagnostic_corpus": 99.01666666666667,
+      "virama_final": 21.175
+    }
+  }
+}

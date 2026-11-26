@@ -4,6 +4,16 @@ import hashlib
 import math
 
 
+def summarize_bpb(document_losses, canonical_bytes, predicted_tokens):
+    """Reduce one summed NLL in nats per document with a shared byte denominator."""
+    losses = list(document_losses)
+    if canonical_bytes <= 0 or any(not math.isfinite(nll) or nll < 0 for nll in losses):
+        raise ValueError("BPB requires finite nonnegative losses and positive canonical source bytes")
+    total_nll = math.fsum(losses)
+    return {"bpb": total_nll / math.log(2) / canonical_bytes, "canonical_bytes": canonical_bytes,
+            "predicted_tokens": predicted_tokens, "documents": len(losses), "nll_nats": total_nll}
+
+
 def canonical_bpb(backend, rows, nll):
     """Call nll(inputs, targets) once per document. Return one nats value per target."""
     bos, eos = (backend.special_ids[token] for token in ("<s>", "</s>"))
@@ -32,11 +42,7 @@ def canonical_bpb(backend, rows, nll):
         document_losses.append(math.fsum(values))
         total_bytes += len(raw)
         targets_scored += len(targets)
-    if total_bytes == 0:
-        raise ValueError("BPB requires positive canonical source bytes")
-    total_nll = math.fsum(document_losses)
-    return {"bpb": total_nll / math.log(2) / total_bytes, "canonical_bytes": total_bytes,
-            "predicted_tokens": targets_scored, "documents": len(document_ids), "nll_nats": total_nll}
+    return summarize_bpb(document_losses, total_bytes, targets_scored)
 
 
 class TorchWindowNLL:

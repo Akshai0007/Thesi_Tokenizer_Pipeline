@@ -1,0 +1,16 @@
+model: {type: gpt, n_layer: 7, n_head: 7, d_model: 448}
+context: 512
+seed: 17
+optimizer:
+  method: adamw
+  schedule: exposure_warmup_cosine_v1
+  peak_lr: 0.0003
+  end_lr: 0.00003
+  betas: [0.9, 0.95]
+  weight_decay: 0.1
+  clip: 1.0
+  warmup_fraction: 0.05
+budgets: {fixed_source_bytes: 50000000, fixed_training_tokens: 5000000}
+update_targets: 16384
+microbatch_blocks: 1
+checkpoint_updates: 50

@@ -1,0 +1,2329 @@
+{
+  "arms": {
+    "T0": {
+      "boundary_attribution": null,
+      "fidelity": {
+        "akshara_breaks": 0,
+        "akshara_reference_sites": 17,
+        "alternate_akshara_breaks": 0,
+        "bytes_per_token": 8.481481481481481,
+        "canonical_bytes": 229,
+        "canonical_roundtrip": 7,
+        "canonical_words": 13,
+        "docs": 11,
+        "eligible_transitions": 3,
+        "encoding_bytes_per_second": 195059.62566764737,
+        "encoding_seconds": 0.0011739999972633086,
+        "fallback_ids": 0,
+        "fallback_rate": 0.0,
+        "fertility": 2.076923076923077,
+        "grapheme_breaks": 1,
+        "grapheme_reference_sites": 63,
+        "ids": 27,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 0,
+        "offset_exclusions": 14,
+        "one_occurrence_lexical_ids": 13,
+        "raw_roundtrip": 5,
+        "standalone_lexical_ids": 16,
+        "transitions_all": 17
+      },
+      "fit": {
+        "historical_reference_only": true,
+        "identity": {
+          "algorithm": "2f4b7e8b0706007f7ab3f0b8b2cc1b169094072c334585dabc4081d455e69ff5",
+          "arm": "T0",
+          "checkpoint_interval": 1024,
+          "code": {
+            "orthographic_errors.py": "06f1a40aa84e5bd35d2e1099c6355fd5446de6f488eb2b9b8a344347378cddc0",
+            "performance.py": "9723e989237db01fa68ab9fe0c4d9f4e90470e190446536fa720e22b77864e39",
+            "scale_data.py": "7051a0d6053b2683af132ee8151f357f073317ccf0d885bd25c1dcb6476fe7c2",
+            "scale_fit.py": "5ad1fc8f80d28a959440ee363c3b393267861780b54c03d2c7c0eec9502fa78e"
+          },
+          "config_sha256": "52c15e995667859ee23bc318c9c6086763546ec699b6bb01722dacd10b29eef2",
+          "fallback_count": 256,
+          "fidelity_panel_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+          "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+          "normalizer": "bccfa8669a7e8528",
+          "pretokenizer": "dbb6a78fb100dd2e",
+          "requested_vocab": 48000,
+          "specials": [
+            "<pad>",
+            "<s>",
+            "</s>",
+            "<unk>",
+            "<|im_start|>",
+            "<|im_end|>",
+            "<|endoftext|>"
+          ],
+          "train_stream_sha256": "af04b3a3dea8b81fa84e45dd8fde0d9b10fc5f846f2c96415f12211c8eb86150",
+          "validation_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd"
+        },
+        "occupied_vocab": 48000
+      },
+      "qualification": "WIKIMEDIA_CAPACITY_DIAGNOSTIC",
+      "scientific_holdout": false,
+      "source_validation_sha256": "b71602d9ab1bafb2eac24b1c145074b8b9643d99f8ebbb6eb62fe1992c3df222",
+      "special_ids": {
+        "</s>": 2,
+        "<pad>": 0,
+        "<s>": 1,
+        "<unk>": 3,
+        "<|endoftext|>": 6,
+        "<|im_end|>": 5,
+        "<|im_start|>": 4
+      },
+      "strata": {
+        "domain": {
+          "encyclopedic": {
+            "akshara_breaks": 773,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 774,
+            "bytes_per_token": 12.121438444191178,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 26527,
+            "encoding_bytes_per_second": 655156.5121524332,
+            "encoding_seconds": 1.5259742999660375,
+            "fallback_ids": 48,
+            "fallback_rate": 0.0005819733747181066,
+            "fertility": 2.1936805149210064,
+            "grapheme_breaks": 990,
+            "grapheme_reference_sites": 208108,
+            "ids": 82478,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 11891,
+            "offset_exclusions": 55676,
+            "one_occurrence_lexical_ids": 6947,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15701,
+            "transitions_all": 82203
+          }
+        },
+        "src": {
+          "mlwiki_snapshot": {
+            "akshara_breaks": 773,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 774,
+            "bytes_per_token": 12.121438444191178,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 26527,
+            "encoding_bytes_per_second": 586443.1623247646,
+            "encoding_seconds": 1.7047721999806527,
+            "fallback_ids": 48,
+            "fallback_rate": 0.0005819733747181066,
+            "fertility": 2.1936805149210064,
+            "grapheme_breaks": 990,
+            "grapheme_reference_sites": 208108,
+            "ids": 82478,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 11891,
+            "offset_exclusions": 55676,
+            "one_occurrence_lexical_ids": 6947,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15701,
+            "transitions_all": 82203
+          }
+        }
+      },
+      "validation": {
+        "akshara_breaks": 773,
+        "akshara_reference_sites": 112505,
+        "alternate_akshara_breaks": 774,
+        "bytes_per_token": 12.121438444191178,
+        "canonical_bytes": 999752,
+        "canonical_roundtrip": 275,
+        "canonical_words": 37598,
+        "docs": 275,
+        "eligible_transitions": 26527,
+        "encoding_bytes_per_second": 762504.8640636901,
+        "encoding_seconds": 1.3111418000298727,
+        "fallback_ids": 48,
+        "fallback_rate": 0.0005819733747181066,
+        "fertility": 2.1936805149210064,
+        "grapheme_breaks": 990,
+        "grapheme_reference_sites": 208108,
+        "ids": 82478,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 11891,
+        "offset_exclusions": 55676,
+        "one_occurrence_lexical_ids": 6947,
+        "raw_roundtrip": 274,
+        "standalone_lexical_ids": 15701,
+        "transitions_all": 82203
+      }
+    },
+    "T1": {
+      "boundary_attribution": {
+        "mechanisms": {},
+        "primary_patterns": {
+          "joiner_context_lexical/joiner": 45,
+          "legacy_lexical/combining_mark": 110,
+          "legacy_lexical/dependent_vowel": 2016,
+          "legacy_lexical/virama_or_conjunct": 753
+        },
+        "selected_model_segmenter": "codepoint",
+        "totals": {
+          "additional_joiner_context_lexical_breaks": 45,
+          "byte_adjacent_exact_transitions": 68,
+          "byte_adjacent_grapheme_breaks": 10,
+          "byte_ids": 126,
+          "documents": 275,
+          "exact_scalar_transitions": 108682,
+          "legacy_akshara_breaks": 2879,
+          "legacy_covered_malayalam_transitions": 19554,
+          "legacy_excluded_transitions": 150,
+          "malayalam_reference_interior_sites": 164187,
+          "unicode_scalar_continuation_transitions": 82
+        }
+      },
+      "fidelity": {
+        "akshara_breaks": 0,
+        "akshara_reference_sites": 17,
+        "alternate_akshara_breaks": 0,
+        "bytes_per_token": 4.872340425531915,
+        "canonical_bytes": 229,
+        "canonical_roundtrip": 11,
+        "canonical_words": 13,
+        "docs": 11,
+        "eligible_transitions": 33,
+        "encoding_bytes_per_second": 105578.60785898457,
+        "encoding_seconds": 0.0021689999957743566,
+        "fallback_ids": 3,
+        "fallback_rate": 0.06382978723404255,
+        "fertility": 3.6153846153846154,
+        "grapheme_breaks": 0,
+        "grapheme_reference_sites": 63,
+        "ids": 47,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 0,
+        "offset_exclusions": 4,
+        "one_occurrence_lexical_ids": 14,
+        "raw_roundtrip": 9,
+        "standalone_lexical_ids": 25,
+        "transitions_all": 37
+      },
+      "fit": {
+        "identity": {
+          "algorithm": "60f4af88757d274b",
+          "arm": "T1",
+          "checkpoint_interval": 1024,
+          "code": {
+            "orthographic_errors.py": "06f1a40aa84e5bd35d2e1099c6355fd5446de6f488eb2b9b8a344347378cddc0",
+            "performance.py": "9723e989237db01fa68ab9fe0c4d9f4e90470e190446536fa720e22b77864e39",
+            "scale_data.py": "7051a0d6053b2683af132ee8151f357f073317ccf0d885bd25c1dcb6476fe7c2",
+            "scale_fit.py": "5ad1fc8f80d28a959440ee363c3b393267861780b54c03d2c7c0eec9502fa78e"
+          },
+          "config_sha256": "52c15e995667859ee23bc318c9c6086763546ec699b6bb01722dacd10b29eef2",
+          "fallback_count": 256,
+          "fidelity_panel_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+          "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+          "normalizer": "bccfa8669a7e8528",
+          "pretokenizer": "dbb6a78fb100dd2e",
+          "requested_vocab": 48000,
+          "specials": [
+            "<pad>",
+            "<s>",
+            "</s>",
+            "<unk>",
+            "<|im_start|>",
+            "<|im_end|>",
+            "<|endoftext|>"
+          ],
+          "train_stream_sha256": "af04b3a3dea8b81fa84e45dd8fde0d9b10fc5f846f2c96415f12211c8eb86150",
+          "validation_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd"
+        },
+        "largest_checkpoint_bytes": 278877,
+        "latest_checkpoint_sha256": "303615755eb0855f6a6d9c962a20eff258f42832ec62389e8babb46fb064a504",
+        "model_sha256": "71b98475d19856192a19c4a4b1c19c890bd82c0fb84d745c0d004b41c51af9d0",
+        "occupied_vocab": 48000,
+        "peak_rss_bytes": 683892736,
+        "seconds": 155.87725710000086,
+        "status": "OCCUPIED_48K",
+        "training": {
+          "abstained_morphology_forms": 0,
+          "canonical_bytes": 7999910,
+          "documents": 1872,
+          "initial_unit_coverage": 0.9999903289910503,
+          "n_merges": 47128,
+          "n_removed": 0,
+          "occupied_vocab": 48000,
+          "protected_atoms": 0,
+          "raw_bytes": 7999916,
+          "resumed_events": 0,
+          "reviewed_training_forms_encountered": 0,
+          "standalone_train_tokens": 834643,
+          "stop_reason": "vocabulary_reached",
+          "supported_morphology_forms": 0,
+          "training_fallback_ids_on_selected_types": 87,
+          "unused_lexical_train": 1985,
+          "used_once_lexical_train": 2031,
+          "word_mass_covered": 1.0,
+          "word_types_used": 100963
+        },
+        "verified_checkpoint_generations": 47
+      },
+      "qualification": "WIKIMEDIA_CAPACITY_DIAGNOSTIC",
+      "scientific_holdout": false,
+      "source_validation_sha256": "23fe8732ccdab774f5c37758b812b9a43c9c30f998d6887daf230017d871fac3",
+      "special_ids": {
+        "</s>": 2,
+        "<pad>": 0,
+        "<s>": 1,
+        "<unk>": 3,
+        "<|endoftext|>": 6,
+        "<|im_end|>": 5,
+        "<|im_start|>": 4
+      },
+      "strata": {
+        "domain": {
+          "encyclopedic": {
+            "akshara_breaks": 2879,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 2888,
+            "bytes_per_token": 9.16875613312668,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108614,
+            "encoding_bytes_per_second": 138858.34019180265,
+            "encoding_seconds": 7.199798000026931,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011555498491365474,
+            "fertility": 2.9001276663652322,
+            "grapheme_breaks": 3015,
+            "grapheme_reference_sites": 208108,
+            "ids": 109039,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19554,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7526,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 16033,
+            "transitions_all": 108764
+          }
+        },
+        "src": {
+          "mlwiki_snapshot": {
+            "akshara_breaks": 2879,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 2888,
+            "bytes_per_token": 9.16875613312668,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108614,
+            "encoding_bytes_per_second": 137077.6590594734,
+            "encoding_seconds": 7.293325599952368,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011555498491365474,
+            "fertility": 2.9001276663652322,
+            "grapheme_breaks": 3015,
+            "grapheme_reference_sites": 208108,
+            "ids": 109039,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19554,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7526,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 16033,
+            "transitions_all": 108764
+          }
+        }
+      },
+      "validation": {
+        "akshara_breaks": 2879,
+        "akshara_reference_sites": 112505,
+        "alternate_akshara_breaks": 2888,
+        "bytes_per_token": 9.16875613312668,
+        "canonical_bytes": 999752,
+        "canonical_roundtrip": 275,
+        "canonical_words": 37598,
+        "docs": 275,
+        "eligible_transitions": 108614,
+        "encoding_bytes_per_second": 133694.84114213396,
+        "encoding_seconds": 7.477865200027736,
+        "fallback_ids": 126,
+        "fallback_rate": 0.0011555498491365474,
+        "fertility": 2.9001276663652322,
+        "grapheme_breaks": 3015,
+        "grapheme_reference_sites": 208108,
+        "ids": 109039,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 19554,
+        "offset_exclusions": 150,
+        "one_occurrence_lexical_ids": 7526,
+        "raw_roundtrip": 274,
+        "standalone_lexical_ids": 16033,
+        "transitions_all": 108764
+      }
+    },
+    "T3": {
+      "boundary_attribution": {
+        "mechanisms": {},
+        "primary_patterns": {
+          "byte_adjacent/combining_mark": 28,
+          "byte_adjacent/dependent_vowel": 211,
+          "byte_adjacent/joiner": 42,
+          "byte_adjacent/virama_or_conjunct": 734
+        },
+        "selected_model_segmenter": "akshara",
+        "totals": {
+          "byte_adjacent_akshara_breaks": 1015,
+          "byte_adjacent_exact_transitions": 1620,
+          "byte_adjacent_grapheme_breaks": 1029,
+          "byte_ids": 3987,
+          "documents": 275,
+          "exact_scalar_transitions": 109515,
+          "legacy_covered_malayalam_transitions": 19023,
+          "legacy_excluded_transitions": 4274,
+          "malayalam_reference_interior_sites": 164187,
+          "unicode_scalar_continuation_transitions": 2654
+        }
+      },
+      "fidelity": {
+        "akshara_breaks": 0,
+        "akshara_reference_sites": 17,
+        "alternate_akshara_breaks": 0,
+        "bytes_per_token": 4.872340425531915,
+        "canonical_bytes": 229,
+        "canonical_roundtrip": 11,
+        "canonical_words": 13,
+        "docs": 11,
+        "eligible_transitions": 33,
+        "encoding_bytes_per_second": 43852.929944342846,
+        "encoding_seconds": 0.005221999996138038,
+        "fallback_ids": 3,
+        "fallback_rate": 0.06382978723404255,
+        "fertility": 3.6153846153846154,
+        "grapheme_breaks": 0,
+        "grapheme_reference_sites": 63,
+        "ids": 47,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 0,
+        "offset_exclusions": 4,
+        "one_occurrence_lexical_ids": 14,
+        "raw_roundtrip": 9,
+        "standalone_lexical_ids": 25,
+        "transitions_all": 37
+      },
+      "fit": {
+        "identity": {
+          "algorithm": "0604adf5e275d9b5",
+          "arm": "T3",
+          "checkpoint_interval": 1024,
+          "code": {
+            "orthographic_errors.py": "06f1a40aa84e5bd35d2e1099c6355fd5446de6f488eb2b9b8a344347378cddc0",
+            "performance.py": "9723e989237db01fa68ab9fe0c4d9f4e90470e190446536fa720e22b77864e39",
+            "scale_data.py": "7051a0d6053b2683af132ee8151f357f073317ccf0d885bd25c1dcb6476fe7c2",
+            "scale_fit.py": "5ad1fc8f80d28a959440ee363c3b393267861780b54c03d2c7c0eec9502fa78e"
+          },
+          "config_sha256": "52c15e995667859ee23bc318c9c6086763546ec699b6bb01722dacd10b29eef2",
+          "fallback_count": 256,
+          "fidelity_panel_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+          "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+          "normalizer": "bccfa8669a7e8528",
+          "pretokenizer": "dbb6a78fb100dd2e",
+          "requested_vocab": 48000,
+          "specials": [
+            "<pad>",
+            "<s>",
+            "</s>",
+            "<unk>",
+            "<|im_start|>",
+            "<|im_end|>",
+            "<|endoftext|>"
+          ],
+          "train_stream_sha256": "af04b3a3dea8b81fa84e45dd8fde0d9b10fc5f846f2c96415f12211c8eb86150",
+          "validation_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd"
+        },
+        "largest_checkpoint_bytes": 256867,
+        "latest_checkpoint_sha256": "8865abfc1208c552fd6382d9f67259bca48d511e573e438c1f90ceb6ef05fb39",
+        "model_sha256": "021c57b0759f1dcef6efc771f2493f7d643ed62e7beb779fd403ee4841b51e30",
+        "occupied_vocab": 48000,
+        "peak_rss_bytes": 546402304,
+        "seconds": 153.39055929999813,
+        "status": "OCCUPIED_48K",
+        "training": {
+          "abstained_morphology_forms": 0,
+          "canonical_bytes": 7999910,
+          "documents": 1872,
+          "initial_unit_coverage": 0.9999905248914064,
+          "n_merges": 43390,
+          "n_removed": 0,
+          "occupied_vocab": 48000,
+          "protected_atoms": 0,
+          "raw_bytes": 7999916,
+          "resumed_events": 0,
+          "reviewed_training_forms_encountered": 0,
+          "standalone_train_tokens": 835504,
+          "stop_reason": "vocabulary_reached",
+          "supported_morphology_forms": 0,
+          "training_fallback_ids_on_selected_types": 48,
+          "unused_lexical_train": 2357,
+          "used_once_lexical_train": 3371,
+          "word_mass_covered": 1.0,
+          "word_types_used": 100963
+        },
+        "verified_checkpoint_generations": 43
+      },
+      "qualification": "WIKIMEDIA_CAPACITY_DIAGNOSTIC",
+      "scientific_holdout": false,
+      "source_validation_sha256": "73da2e24b5e44025066059f2f2abf75dd8ae6ee96868cea72bcfc6f6c3b0fd59",
+      "special_ids": {
+        "</s>": 2,
+        "<pad>": 0,
+        "<s>": 1,
+        "<unk>": 3,
+        "<|endoftext|>": 6,
+        "<|im_end|>": 5,
+        "<|im_start|>": 4
+      },
+      "strata": {
+        "domain": {
+          "encyclopedic": {
+            "akshara_breaks": 0,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 7,
+            "bytes_per_token": 8.891110241542457,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 107895,
+            "encoding_bytes_per_second": 102953.51972233162,
+            "encoding_seconds": 9.710712199994305,
+            "fallback_ids": 3987,
+            "fallback_rate": 0.03545765003023727,
+            "fertility": 2.9906909942018194,
+            "grapheme_breaks": 45,
+            "grapheme_reference_sites": 208108,
+            "ids": 112444,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19023,
+            "offset_exclusions": 4274,
+            "one_occurrence_lexical_ids": 7313,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15671,
+            "transitions_all": 112169
+          }
+        },
+        "src": {
+          "mlwiki_snapshot": {
+            "akshara_breaks": 0,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 7,
+            "bytes_per_token": 8.891110241542457,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 107895,
+            "encoding_bytes_per_second": 110367.20373041296,
+            "encoding_seconds": 9.058415600000444,
+            "fallback_ids": 3987,
+            "fallback_rate": 0.03545765003023727,
+            "fertility": 2.9906909942018194,
+            "grapheme_breaks": 45,
+            "grapheme_reference_sites": 208108,
+            "ids": 112444,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19023,
+            "offset_exclusions": 4274,
+            "one_occurrence_lexical_ids": 7313,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15671,
+            "transitions_all": 112169
+          }
+        }
+      },
+      "validation": {
+        "akshara_breaks": 0,
+        "akshara_reference_sites": 112505,
+        "alternate_akshara_breaks": 7,
+        "bytes_per_token": 8.891110241542457,
+        "canonical_bytes": 999752,
+        "canonical_roundtrip": 275,
+        "canonical_words": 37598,
+        "docs": 275,
+        "eligible_transitions": 107895,
+        "encoding_bytes_per_second": 106012.59165146608,
+        "encoding_seconds": 9.430502400005935,
+        "fallback_ids": 3987,
+        "fallback_rate": 0.03545765003023727,
+        "fertility": 2.9906909942018194,
+        "grapheme_breaks": 45,
+        "grapheme_reference_sites": 208108,
+        "ids": 112444,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 19023,
+        "offset_exclusions": 4274,
+        "one_occurrence_lexical_ids": 7313,
+        "raw_roundtrip": 274,
+        "standalone_lexical_ids": 15671,
+        "transitions_all": 112169
+      }
+    },
+    "T4": {
+      "boundary_attribution": {
+        "mechanisms": {
+          "joiner_context_lexical/unprotected_akshara_scalar_backoff": 2,
+          "legacy_lexical/unprotected_akshara_scalar_backoff": 1029
+        },
+        "primary_patterns": {
+          "joiner_context_lexical/joiner": 2,
+          "legacy_lexical/combining_mark": 21,
+          "legacy_lexical/dependent_vowel": 270,
+          "legacy_lexical/virama_or_conjunct": 738
+        },
+        "selected_model_segmenter": "hybrid",
+        "totals": {
+          "additional_joiner_context_lexical_breaks": 2,
+          "byte_adjacent_exact_transitions": 68,
+          "byte_adjacent_grapheme_breaks": 10,
+          "byte_ids": 126,
+          "documents": 275,
+          "exact_scalar_transitions": 108825,
+          "legacy_akshara_breaks": 1029,
+          "legacy_covered_malayalam_transitions": 19771,
+          "legacy_excluded_transitions": 150,
+          "malayalam_reference_interior_sites": 164187,
+          "unicode_scalar_continuation_transitions": 82
+        }
+      },
+      "fidelity": {
+        "akshara_breaks": 0,
+        "akshara_reference_sites": 17,
+        "alternate_akshara_breaks": 0,
+        "bytes_per_token": 4.872340425531915,
+        "canonical_bytes": 229,
+        "canonical_roundtrip": 11,
+        "canonical_words": 13,
+        "docs": 11,
+        "eligible_transitions": 33,
+        "encoding_bytes_per_second": 48941.03556962145,
+        "encoding_seconds": 0.004679100009525428,
+        "fallback_ids": 3,
+        "fallback_rate": 0.06382978723404255,
+        "fertility": 3.6153846153846154,
+        "grapheme_breaks": 0,
+        "grapheme_reference_sites": 63,
+        "ids": 47,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 0,
+        "offset_exclusions": 4,
+        "one_occurrence_lexical_ids": 14,
+        "raw_roundtrip": 9,
+        "standalone_lexical_ids": 25,
+        "transitions_all": 37
+      },
+      "fit": {
+        "identity": {
+          "algorithm": "4f87dc3d8cdd7a2e",
+          "arm": "T4",
+          "checkpoint_interval": 1024,
+          "code": {
+            "orthographic_errors.py": "06f1a40aa84e5bd35d2e1099c6355fd5446de6f488eb2b9b8a344347378cddc0",
+            "performance.py": "9723e989237db01fa68ab9fe0c4d9f4e90470e190446536fa720e22b77864e39",
+            "scale_data.py": "7051a0d6053b2683af132ee8151f357f073317ccf0d885bd25c1dcb6476fe7c2",
+            "scale_fit.py": "5ad1fc8f80d28a959440ee363c3b393267861780b54c03d2c7c0eec9502fa78e"
+          },
+          "config_sha256": "52c15e995667859ee23bc318c9c6086763546ec699b6bb01722dacd10b29eef2",
+          "fallback_count": 256,
+          "fidelity_panel_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+          "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+          "normalizer": "bccfa8669a7e8528",
+          "pretokenizer": "dbb6a78fb100dd2e",
+          "requested_vocab": 48000,
+          "specials": [
+            "<pad>",
+            "<s>",
+            "</s>",
+            "<unk>",
+            "<|im_start|>",
+            "<|im_end|>",
+            "<|endoftext|>"
+          ],
+          "train_stream_sha256": "af04b3a3dea8b81fa84e45dd8fde0d9b10fc5f846f2c96415f12211c8eb86150",
+          "validation_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd"
+        },
+        "largest_checkpoint_bytes": 274915,
+        "latest_checkpoint_sha256": "4aaae13bac1a386c18164fe284d8ca3fdb2adaf53e88a20ed50d78a7b8e103ca",
+        "model_sha256": "112e49f8464f93d3166f877790c4ac7276f579d2e7c22af40cc91e39572f8263",
+        "occupied_vocab": 48000,
+        "peak_rss_bytes": 570228736,
+        "seconds": 173.4328299000008,
+        "status": "OCCUPIED_48K",
+        "training": {
+          "abstained_morphology_forms": 0,
+          "canonical_bytes": 7999910,
+          "documents": 1872,
+          "initial_unit_coverage": 1.0,
+          "n_merges": 46587,
+          "n_removed": 0,
+          "occupied_vocab": 48000,
+          "protected_atoms": 512,
+          "raw_bytes": 7999916,
+          "resumed_events": 0,
+          "reviewed_training_forms_encountered": 0,
+          "standalone_train_tokens": 835332,
+          "stop_reason": "vocabulary_reached",
+          "supported_morphology_forms": 0,
+          "training_fallback_ids_on_selected_types": 0,
+          "unused_lexical_train": 2253,
+          "used_once_lexical_train": 2122,
+          "word_mass_covered": 1.0,
+          "word_types_used": 100963
+        },
+        "verified_checkpoint_generations": 46
+      },
+      "qualification": "WIKIMEDIA_CAPACITY_DIAGNOSTIC",
+      "scientific_holdout": false,
+      "source_validation_sha256": "46ae4a9e0482e713a45cd6b3bd5b1bed4b8cfe8d59139d5b0ccdd5953460b4e9",
+      "special_ids": {
+        "</s>": 2,
+        "<pad>": 0,
+        "<s>": 1,
+        "<unk>": 3,
+        "<|endoftext|>": 6,
+        "<|im_end|>": 5,
+        "<|im_start|>": 4
+      },
+      "strata": {
+        "domain": {
+          "encyclopedic": {
+            "akshara_breaks": 1029,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 1036,
+            "bytes_per_token": 9.15674744921324,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108757,
+            "encoding_bytes_per_second": 190733.7412660071,
+            "encoding_seconds": 5.241610600012791,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011540363796230149,
+            "fertility": 2.903931060162775,
+            "grapheme_breaks": 1084,
+            "grapheme_reference_sites": 208108,
+            "ids": 109182,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19771,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7494,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15945,
+            "transitions_all": 108907
+          }
+        },
+        "src": {
+          "mlwiki_snapshot": {
+            "akshara_breaks": 1029,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 1036,
+            "bytes_per_token": 9.15674744921324,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108757,
+            "encoding_bytes_per_second": 173263.74606117472,
+            "encoding_seconds": 5.770116500003496,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011540363796230149,
+            "fertility": 2.903931060162775,
+            "grapheme_breaks": 1084,
+            "grapheme_reference_sites": 208108,
+            "ids": 109182,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19771,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7494,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15945,
+            "transitions_all": 108907
+          }
+        }
+      },
+      "validation": {
+        "akshara_breaks": 1029,
+        "akshara_reference_sites": 112505,
+        "alternate_akshara_breaks": 1036,
+        "bytes_per_token": 9.15674744921324,
+        "canonical_bytes": 999752,
+        "canonical_roundtrip": 275,
+        "canonical_words": 37598,
+        "docs": 275,
+        "eligible_transitions": 108757,
+        "encoding_bytes_per_second": 202678.12736318185,
+        "encoding_seconds": 4.932707899992238,
+        "fallback_ids": 126,
+        "fallback_rate": 0.0011540363796230149,
+        "fertility": 2.903931060162775,
+        "grapheme_breaks": 1084,
+        "grapheme_reference_sites": 208108,
+        "ids": 109182,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 19771,
+        "offset_exclusions": 150,
+        "one_occurrence_lexical_ids": 7494,
+        "raw_roundtrip": 274,
+        "standalone_lexical_ids": 15945,
+        "transitions_all": 108907
+      }
+    },
+    "T5": {
+      "boundary_attribution": {
+        "mechanisms": {
+          "joiner_context_lexical/unprotected_akshara_scalar_backoff": 25,
+          "legacy_lexical/unprotected_akshara_scalar_backoff": 1030
+        },
+        "primary_patterns": {
+          "joiner_context_lexical/joiner": 25,
+          "legacy_lexical/combining_mark": 32,
+          "legacy_lexical/dependent_vowel": 544,
+          "legacy_lexical/virama_or_conjunct": 454
+        },
+        "selected_model_segmenter": "hybrid",
+        "totals": {
+          "additional_joiner_context_lexical_breaks": 25,
+          "byte_adjacent_exact_transitions": 68,
+          "byte_adjacent_grapheme_breaks": 10,
+          "byte_ids": 126,
+          "documents": 275,
+          "exact_scalar_transitions": 108476,
+          "legacy_akshara_breaks": 1030,
+          "legacy_covered_malayalam_transitions": 19388,
+          "legacy_excluded_transitions": 150,
+          "malayalam_reference_interior_sites": 164187,
+          "unicode_scalar_continuation_transitions": 82
+        }
+      },
+      "fidelity": {
+        "akshara_breaks": 0,
+        "akshara_reference_sites": 17,
+        "alternate_akshara_breaks": 0,
+        "bytes_per_token": 4.872340425531915,
+        "canonical_bytes": 229,
+        "canonical_roundtrip": 11,
+        "canonical_words": 13,
+        "docs": 11,
+        "eligible_transitions": 33,
+        "encoding_bytes_per_second": 73235.47276632965,
+        "encoding_seconds": 0.0031269000028260052,
+        "fallback_ids": 3,
+        "fallback_rate": 0.06382978723404255,
+        "fertility": 3.6153846153846154,
+        "grapheme_breaks": 0,
+        "grapheme_reference_sites": 63,
+        "ids": 47,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 0,
+        "offset_exclusions": 4,
+        "one_occurrence_lexical_ids": 14,
+        "raw_roundtrip": 9,
+        "standalone_lexical_ids": 25,
+        "transitions_all": 37
+      },
+      "fit": {
+        "identity": {
+          "algorithm": "066e4843cf43e548",
+          "arm": "T5",
+          "checkpoint_interval": 1024,
+          "code": {
+            "orthographic_errors.py": "06f1a40aa84e5bd35d2e1099c6355fd5446de6f488eb2b9b8a344347378cddc0",
+            "performance.py": "9723e989237db01fa68ab9fe0c4d9f4e90470e190446536fa720e22b77864e39",
+            "scale_data.py": "7051a0d6053b2683af132ee8151f357f073317ccf0d885bd25c1dcb6476fe7c2",
+            "scale_fit.py": "5ad1fc8f80d28a959440ee363c3b393267861780b54c03d2c7c0eec9502fa78e"
+          },
+          "config_sha256": "52c15e995667859ee23bc318c9c6086763546ec699b6bb01722dacd10b29eef2",
+          "fallback_count": 256,
+          "fidelity_panel_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+          "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+          "normalizer": "bccfa8669a7e8528",
+          "pretokenizer": "dbb6a78fb100dd2e",
+          "requested_vocab": 48000,
+          "specials": [
+            "<pad>",
+            "<s>",
+            "</s>",
+            "<unk>",
+            "<|im_start|>",
+            "<|im_end|>",
+            "<|endoftext|>"
+          ],
+          "train_stream_sha256": "af04b3a3dea8b81fa84e45dd8fde0d9b10fc5f846f2c96415f12211c8eb86150",
+          "validation_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd"
+        },
+        "largest_checkpoint_bytes": 322694,
+        "latest_checkpoint_sha256": "d6e666ecaeae7241af7b979307a77ccfa28a679880275079fb874bbd65abc4e4",
+        "model_sha256": "9c0e42e975162b69cd966ec99210731666ad8c78cfc3d03436bfad08b31e3aab",
+        "occupied_vocab": 48000,
+        "peak_rss_bytes": 571867136,
+        "seconds": 230.67503580000266,
+        "status": "OCCUPIED_48K",
+        "training": {
+          "abstained_morphology_forms": 0,
+          "canonical_bytes": 7999910,
+          "documents": 1872,
+          "initial_unit_coverage": 1.0,
+          "n_merges": 49329,
+          "n_removed": 2514,
+          "occupied_vocab": 48000,
+          "protected_atoms": 512,
+          "raw_bytes": 7999916,
+          "resumed_events": 0,
+          "reviewed_training_forms_encountered": 0,
+          "standalone_train_tokens": 828612,
+          "stop_reason": "vocabulary_reached",
+          "supported_morphology_forms": 0,
+          "training_fallback_ids_on_selected_types": 0,
+          "unused_lexical_train": 22,
+          "used_once_lexical_train": 2049,
+          "word_mass_covered": 1.0,
+          "word_types_used": 100963
+        },
+        "verified_checkpoint_generations": 51
+      },
+      "qualification": "WIKIMEDIA_CAPACITY_DIAGNOSTIC",
+      "scientific_holdout": false,
+      "source_validation_sha256": "b14d8fb29730f3aa69916d56a54c0da3c10dd1e2f2af182a53db0bf57cb56031",
+      "special_ids": {
+        "</s>": 2,
+        "<pad>": 0,
+        "<s>": 1,
+        "<unk>": 3,
+        "<|endoftext|>": 6,
+        "<|im_end|>": 5,
+        "<|im_start|>": 4
+      },
+      "strata": {
+        "domain": {
+          "encyclopedic": {
+            "akshara_breaks": 1030,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 1039,
+            "bytes_per_token": 9.186110830354764,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108408,
+            "encoding_bytes_per_second": 127703.50232476684,
+            "encoding_seconds": 7.828696800010221,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011577370834213888,
+            "fertility": 2.894648651524017,
+            "grapheme_breaks": 1119,
+            "grapheme_reference_sites": 208108,
+            "ids": 108833,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19388,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7548,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15886,
+            "transitions_all": 108558
+          }
+        },
+        "src": {
+          "mlwiki_snapshot": {
+            "akshara_breaks": 1030,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 1039,
+            "bytes_per_token": 9.186110830354764,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108408,
+            "encoding_bytes_per_second": 100209.61634691776,
+            "encoding_seconds": 9.976607400021749,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011577370834213888,
+            "fertility": 2.894648651524017,
+            "grapheme_breaks": 1119,
+            "grapheme_reference_sites": 208108,
+            "ids": 108833,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19388,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7548,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15886,
+            "transitions_all": 108558
+          }
+        }
+      },
+      "validation": {
+        "akshara_breaks": 1030,
+        "akshara_reference_sites": 112505,
+        "alternate_akshara_breaks": 1039,
+        "bytes_per_token": 9.186110830354764,
+        "canonical_bytes": 999752,
+        "canonical_roundtrip": 275,
+        "canonical_words": 37598,
+        "docs": 275,
+        "eligible_transitions": 108408,
+        "encoding_bytes_per_second": 127552.24221875033,
+        "encoding_seconds": 7.837980600023002,
+        "fallback_ids": 126,
+        "fallback_rate": 0.0011577370834213888,
+        "fertility": 2.894648651524017,
+        "grapheme_breaks": 1119,
+        "grapheme_reference_sites": 208108,
+        "ids": 108833,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 19388,
+        "offset_exclusions": 150,
+        "one_occurrence_lexical_ids": 7548,
+        "raw_roundtrip": 274,
+        "standalone_lexical_ids": 15886,
+        "transitions_all": 108558
+      }
+    },
+    "T8": {
+      "boundary_attribution": {
+        "mechanisms": {
+          "joiner_context_lexical/unprotected_akshara_scalar_backoff": 24,
+          "legacy_lexical/unprotected_akshara_scalar_backoff": 706
+        },
+        "primary_patterns": {
+          "joiner_context_lexical/joiner": 24,
+          "legacy_lexical/combining_mark": 18,
+          "legacy_lexical/dependent_vowel": 330,
+          "legacy_lexical/virama_or_conjunct": 358
+        },
+        "selected_model_segmenter": "hybrid",
+        "totals": {
+          "additional_joiner_context_lexical_breaks": 24,
+          "byte_adjacent_exact_transitions": 68,
+          "byte_adjacent_grapheme_breaks": 10,
+          "byte_ids": 126,
+          "documents": 275,
+          "exact_scalar_transitions": 108445,
+          "legacy_akshara_breaks": 706,
+          "legacy_covered_malayalam_transitions": 19361,
+          "legacy_excluded_transitions": 150,
+          "malayalam_reference_interior_sites": 164187,
+          "unicode_scalar_continuation_transitions": 82
+        }
+      },
+      "fidelity": {
+        "akshara_breaks": 0,
+        "akshara_reference_sites": 17,
+        "alternate_akshara_breaks": 0,
+        "bytes_per_token": 4.872340425531915,
+        "canonical_bytes": 229,
+        "canonical_roundtrip": 11,
+        "canonical_words": 13,
+        "docs": 11,
+        "eligible_transitions": 33,
+        "encoding_bytes_per_second": 67952.52243134126,
+        "encoding_seconds": 0.0033699999912641943,
+        "fallback_ids": 3,
+        "fallback_rate": 0.06382978723404255,
+        "fertility": 3.6153846153846154,
+        "grapheme_breaks": 0,
+        "grapheme_reference_sites": 63,
+        "ids": 47,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 0,
+        "offset_exclusions": 4,
+        "one_occurrence_lexical_ids": 14,
+        "raw_roundtrip": 9,
+        "standalone_lexical_ids": 25,
+        "transitions_all": 37
+      },
+      "fit": {
+        "identity": {
+          "algorithm": "e530a8f815b865fc",
+          "arm": "T8",
+          "checkpoint_interval": 1024,
+          "code": {
+            "orthographic_errors.py": "06f1a40aa84e5bd35d2e1099c6355fd5446de6f488eb2b9b8a344347378cddc0",
+            "performance.py": "9723e989237db01fa68ab9fe0c4d9f4e90470e190446536fa720e22b77864e39",
+            "scale_data.py": "7051a0d6053b2683af132ee8151f357f073317ccf0d885bd25c1dcb6476fe7c2",
+            "scale_fit.py": "5ad1fc8f80d28a959440ee363c3b393267861780b54c03d2c7c0eec9502fa78e"
+          },
+          "config_sha256": "52c15e995667859ee23bc318c9c6086763546ec699b6bb01722dacd10b29eef2",
+          "fallback_count": 256,
+          "fidelity_panel_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+          "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+          "normalizer": "bccfa8669a7e8528",
+          "pretokenizer": "dbb6a78fb100dd2e",
+          "requested_vocab": 48000,
+          "specials": [
+            "<pad>",
+            "<s>",
+            "</s>",
+            "<unk>",
+            "<|im_start|>",
+            "<|im_end|>",
+            "<|endoftext|>"
+          ],
+          "train_stream_sha256": "af04b3a3dea8b81fa84e45dd8fde0d9b10fc5f846f2c96415f12211c8eb86150",
+          "validation_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd"
+        },
+        "largest_checkpoint_bytes": 325648,
+        "latest_checkpoint_sha256": "af6bbeff44eddcc05296d7beabd2499698f54420fa254b9ca99b5e529a8bd42f",
+        "model_sha256": "9b8b1107ae93c3ee3021c49b7ac5cf6be59617640e402f1d8eb7dcfac0599450",
+        "occupied_vocab": 48000,
+        "peak_rss_bytes": 581120000,
+        "seconds": 240.19060570000147,
+        "status": "OCCUPIED_48K",
+        "training": {
+          "canonical_bytes": 7999910,
+          "documents": 1872,
+          "guarded_internal_sites": 130574,
+          "initial_unit_coverage": 1.0,
+          "n_merges": 49497,
+          "n_removed": 2704,
+          "occupied_vocab": 48000,
+          "protected_atoms": 512,
+          "raw_bytes": 7999916,
+          "resumed_events": 0,
+          "standalone_train_tokens": 828514,
+          "stop_reason": "vocabulary_reached",
+          "training_fallback_ids_on_selected_types": 0,
+          "unused_lexical_train": 21,
+          "used_once_lexical_train": 2046,
+          "word_mass_covered": 1.0,
+          "word_types_used": 100963
+        },
+        "verified_checkpoint_generations": 51
+      },
+      "qualification": "WIKIMEDIA_CAPACITY_DIAGNOSTIC",
+      "scientific_holdout": false,
+      "source_validation_sha256": "d0baddbdd0c616948abd4012537702d8e4b55dd998f1113907b35a3c6f710e5a",
+      "special_ids": {
+        "</s>": 2,
+        "<pad>": 0,
+        "<s>": 1,
+        "<unk>": 3,
+        "<|endoftext|>": 6,
+        "<|im_end|>": 5,
+        "<|im_start|>": 4
+      },
+      "strata": {
+        "domain": {
+          "encyclopedic": {
+            "akshara_breaks": 706,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 713,
+            "bytes_per_token": 9.188728148379626,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108377,
+            "encoding_bytes_per_second": 126326.60677819693,
+            "encoding_seconds": 7.914025599970046,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011580669472987628,
+            "fertility": 2.8938241395818927,
+            "grapheme_breaks": 789,
+            "grapheme_reference_sites": 208108,
+            "ids": 108802,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19361,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7556,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15873,
+            "transitions_all": 108527
+          }
+        },
+        "src": {
+          "mlwiki_snapshot": {
+            "akshara_breaks": 706,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 713,
+            "bytes_per_token": 9.188728148379626,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108377,
+            "encoding_bytes_per_second": 115212.403249026,
+            "encoding_seconds": 8.677468499976385,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011580669472987628,
+            "fertility": 2.8938241395818927,
+            "grapheme_breaks": 789,
+            "grapheme_reference_sites": 208108,
+            "ids": 108802,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19361,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7556,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15873,
+            "transitions_all": 108527
+          }
+        }
+      },
+      "validation": {
+        "akshara_breaks": 706,
+        "akshara_reference_sites": 112505,
+        "alternate_akshara_breaks": 713,
+        "bytes_per_token": 9.188728148379626,
+        "canonical_bytes": 999752,
+        "canonical_roundtrip": 275,
+        "canonical_words": 37598,
+        "docs": 275,
+        "eligible_transitions": 108377,
+        "encoding_bytes_per_second": 115175.93704092225,
+        "encoding_seconds": 8.680215899999894,
+        "fallback_ids": 126,
+        "fallback_rate": 0.0011580669472987628,
+        "fertility": 2.8938241395818927,
+        "grapheme_breaks": 789,
+        "grapheme_reference_sites": 208108,
+        "ids": 108802,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 19361,
+        "offset_exclusions": 150,
+        "one_occurrence_lexical_ids": 7556,
+        "raw_roundtrip": 274,
+        "standalone_lexical_ids": 15873,
+        "transitions_all": 108527
+      }
+    },
+    "T8-guard-off": {
+      "boundary_attribution": {
+        "mechanisms": {
+          "joiner_context_lexical/unprotected_akshara_scalar_backoff": 25,
+          "legacy_lexical/unprotected_akshara_scalar_backoff": 1030
+        },
+        "primary_patterns": {
+          "joiner_context_lexical/joiner": 25,
+          "legacy_lexical/combining_mark": 32,
+          "legacy_lexical/dependent_vowel": 544,
+          "legacy_lexical/virama_or_conjunct": 454
+        },
+        "selected_model_segmenter": "hybrid",
+        "totals": {
+          "additional_joiner_context_lexical_breaks": 25,
+          "byte_adjacent_exact_transitions": 68,
+          "byte_adjacent_grapheme_breaks": 10,
+          "byte_ids": 126,
+          "documents": 275,
+          "exact_scalar_transitions": 108476,
+          "legacy_akshara_breaks": 1030,
+          "legacy_covered_malayalam_transitions": 19388,
+          "legacy_excluded_transitions": 150,
+          "malayalam_reference_interior_sites": 164187,
+          "unicode_scalar_continuation_transitions": 82
+        }
+      },
+      "fidelity": {
+        "akshara_breaks": 0,
+        "akshara_reference_sites": 17,
+        "alternate_akshara_breaks": 0,
+        "bytes_per_token": 4.872340425531915,
+        "canonical_bytes": 229,
+        "canonical_roundtrip": 11,
+        "canonical_words": 13,
+        "docs": 11,
+        "eligible_transitions": 33,
+        "encoding_bytes_per_second": 40695.19474078237,
+        "encoding_seconds": 0.005627200003800681,
+        "fallback_ids": 3,
+        "fallback_rate": 0.06382978723404255,
+        "fertility": 3.6153846153846154,
+        "grapheme_breaks": 0,
+        "grapheme_reference_sites": 63,
+        "ids": 47,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 0,
+        "offset_exclusions": 4,
+        "one_occurrence_lexical_ids": 14,
+        "raw_roundtrip": 9,
+        "standalone_lexical_ids": 25,
+        "transitions_all": 37
+      },
+      "fit": {
+        "identity": {
+          "algorithm": "03c062bab7ff98c3",
+          "arm": "T8-guard-off",
+          "checkpoint_interval": 1024,
+          "code": {
+            "orthographic_errors.py": "06f1a40aa84e5bd35d2e1099c6355fd5446de6f488eb2b9b8a344347378cddc0",
+            "performance.py": "9723e989237db01fa68ab9fe0c4d9f4e90470e190446536fa720e22b77864e39",
+            "scale_data.py": "7051a0d6053b2683af132ee8151f357f073317ccf0d885bd25c1dcb6476fe7c2",
+            "scale_fit.py": "5ad1fc8f80d28a959440ee363c3b393267861780b54c03d2c7c0eec9502fa78e"
+          },
+          "config_sha256": "52c15e995667859ee23bc318c9c6086763546ec699b6bb01722dacd10b29eef2",
+          "fallback_count": 256,
+          "fidelity_panel_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+          "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+          "normalizer": "bccfa8669a7e8528",
+          "pretokenizer": "dbb6a78fb100dd2e",
+          "requested_vocab": 48000,
+          "specials": [
+            "<pad>",
+            "<s>",
+            "</s>",
+            "<unk>",
+            "<|im_start|>",
+            "<|im_end|>",
+            "<|endoftext|>"
+          ],
+          "train_stream_sha256": "af04b3a3dea8b81fa84e45dd8fde0d9b10fc5f846f2c96415f12211c8eb86150",
+          "validation_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd"
+        },
+        "largest_checkpoint_bytes": 322692,
+        "latest_checkpoint_sha256": "0c4b3e60dd78a3b2cfb0d79e787f6049cdba5a6439da12007331cfbf02ce95cd",
+        "model_sha256": "e2ab41b8450d81655e923a18269c23227a5637082ea9efa506e3a31e233e6f1a",
+        "occupied_vocab": 48000,
+        "peak_rss_bytes": 580784128,
+        "seconds": 182.06911760000003,
+        "status": "OCCUPIED_48K",
+        "training": {
+          "canonical_bytes": 7999910,
+          "documents": 1872,
+          "guarded_internal_sites": 0,
+          "initial_unit_coverage": 1.0,
+          "n_merges": 49329,
+          "n_removed": 2514,
+          "occupied_vocab": 48000,
+          "protected_atoms": 512,
+          "raw_bytes": 7999916,
+          "resumed_events": 0,
+          "standalone_train_tokens": 828612,
+          "stop_reason": "vocabulary_reached",
+          "training_fallback_ids_on_selected_types": 0,
+          "unused_lexical_train": 22,
+          "used_once_lexical_train": 2049,
+          "word_mass_covered": 1.0,
+          "word_types_used": 100963
+        },
+        "verified_checkpoint_generations": 51
+      },
+      "qualification": "WIKIMEDIA_CAPACITY_DIAGNOSTIC",
+      "scientific_holdout": false,
+      "source_validation_sha256": "21dd5ae76a991ec121bb5094a8706de8bc5f986c314b4cba16533afc5315e6f1",
+      "special_ids": {
+        "</s>": 2,
+        "<pad>": 0,
+        "<s>": 1,
+        "<unk>": 3,
+        "<|endoftext|>": 6,
+        "<|im_end|>": 5,
+        "<|im_start|>": 4
+      },
+      "strata": {
+        "domain": {
+          "encyclopedic": {
+            "akshara_breaks": 1030,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 1039,
+            "bytes_per_token": 9.186110830354764,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108408,
+            "encoding_bytes_per_second": 82071.39966798513,
+            "encoding_seconds": 12.181490800016036,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011577370834213888,
+            "fertility": 2.894648651524017,
+            "grapheme_breaks": 1119,
+            "grapheme_reference_sites": 208108,
+            "ids": 108833,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19388,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7548,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15886,
+            "transitions_all": 108558
+          }
+        },
+        "src": {
+          "mlwiki_snapshot": {
+            "akshara_breaks": 1030,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 1039,
+            "bytes_per_token": 9.186110830354764,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108408,
+            "encoding_bytes_per_second": 81991.50677136017,
+            "encoding_seconds": 12.1933604999831,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011577370834213888,
+            "fertility": 2.894648651524017,
+            "grapheme_breaks": 1119,
+            "grapheme_reference_sites": 208108,
+            "ids": 108833,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19388,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7548,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15886,
+            "transitions_all": 108558
+          }
+        }
+      },
+      "validation": {
+        "akshara_breaks": 1030,
+        "akshara_reference_sites": 112505,
+        "alternate_akshara_breaks": 1039,
+        "bytes_per_token": 9.186110830354764,
+        "canonical_bytes": 999752,
+        "canonical_roundtrip": 275,
+        "canonical_words": 37598,
+        "docs": 275,
+        "eligible_transitions": 108408,
+        "encoding_bytes_per_second": 103371.88113629217,
+        "encoding_seconds": 9.671411500017712,
+        "fallback_ids": 126,
+        "fallback_rate": 0.0011577370834213888,
+        "fertility": 2.894648651524017,
+        "grapheme_breaks": 1119,
+        "grapheme_reference_sites": 208108,
+        "ids": 108833,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 19388,
+        "offset_exclusions": 150,
+        "one_occurrence_lexical_ids": 7548,
+        "raw_roundtrip": 274,
+        "standalone_lexical_ids": 15886,
+        "transitions_all": 108558
+      }
+    },
+    "T8-guard-only": {
+      "boundary_attribution": {
+        "mechanisms": {
+          "joiner_context_lexical/unprotected_akshara_scalar_backoff": 4,
+          "legacy_lexical/unprotected_akshara_scalar_backoff": 687
+        },
+        "primary_patterns": {
+          "joiner_context_lexical/joiner": 4,
+          "legacy_lexical/combining_mark": 12,
+          "legacy_lexical/dependent_vowel": 166,
+          "legacy_lexical/virama_or_conjunct": 509
+        },
+        "selected_model_segmenter": "hybrid",
+        "totals": {
+          "additional_joiner_context_lexical_breaks": 4,
+          "byte_adjacent_exact_transitions": 68,
+          "byte_adjacent_grapheme_breaks": 10,
+          "byte_ids": 126,
+          "documents": 275,
+          "exact_scalar_transitions": 108818,
+          "legacy_akshara_breaks": 687,
+          "legacy_covered_malayalam_transitions": 19765,
+          "legacy_excluded_transitions": 150,
+          "malayalam_reference_interior_sites": 164187,
+          "unicode_scalar_continuation_transitions": 82
+        }
+      },
+      "fidelity": {
+        "akshara_breaks": 0,
+        "akshara_reference_sites": 17,
+        "alternate_akshara_breaks": 0,
+        "bytes_per_token": 4.872340425531915,
+        "canonical_bytes": 229,
+        "canonical_roundtrip": 11,
+        "canonical_words": 13,
+        "docs": 11,
+        "eligible_transitions": 33,
+        "encoding_bytes_per_second": 84937.5023080453,
+        "encoding_seconds": 0.0026961000003211666,
+        "fallback_ids": 3,
+        "fallback_rate": 0.06382978723404255,
+        "fertility": 3.6153846153846154,
+        "grapheme_breaks": 0,
+        "grapheme_reference_sites": 63,
+        "ids": 47,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 0,
+        "offset_exclusions": 4,
+        "one_occurrence_lexical_ids": 14,
+        "raw_roundtrip": 9,
+        "standalone_lexical_ids": 25,
+        "transitions_all": 37
+      },
+      "fit": {
+        "identity": {
+          "algorithm": "5f705925540c0b01",
+          "arm": "T8-guard-only",
+          "checkpoint_interval": 1024,
+          "code": {
+            "orthographic_errors.py": "06f1a40aa84e5bd35d2e1099c6355fd5446de6f488eb2b9b8a344347378cddc0",
+            "performance.py": "9723e989237db01fa68ab9fe0c4d9f4e90470e190446536fa720e22b77864e39",
+            "scale_data.py": "7051a0d6053b2683af132ee8151f357f073317ccf0d885bd25c1dcb6476fe7c2",
+            "scale_fit.py": "5ad1fc8f80d28a959440ee363c3b393267861780b54c03d2c7c0eec9502fa78e"
+          },
+          "config_sha256": "52c15e995667859ee23bc318c9c6086763546ec699b6bb01722dacd10b29eef2",
+          "fallback_count": 256,
+          "fidelity_panel_sha256": "515f9c0730591f45d02930ab77cab693dedc9c13bcb229b73c121f1499227229",
+          "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+          "normalizer": "bccfa8669a7e8528",
+          "pretokenizer": "dbb6a78fb100dd2e",
+          "requested_vocab": 48000,
+          "specials": [
+            "<pad>",
+            "<s>",
+            "</s>",
+            "<unk>",
+            "<|im_start|>",
+            "<|im_end|>",
+            "<|endoftext|>"
+          ],
+          "train_stream_sha256": "af04b3a3dea8b81fa84e45dd8fde0d9b10fc5f846f2c96415f12211c8eb86150",
+          "validation_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd"
+        },
+        "largest_checkpoint_bytes": 273709,
+        "latest_checkpoint_sha256": "f14900f4e73fe5d6d07d61258009f498be7182f861a7f720974aca29116b7e17",
+        "model_sha256": "b4c469b9862be8405bf9893c760b431bb51fa352b92d463bfa1e04c5a12ed10a",
+        "occupied_vocab": 48000,
+        "peak_rss_bytes": 580038656,
+        "seconds": 252.76255200000014,
+        "status": "OCCUPIED_48K",
+        "training": {
+          "canonical_bytes": 7999910,
+          "documents": 1872,
+          "guarded_internal_sites": 130574,
+          "initial_unit_coverage": 1.0,
+          "n_merges": 46587,
+          "n_removed": 0,
+          "occupied_vocab": 48000,
+          "protected_atoms": 512,
+          "raw_bytes": 7999916,
+          "resumed_events": 0,
+          "standalone_train_tokens": 835557,
+          "stop_reason": "vocabulary_reached",
+          "training_fallback_ids_on_selected_types": 0,
+          "unused_lexical_train": 2524,
+          "used_once_lexical_train": 2110,
+          "word_mass_covered": 1.0,
+          "word_types_used": 100963
+        },
+        "verified_checkpoint_generations": 46
+      },
+      "qualification": "WIKIMEDIA_CAPACITY_DIAGNOSTIC",
+      "scientific_holdout": false,
+      "source_validation_sha256": "8ad67256122dfdd855d14762537cffd6735dd2fe0dced0d49ec4d344cb758946",
+      "special_ids": {
+        "</s>": 2,
+        "<pad>": 0,
+        "<s>": 1,
+        "<unk>": 3,
+        "<|endoftext|>": 6,
+        "<|im_end|>": 5,
+        "<|im_start|>": 4
+      },
+      "strata": {
+        "domain": {
+          "encyclopedic": {
+            "akshara_breaks": 687,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 694,
+            "bytes_per_token": 9.157334554614152,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108750,
+            "encoding_bytes_per_second": 124964.36226053588,
+            "encoding_seconds": 8.000296899972454,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011541103732539502,
+            "fertility": 2.903744880046811,
+            "grapheme_breaks": 740,
+            "grapheme_reference_sites": 208108,
+            "ids": 109175,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19765,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7443,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15887,
+            "transitions_all": 108900
+          }
+        },
+        "src": {
+          "mlwiki_snapshot": {
+            "akshara_breaks": 687,
+            "akshara_reference_sites": 112505,
+            "alternate_akshara_breaks": 694,
+            "bytes_per_token": 9.157334554614152,
+            "canonical_bytes": 999752,
+            "canonical_roundtrip": 275,
+            "canonical_words": 37598,
+            "docs": 275,
+            "eligible_transitions": 108750,
+            "encoding_bytes_per_second": 114597.6058263947,
+            "encoding_seconds": 8.724021700021694,
+            "fallback_ids": 126,
+            "fallback_rate": 0.0011541103732539502,
+            "fertility": 2.903744880046811,
+            "grapheme_breaks": 740,
+            "grapheme_reference_sites": 208108,
+            "ids": 109175,
+            "lexical_slots": 47737,
+            "malayalam_eligible_transitions": 19765,
+            "offset_exclusions": 150,
+            "one_occurrence_lexical_ids": 7443,
+            "raw_roundtrip": 274,
+            "standalone_lexical_ids": 15887,
+            "transitions_all": 108900
+          }
+        }
+      },
+      "validation": {
+        "akshara_breaks": 687,
+        "akshara_reference_sites": 112505,
+        "alternate_akshara_breaks": 694,
+        "bytes_per_token": 9.157334554614152,
+        "canonical_bytes": 999752,
+        "canonical_roundtrip": 275,
+        "canonical_words": 37598,
+        "docs": 275,
+        "eligible_transitions": 108750,
+        "encoding_bytes_per_second": 110806.41394005327,
+        "encoding_seconds": 9.022510200004035,
+        "fallback_ids": 126,
+        "fallback_rate": 0.0011541103732539502,
+        "fertility": 2.903744880046811,
+        "grapheme_breaks": 740,
+        "grapheme_reference_sites": 208108,
+        "ids": 109175,
+        "lexical_slots": 47737,
+        "malayalam_eligible_transitions": 19765,
+        "offset_exclusions": 150,
+        "one_occurrence_lexical_ids": 7443,
+        "raw_roundtrip": 274,
+        "standalone_lexical_ids": 15887,
+        "transitions_all": 108900
+      }
+    }
+  },
+  "capture": {
+    "article_rows": 33994,
+    "completion_sha256": "66ad74d527ce5b6d3c1623f1a4ed3ee775bbbc997a24894d22f47359c2adada8",
+    "group_sha256": {
+      "wiki-000": "8229feaec3ab6f6f53c6bbf970f4bab8d8d0cefc14bd5c7a176b5773cc0184c6",
+      "wiki-001": "fdd6561f4e2f729551dc0b7d503fe5ee194acf1904ce0cc0348a5bba54a1214e",
+      "wiki-004": "907af40074237f5f487b745fc31a2cb582ba67d38e87cbbe2a3bd95775c503ed",
+      "wiki-005": "468a6b06bec57ca8eade9defe67a17d1f7e1ae67fa44c15a3bb26764d2abdbb6",
+      "wiki-006": "82b1edddcb74b75d0e7e229c9ba8773237dbc53076c0378d1000784f6e93282a",
+      "wiki-007": "21bf3b66dd7c2fd4e887e14f4e2047725cb5d48258a89e3372eb2eda2c6d0c5a",
+      "wiki-008": "3d77f97ad65d78dabd1cb528864b382106d8f4b570e2a15d2a2ccfa3789940b2",
+      "wiki-010": "32f23c49767b13ca2956fd7c2642f3ca6da9603e9ff4cba7eafb549c80177c7a",
+      "wiki-017": "44dcb50e5e05f36d4ef135fc28d6049fa76895ac7312c9676bec5710eda454ff",
+      "wiki-018": "42eb0b480c9e500c6e4c89300607dca2f5bb5ea27a622a3757b6c769aa0488a6",
+      "wiki-021": "a82bac704c4b65e8e9b6b563e849c9f1457d7b3eddec32fb9e7a99e3482ba45a",
+      "wiki-022": "37c10ede43f1537a501d4ff6a31daafbcdf540ccd5b459ca51aa5e66af30172d",
+      "wiki-026": "74329f7bb3faa16577e94f3ff1f0d0182774a806816d54306602f3b9babe610e",
+      "wiki-028": "0edac4c3c764e7d18b3d0f0f8cd8c70f874f3a6e0e6eb9d88ec5b83bf7790d86",
+      "wiki-029": "daf064c6bc5e2bcafe165ed1284af500631d9e784b41c220c3319041803e9be5",
+      "wiki-031": "82db8f0d1ec63a9a4c432a3b05b534a6f7f1e662405b7d2a9b55b87504529ba6",
+      "wiki-033": "83c897802bf2c825b16ed5e16b6452a06ebfda1ec9c1de50e40cc47291b78a74",
+      "wiki-035": "d9daa24f2360db5e5eac80620056fa5c3407a79767fdf905de53aecbc5c5a68f",
+      "wiki-037": "454b84ccae08610193d2cb26be20b759f7ff2aefb1d01d11dec5b752aae9190b",
+      "wiki-040": "f857141a0fde43fbda2d4959b0fd0850c7d22a0d36e7c5c6eb22cdb9fd6e0231",
+      "wiki-042": "0b370f7387cf3e43e73700a2f86f1684ef02c48e0855f4f67cd65b030f3a1cec",
+      "wiki-043": "4d750424d3683f25a1900d75369cafae4b5c4a92c893253f8702627ad21b5f39",
+      "wiki-045": "f937fb40d1653ef3be5e53907e97b176d8ecaa33141c1788f8b7154c7c623d5f",
+      "wiki-047": "6bf736e7eaa3044fcc8e67604aade2493c95ceff5e5cf96f50d92dcc931592af",
+      "wiki-048": "1f07dc851de9a6e0433f17d00ae5a7152111b4298a1920d56dc050fe9b4a08cb",
+      "wiki-049": "8c8da29768d30ea0b4e7579318108fa07741756dbfbe0d1942457cf5911b077e",
+      "wiki-054": "910ffa5d369c42dd64d12a59af7507a8aff888c5e7cc4338bd0e1f3ea4b526cc",
+      "wiki-056": "1ab38500fe9afce80ba4a2d58cb6a1b26544ef849c931d53652f32628847c248",
+      "wiki-060": "86952a2902a1202a46acf7cb9fa913347a0db6ea51457b231ca1c388aab8e03a",
+      "wiki-061": "46d0fc84e53d06bbf68270012d13439113ccd2850d28dcbb172eb8fd3cf3c0cc",
+      "wiki-062": "5ad9351c1c9afe873b50257195588568f76d69da32cd4849a02378f29b5a2242",
+      "wiki-078": "b0094c469b57598bc21a614c8457d25096a751961f67baf7989374669d13155e",
+      "wiki-079": "95e96c394671c97757ffa913a6c0cde481655fcbc6d396711ee203b90f0bf7cd",
+      "wiki-083": "3608b0e121846e968d6c647a09e256da5caaa78f15a174841d445948a92398d5"
+    },
+    "groups": [
+      "wiki-033.json",
+      "wiki-048.json",
+      "wiki-079.json",
+      "wiki-006.json",
+      "wiki-062.json",
+      "wiki-010.json",
+      "wiki-054.json",
+      "wiki-001.json",
+      "wiki-043.json",
+      "wiki-056.json",
+      "wiki-004.json",
+      "wiki-028.json",
+      "wiki-021.json",
+      "wiki-031.json",
+      "wiki-040.json",
+      "wiki-045.json",
+      "wiki-008.json",
+      "wiki-078.json",
+      "wiki-018.json",
+      "wiki-005.json",
+      "wiki-049.json",
+      "wiki-061.json",
+      "wiki-042.json",
+      "wiki-083.json",
+      "wiki-035.json",
+      "wiki-017.json",
+      "wiki-000.json",
+      "wiki-022.json",
+      "wiki-037.json",
+      "wiki-007.json",
+      "wiki-060.json",
+      "wiki-047.json",
+      "wiki-026.json",
+      "wiki-029.json"
+    ],
+    "groups_requested": 53,
+    "payload_transfer_bytes": 73438129,
+    "recipe_sha256": "086470538f20074dfda45f8042902bbdac417cec34562294747528fc11dce61f",
+    "schema": "mom-wikipedia-capacity-capture-v1",
+    "transfer_cap": 75000000
+  },
+  "downstream_training": false,
+  "guard_off_equivalence": {
+    "atoms": true,
+    "events": true,
+    "initial": true,
+    "preprocessing": true,
+    "specials": true
+  },
+  "host": {
+    "compute": "CPU",
+    "platform": "Windows",
+    "python": "3.12.0"
+  },
+  "larger_scales": {
+    "B": {
+      "canonical_target": 1500000000,
+      "status": "BLOCKED_APPROVED_CORPUS_AND_RESOURCE_PREFLIGHT"
+    },
+    "C": {
+      "canonical_target": 8000000000,
+      "status": "BLOCKED_APPROVED_CORPUS_AND_RESOURCE_PREFLIGHT_AND_SCIENTIFIC_FREEZE"
+    }
+  },
+  "offline_tests": {
+    "affected_tests_rerun_with_pythonutf8": {
+      "failed": 0,
+      "passed": 2,
+      "seconds": 0.22,
+      "skipped": 0,
+      "warnings": 0
+    },
+    "full_cpu_initial": {
+      "failed": 2,
+      "failures": "Two architecture tests read UTF-8 sources with the Windows CP1252 default.",
+      "passed": 304,
+      "seconds": 1014.85,
+      "skipped": 2,
+      "skips": "Two CUDA-only tests.",
+      "warnings": 2
+    },
+    "runtime_flags": {
+      "device": "CPU",
+      "mkl_threads": 1,
+      "offline": true,
+      "omp_threads": 1
+    },
+    "scoped_cpu": {
+      "deselected": 9,
+      "failed": 0,
+      "passed": 204,
+      "seconds": 178.15,
+      "skipped": 0,
+      "warnings": 2
+    }
+  },
+  "parent_research_commit": "261c5934ff41c5b29c1b11d5762cfd13414eba46",
+  "pilot": {
+    "canonical_shortfall": 90,
+    "canonical_target": 8000000,
+    "initial_capacity": {
+      "arms": {
+        "T1": "codepoint",
+        "T3": "akshara",
+        "T5": "hybrid",
+        "T8": "hybrid"
+      },
+      "by_unitization": {
+        "akshara": {
+          "alphabet": 4347,
+          "distinct_novel_concatenations_frequency_ge_2": 30605,
+          "fallback_bytes_in_merge_domains": 48,
+          "free_lexical_slots": 43390,
+          "initial_distinct_pairs": 51700,
+          "initial_pairs_frequency_ge_2": 30605,
+          "initial_unit_coverage": 0.9999905248914064,
+          "known_unit_positions_in_types": 536008,
+          "pair_type_postings": 433239,
+          "protected_atoms": 0
+        },
+        "codepoint": {
+          "alphabet": 609,
+          "distinct_novel_concatenations_frequency_ge_2": 3600,
+          "fallback_bytes_in_merge_domains": 87,
+          "free_lexical_slots": 47128,
+          "initial_distinct_pairs": 4493,
+          "initial_pairs_frequency_ge_2": 3600,
+          "initial_unit_coverage": 0.9999903289910503,
+          "known_unit_positions_in_types": 1122088,
+          "pair_type_postings": 990754,
+          "protected_atoms": 0
+        },
+        "hybrid": {
+          "alphabet": 1150,
+          "distinct_novel_concatenations_frequency_ge_2": 25888,
+          "fallback_bytes_in_merge_domains": 0,
+          "free_lexical_slots": 46587,
+          "initial_distinct_pairs": 37940,
+          "initial_pairs_frequency_ge_2": 26112,
+          "initial_unit_coverage": 1.0,
+          "known_unit_positions_in_types": 606982,
+          "pair_type_postings": 501116,
+          "protected_atoms": 512
+        }
+      },
+      "canonical_bytes": 7999910,
+      "identity": {
+        "algorithms": {
+          "T1": "60f4af88757d274b",
+          "T3": "0604adf5e275d9b5",
+          "T5": "066e4843cf43e548",
+          "T8": "e530a8f815b865fc"
+        },
+        "code_sha256": "6e676d9ad1389d7e83f5f8100bf306873cf681f04a8f15e61491a97f78fcc950",
+        "config_sha256": "52c15e995667859ee23bc318c9c6086763546ec699b6bb01722dacd10b29eef2",
+        "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+        "training_stream_sha256": "af04b3a3dea8b81fa84e45dd8fde0d9b10fc5f846f2c96415f12211c8eb86150"
+      },
+      "interpretation": "Initial pair counts precede the first event and do not prove final occupancy.",
+      "merge_domain_types": 100963,
+      "peak_rss_bytes": 300744704,
+      "repeated_merge_domain_types": 29296,
+      "seconds": 85.08327359999748,
+      "target_shortfall": 90,
+      "word_type_growth": [
+        {
+          "canonical_bytes": 1001557,
+          "merge_domain_types": 18210,
+          "threshold": 1000000
+        },
+        {
+          "canonical_bytes": 5002359,
+          "merge_domain_types": 68309,
+          "threshold": 5000000
+        }
+      ]
+    },
+    "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+    "preparation": {
+      "corpus_build.py": "8e9f5806dcdfa9e9e6c6ffbb3aad6c3710edd0a788e165307003f3599e55e8fa",
+      "corpus_overlap.py": "30e7ae5bc9fcce6bcf3afa1ca29d5a83276524bc532ad2e15ab84637447146d5",
+      "corpus_quality.py": "3c637c37545c59c80cff356ccbad8dd762cf17c13579bd14886a557ce155bf77",
+      "scale_data.py": "7051a0d6053b2683af132ee8151f357f073317ccf0d885bd25c1dcb6476fe7c2"
+    },
+    "quality": {
+      "capture": {
+        "raw_bytes": 21085072,
+        "rows": 3999,
+        "screened_canonical_bytes": 16349717,
+        "screened_rows": 3405
+      },
+      "duplicate_links": [
+        {
+          "kind": "near_duplicate",
+          "links": 4,
+          "source_a": "mlwiki_snapshot",
+          "source_b": "mlwiki_snapshot"
+        }
+      ],
+      "rejections_by_reason": {
+        "html_hits": 21,
+        "low_malayalam_script_share": 340,
+        "repeated_virama": 6,
+        "short_language_evidence": 5,
+        "unattached_ml_marks": 223,
+        "weak_independent_language_evidence": 159
+      },
+      "scope": "single-source, local engineering only",
+      "unique_groups": 3401
+    },
+    "source_scope": {
+      "normalizer_fingerprint": "bccfa8669a7e8528",
+      "protocol_sha256": "1ff56f1a584073b3d9eaa965b6d44f179f7322e1758c9afc47d04a0a7a340167",
+      "regex": "2026.9.29",
+      "unicode": "15.0.0"
+    },
+    "splits": {
+      "train": {
+        "canonical_bytes": 7999910,
+        "canonical_bytes_by_domain": {
+          "encyclopedic": 7999910
+        },
+        "canonical_bytes_by_source": {
+          "mlwiki_snapshot": 7999910
+        },
+        "canonical_stream_sha256": "af04b3a3dea8b81fa84e45dd8fde0d9b10fc5f846f2c96415f12211c8eb86150",
+        "file": "train.jsonl",
+        "raw_bytes": 7999916,
+        "rows": 1872,
+        "sha256": "7d85ef1f57215226daf18b4488a619b7ba534d145a9fb83659cfc2df9b36455f",
+        "size": 9265892
+      },
+      "validation": {
+        "canonical_bytes": 999752,
+        "canonical_bytes_by_domain": {
+          "encyclopedic": 999752
+        },
+        "canonical_bytes_by_source": {
+          "mlwiki_snapshot": 999752
+        },
+        "canonical_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd",
+        "file": "validation.jsonl",
+        "raw_bytes": 999758,
+        "rows": 275,
+        "sha256": "2d58ff5ba2522b81c513d51dfe69d59c0f9e3c73b715d9ba5e26a6c2806fb785",
+        "size": 1184497
+      }
+    }
+  },
+  "pilot_reproduction": {
+    "both_split_sha256_match": true,
+    "manifest_sha256": "8646ff81d7595f429a2c54f86417dbd437d197c13d5ce69bf3d7d77109a5beb7",
+    "prepared_with_current_bucket_index": true
+  },
+  "proxy_exposure_ledgers": {
+    "T1": {
+      "arm": "T1",
+      "confirmation_model": {
+        "context": 512,
+        "heads": 12,
+        "layers": 12,
+        "parameters": {
+          "non_embedding": 86723328,
+          "position_embeddings": 393216,
+          "tied_embeddings": 36864000,
+          "total": 123980544,
+          "transformer": 86723328
+        },
+        "seeds": [
+          17,
+          23,
+          41
+        ],
+        "width": 768
+      },
+      "fit_sha256": "dea86ecf447b4f263cf71b8eb6d6c62477a368d0c92278b86ef857c3996c48f1",
+      "fixed_source_bytes": {
+        "full_canonical_bytes": 99921,
+        "full_documents": 27,
+        "full_raw_bytes": 99921,
+        "partial": null,
+        "predicted_eos": 27,
+        "predicted_tokens": 10957
+      },
+      "fixed_training_tokens": {
+        "full_canonical_bytes": 55128,
+        "full_documents": 15,
+        "full_raw_bytes": 55128,
+        "partial": {
+          "canonical_bytes": 18114,
+          "predicted_text_tokens": 2016
+        },
+        "predicted_eos": 15,
+        "predicted_tokens": 8192
+      },
+      "integration_model": {
+        "context": 512,
+        "heads": 7,
+        "layers": 7,
+        "parameters": {
+          "non_embedding": 17066560,
+          "position_embeddings": 229376,
+          "tied_embeddings": 21504000,
+          "total": 38799936,
+          "transformer": 17066560
+        },
+        "seeds": [
+          17
+        ],
+        "width": 448
+      },
+      "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+      "predicted_token_budget": 8192,
+      "qualification": "DEVELOPMENT_ONLY",
+      "schema": "mom-48k-proxy-exposure-v1",
+      "source_byte_budget": 100000,
+      "tokenizer_sha256": "71b98475d19856192a19c4a4b1c19c890bd82c0fb84d745c0d004b41c51af9d0",
+      "validation": {
+        "full_canonical_bytes": 999752,
+        "full_documents": 275,
+        "full_raw_bytes": 999758,
+        "partial": null,
+        "predicted_eos": 275,
+        "predicted_tokens": 109314
+      },
+      "validation_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd"
+    },
+    "T5": {
+      "arm": "T5",
+      "confirmation_model": {
+        "context": 512,
+        "heads": 12,
+        "layers": 12,
+        "parameters": {
+          "non_embedding": 86723328,
+          "position_embeddings": 393216,
+          "tied_embeddings": 36864000,
+          "total": 123980544,
+          "transformer": 86723328
+        },
+        "seeds": [
+          17,
+          23,
+          41
+        ],
+        "width": 768
+      },
+      "fit_sha256": "3001af3b7eb262dbd7f76c2568f1d867892b1e0ee4e111ff5691249ce3a330a8",
+      "fixed_source_bytes": {
+        "full_canonical_bytes": 99921,
+        "full_documents": 27,
+        "full_raw_bytes": 99921,
+        "partial": null,
+        "predicted_eos": 27,
+        "predicted_tokens": 10896
+      },
+      "fixed_training_tokens": {
+        "full_canonical_bytes": 55128,
+        "full_documents": 15,
+        "full_raw_bytes": 55128,
+        "partial": {
+          "canonical_bytes": 18624,
+          "predicted_text_tokens": 2044
+        },
+        "predicted_eos": 15,
+        "predicted_tokens": 8192
+      },
+      "integration_model": {
+        "context": 512,
+        "heads": 7,
+        "layers": 7,
+        "parameters": {
+          "non_embedding": 17066560,
+          "position_embeddings": 229376,
+          "tied_embeddings": 21504000,
+          "total": 38799936,
+          "transformer": 17066560
+        },
+        "seeds": [
+          17
+        ],
+        "width": 448
+      },
+      "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+      "predicted_token_budget": 8192,
+      "qualification": "DEVELOPMENT_ONLY",
+      "schema": "mom-48k-proxy-exposure-v1",
+      "source_byte_budget": 100000,
+      "tokenizer_sha256": "9c0e42e975162b69cd966ec99210731666ad8c78cfc3d03436bfad08b31e3aab",
+      "validation": {
+        "full_canonical_bytes": 999752,
+        "full_documents": 275,
+        "full_raw_bytes": 999758,
+        "partial": null,
+        "predicted_eos": 275,
+        "predicted_tokens": 109108
+      },
+      "validation_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd"
+    },
+    "T8": {
+      "arm": "T8",
+      "confirmation_model": {
+        "context": 512,
+        "heads": 12,
+        "layers": 12,
+        "parameters": {
+          "non_embedding": 86723328,
+          "position_embeddings": 393216,
+          "tied_embeddings": 36864000,
+          "total": 123980544,
+          "transformer": 86723328
+        },
+        "seeds": [
+          17,
+          23,
+          41
+        ],
+        "width": 768
+      },
+      "fit_sha256": "a4861e5637886ec9f1dbdec8474869125cd6b502f94fc99d2aa76c5cb8f28f20",
+      "fixed_source_bytes": {
+        "full_canonical_bytes": 99921,
+        "full_documents": 27,
+        "full_raw_bytes": 99921,
+        "partial": null,
+        "predicted_eos": 27,
+        "predicted_tokens": 10874
+      },
+      "fixed_training_tokens": {
+        "full_canonical_bytes": 55128,
+        "full_documents": 15,
+        "full_raw_bytes": 55128,
+        "partial": {
+          "canonical_bytes": 18778,
+          "predicted_text_tokens": 2056
+        },
+        "predicted_eos": 15,
+        "predicted_tokens": 8192
+      },
+      "integration_model": {
+        "context": 512,
+        "heads": 7,
+        "layers": 7,
+        "parameters": {
+          "non_embedding": 17066560,
+          "position_embeddings": 229376,
+          "tied_embeddings": 21504000,
+          "total": 38799936,
+          "transformer": 17066560
+        },
+        "seeds": [
+          17
+        ],
+        "width": 448
+      },
+      "manifest_sha256": "49354dabf49531150935c5276a8cf0d4ae386c85667ba6fd725cbcd3368071e3",
+      "predicted_token_budget": 8192,
+      "qualification": "DEVELOPMENT_ONLY",
+      "schema": "mom-48k-proxy-exposure-v1",
+      "source_byte_budget": 100000,
+      "tokenizer_sha256": "9b8b1107ae93c3ee3021c49b7ac5cf6be59617640e402f1d8eb7dcfac0599450",
+      "validation": {
+        "full_canonical_bytes": 999752,
+        "full_documents": 275,
+        "full_raw_bytes": 999758,
+        "partial": null,
+        "predicted_eos": 275,
+        "predicted_tokens": 109077
+      },
+      "validation_stream_sha256": "ef62f2fe42a57e46c55d9afc75b44e70a37b2369551b3230c197051f947eb4dd"
+    }
+  },
+  "qualification": "EXPLORATORY_WIKIMEDIA_ONLY",
+  "recorded_on": "2026-11-23",
+  "scale_A": {
+    "canonical_shortfall": 26,
+    "canonical_target": 100000000,
+    "initial_capacity": {
+      "arms": {
+        "T1": "codepoint",
+        "T3": "akshara",
+        "T5": "hybrid",
+        "T8": "hybrid"
+      },
+      "by_unitization": {
+        "akshara": {
+          "alphabet": 12457,
+          "distinct_novel_concatenations_frequency_ge_2": 99896,
+          "fallback_bytes_in_merge_domains": 668,
+          "free_lexical_slots": 35280,
+          "initial_distinct_pairs": 164465,
+          "initial_pairs_frequency_ge_2": 99898,
+          "initial_unit_coverage": 0.9999900242240343,
+          "known_unit_positions_in_types": 3899495,
+          "pair_type_postings": 3217309,
+          "protected_atoms": 0
+        },
+        "codepoint": {
+          "alphabet": 1513,
+          "distinct_novel_concatenations_frequency_ge_2": 6523,
+          "fallback_bytes_in_merge_domains": 1136,
+          "free_lexical_slots": 46224,
+          "initial_distinct_pairs": 8681,
+          "initial_pairs_frequency_ge_2": 6523,
+          "initial_unit_coverage": 0.999990023018284,
+          "known_unit_positions_in_types": 8192675,
+          "pair_type_postings": 7278555,
+          "protected_atoms": 0
+        },
+        "hybrid": {
+          "alphabet": 2399,
+          "distinct_novel_concatenations_frequency_ge_2": 64303,
+          "fallback_bytes_in_merge_domains": 0,
+          "free_lexical_slots": 45338,
+          "initial_distinct_pairs": 85992,
+          "initial_pairs_frequency_ge_2": 64537,
+          "initial_unit_coverage": 1.0,
+          "known_unit_positions_in_types": 4448929,
+          "pair_type_postings": 3741493,
+          "protected_atoms": 512
+        }
+      },
+      "canonical_bytes": 99999974,
+      "identity": {
+        "algorithms": {
+          "T1": "60f4af88757d274b",
+          "T3": "0604adf5e275d9b5",
+          "T5": "066e4843cf43e548",
+          "T8": "e530a8f815b865fc"
+        },
+        "code_sha256": "6e676d9ad1389d7e83f5f8100bf306873cf681f04a8f15e61491a97f78fcc950",
+        "config_sha256": "52c15e995667859ee23bc318c9c6086763546ec699b6bb01722dacd10b29eef2",
+        "manifest_sha256": "d5875f855283a135b3c056e9bdc83a629b35f1e387be168211436b334f1ba8b8",
+        "training_stream_sha256": "9fc7e6bc214465b6686c586585b155d076fb18a876d0927d9377534dfba303ac"
+      },
+      "interpretation": "Initial pair counts precede the first event and do not prove final occupancy.",
+      "merge_domain_types": 670732,
+      "peak_rss_bytes": 350855168,
+      "repeated_merge_domain_types": 218563,
+      "seconds": 78.96051620000071,
+      "target_shortfall": 26,
+      "word_type_growth": [
+        {
+          "canonical_bytes": 1001372,
+          "merge_domain_types": 17751,
+          "threshold": 1000000
+        },
+        {
+          "canonical_bytes": 5004273,
+          "merge_domain_types": 69955,
+          "threshold": 5000000
+        },
+        {
+          "canonical_bytes": 10004131,
+          "merge_domain_types": 123525,
+          "threshold": 10000000
+        },
+        {
+          "canonical_bytes": 25002418,
+          "merge_domain_types": 247189,
+          "threshold": 25000000
+        },
+        {
+          "canonical_bytes": 50000328,
+          "merge_domain_types": 409443,
+          "threshold": 50000000
+        },
+        {
+          "canonical_bytes": 75006591,
+          "merge_domain_types": 551944,
+          "threshold": 75000000
+        }
+      ]
+    },
+    "manifest_sha256": "d5875f855283a135b3c056e9bdc83a629b35f1e387be168211436b334f1ba8b8",
+    "preparation": {
+      "corpus_build.py": "8e9f5806dcdfa9e9e6c6ffbb3aad6c3710edd0a788e165307003f3599e55e8fa",
+      "corpus_overlap.py": "41bfa47e1491bdc91f7cff719f572ed63882231948aabcba30c363dff7f3a3b7",
+      "corpus_quality.py": "3c637c37545c59c80cff356ccbad8dd762cf17c13579bd14886a557ce155bf77",
+      "scale_data.py": "7051a0d6053b2683af132ee8151f357f073317ccf0d885bd25c1dcb6476fe7c2"
+    },
+    "quality": {
+      "capture": {
+        "raw_bytes": 157656412,
+        "rows": 26995,
+        "screened_canonical_bytes": 123303248,
+        "screened_rows": 22878
+      },
+      "duplicate_links": [
+        {
+          "kind": "canonical_exact",
+          "links": 14,
+          "source_a": "mlwiki_snapshot",
+          "source_b": "mlwiki_snapshot"
+        },
+        {
+          "kind": "near_duplicate",
+          "links": 47,
+          "source_a": "mlwiki_snapshot",
+          "source_b": "mlwiki_snapshot"
+        },
+        {
+          "kind": "raw_exact",
+          "links": 14,
+          "source_a": "mlwiki_snapshot",
+          "source_b": "mlwiki_snapshot"
+        },
+        {
+          "kind": "screening_exact",
+          "links": 14,
+          "source_a": "mlwiki_snapshot",
+          "source_b": "mlwiki_snapshot"
+        }
+      ],
+      "rejections_by_reason": {
+        "control_chars": 2,
+        "html_hits": 80,
+        "low_malayalam_script_share": 2599,
+        "repeated_line_boilerplate": 5,
+        "repeated_virama": 58,
+        "replacement_chars": 3,
+        "short_language_evidence": 13,
+        "unattached_ml_marks": 1346,
+        "weak_independent_language_evidence": 1138
+      },
+      "scope": "single-source, local engineering only",
+      "unique_groups": 22829
+    },
+    "source_scope": {
+      "normalizer_fingerprint": "bccfa8669a7e8528",
+      "protocol_sha256": "1ff56f1a584073b3d9eaa965b6d44f179f7322e1758c9afc47d04a0a7a340167",
+      "regex": "2026.9.29",
+      "unicode": "15.0.0"
+    },
+    "splits": {
+      "train": {
+        "canonical_bytes": 99999974,
+        "canonical_bytes_by_domain": {
+          "encyclopedic": 99999974
+        },
+        "canonical_bytes_by_source": {
+          "mlwiki_snapshot": 99999974
+        },
+        "canonical_stream_sha256": "9fc7e6bc214465b6686c586585b155d076fb18a876d0927d9377534dfba303ac",
+        "file": "train.jsonl",
+        "raw_bytes": 100000274,
+        "rows": 19405,
+        "sha256": "f5fa6515cd087ce454333985d9f14682c9bd0d6675f8ace6bc92b150229fcb81",
+        "size": 113190872
+      },
+      "validation": {
+        "canonical_bytes": 999950,
+        "canonical_bytes_by_domain": {
+          "encyclopedic": 999950
+        },
+        "canonical_bytes_by_source": {
+          "mlwiki_snapshot": 999950
+        },
+        "canonical_stream_sha256": "efdeb7e194c1941b8d8124d7060c6f5bfdfdf92a1ff4f833dbc2f4d56702f514",
+        "file": "validation.jsonl",
+        "raw_bytes": 999950,
+        "rows": 186,
+        "sha256": "4edaba0cb81f64a51518a54d035e4a83de7b2955b8e9674c91a406d4369f4a02",
+        "size": 1125028
+      }
+    }
+  },
+  "scale_A_completed_full_fits": [],
+  "schema": "mom-48k-capacity-evidence-v1",
+  "scientific_holdout": false
+}

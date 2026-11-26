@@ -33,8 +33,9 @@ def public_session(agent):
 
 
 class RangeFile(io.RawIOBase):
-    def __init__(self, session, url, size, ledger):
+    def __init__(self, session, url, size, ledger, *, byte_cap=None):
         self.session, self.url, self.size, self.ledger = session, url, size, ledger
+        self.byte_cap = byte_cap
         self.pos = 0
 
     def readable(self):
@@ -59,7 +60,7 @@ class RangeFile(io.RawIOBase):
             return b""
         start, end = self.pos, self.pos + count - 1
         reserved = self.ledger.get("reserved", self.ledger["bytes"]) + count
-        if reserved > CAP:
+        if reserved > (CAP if self.byte_cap is None else self.byte_cap):
             raise OSError("Corpus sample transfer budget exhausted")
         # A distinct query per range also prevents intermediary range-cache mixing.
         url = self.url + f"?sample_range={start}-{end}"

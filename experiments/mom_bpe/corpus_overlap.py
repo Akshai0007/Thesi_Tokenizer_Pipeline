@@ -2,25 +2,28 @@
 
 import json
 import sqlite3
+from pathlib import Path
 
 from experiments.mom_bpe.corpus_quality import duplicate_view
 from experiments.mom_bpe.diagnose import sha
 
 THRESHOLD = 85
+SKETCH_SHA256 = "22e8ba23fb337fb7b6fb8529620a1d35b50dd733a305646736ae322e4a8fe627"
 
 
 def signatures(text):
     return {text[i:i + 5] for i in range(len(text) - 4)}
 
 
-def prefix(grams):
+def prefix(grams, feature_order=None):
     length = len(grams)
     # AllPairs prefix bound under a shared total ordering of features.
-    return sorted(grams)[:length - (THRESHOLD * length + 99) // 100 + 1]
+    return sorted(grams, key=feature_order)[:length - (THRESHOLD * length + 99) // 100 + 1]
 
 
 class DuplicateIndex:
-    def __init__(self, path):
+    def __init__(self, path, *, feature_order=None):
+        self.feature_order = feature_order
         self.db = sqlite3.connect(path)
         self.db.execute("PRAGMA synchronous=FULL")
         self.db.execute("PRAGMA journal_mode=WAL")
@@ -41,6 +44,14 @@ class DuplicateIndex:
         CREATE TABLE IF NOT EXISTS links(n INTEGER, other INTEGER, kind TEXT, PRIMARY KEY(n,other,kind)) WITHOUT ROWID;
         CREATE TEMP TABLE IF NOT EXISTS candidates(n INTEGER PRIMARY KEY);
         """)
+        self.sketch = None
+        if feature_order is not None:
+            from experiments.mom_bpe.corpus_sketch import GramSketch
+
+            implementation = Path(__file__).with_name("corpus_sketch.py").read_bytes().replace(b"\r\n", b"\n")
+            if sha(implementation) != SKETCH_SHA256:
+                raise ValueError("The bounded candidate implementation differs from its recorded identity")
+            self.sketch = GramSketch(self.db, THRESHOLD)
 
     def root(self, n):
         path = []
@@ -80,7 +91,19 @@ class DuplicateIndex:
                 self.join(n, other, kind)
         if not grams:
             return
-        terms = prefix(grams)
+        if self.sketch is not None:
+            histogram, candidates = self.sketch.candidates(grams)
+            # The shared bucket counts bound exact overlap, so every surviving
+            # pair is still checked against its complete five-gram set.
+            for other in candidates:
+                size, old, view_hash = self.db.execute(
+                    "SELECT gram_count,text,view_hash FROM documents WHERE n=?", (other,)
+                ).fetchone()
+                if view_hash != values["view_hash"]:
+                    self.compare(n, other, size, old, grams)
+            self.sketch.persist(n, len(grams), histogram)
+            return
+        terms = prefix(grams, self.feature_order)
         self.db.execute("DELETE FROM candidates")
         for start in range(0, len(terms), 180):
             chunk = terms[start:start + 180]
@@ -88,17 +111,21 @@ class DuplicateIndex:
                 f"INSERT OR IGNORE INTO candidates SELECT n FROM postings WHERE term IN ({','.join('?' for _ in chunk)})",
                 chunk,
             )
+        minimum = (THRESHOLD * len(grams) + 99) // 100
+        maximum = 100 * len(grams) // THRESHOLD
         for other, size, old in self.db.execute(
-            "SELECT d.n,d.gram_count,d.text FROM candidates c JOIN documents d USING(n) WHERE d.view_hash<>?",
-            (values["view_hash"],),
+            "SELECT d.n,d.gram_count,d.text FROM candidates c JOIN documents d USING(n)"
+            " WHERE d.view_hash<>? AND d.gram_count BETWEEN ? AND ?",
+            (values["view_hash"], minimum, maximum),
         ):
-            if 100 * min(size, len(grams)) < THRESHOLD * max(size, len(grams)):
-                continue
-            comparison = signatures(duplicate_view(old))
-            shared = len(comparison & grams)
-            if 100 * shared >= THRESHOLD * (len(grams) + size - shared):
-                self.join(n, other, "near_duplicate")
+            self.compare(n, other, size, old, grams)
         self.db.executemany("INSERT INTO postings VALUES(?,?)", ((term, n) for term in terms))
+
+    def compare(self, n, other, size, old, grams):
+        comparison = signatures(duplicate_view(old))
+        shared = len(comparison & grams)
+        if 100 * shared >= THRESHOLD * (len(grams) + size - shared):
+            self.join(n, other, "near_duplicate")
 
     def counts(self):
         # Exact links record one previous witness per source; they are not all pairs.
