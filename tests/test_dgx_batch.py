@@ -4,6 +4,7 @@ import json
 import math
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import torch
@@ -308,19 +309,132 @@ def test_paired_statistics_use_weighted_canonical_byte_denominator():
 def test_notebook_cells_independent_and_opt_in(tmp_path, monkeypatch):
     book = json.loads((REPO / "notebooks/mom_bpe_dgx_batch.ipynb").read_bytes())
     code = {c["id"]: c for c in book["cells"] if c["cell_type"] == "code"}
-    assert list(code) == ["source", "environment", "restore", "verify", "plan", "ready", "inspect", "smoke",
+    assert list(code) == ["environment", "retrieve-source", "source", "authenticate", "restore", "verify", "plan", "ready", "inspect", "smoke",
                           "first", "first-results", "second", "results", "analyze", "backup", "report"]
     for name, cell in code.items():
         assert not cell["outputs"] and cell["execution_count"] is None
         src = "".join(cell["source"])
         compile(src, name, "exec")
-        assert hashlib.sha256((HERE / "dgx_batch.py").read_bytes()).hexdigest() in src
+        assert all(word not in src.lower() for word in (".zip", ".tar", "unzip", "--archive"))
+    assert 'run("restore-individual")' in "".join(code["restore"]["source"])
+    monkeypatch.setenv("MOM_BPE_DEPLOY_REVISION", "a" * 40)
     invoked = []
     monkeypatch.setattr(subprocess, "run", lambda cmd, **kw: invoked.append(cmd))
     for _ in range(2):
-        for name in ("restore", "smoke", "first", "second", "backup"):
+        for name in ("smoke", "first", "second", "backup"):
             src = "".join(code[name]["source"]).replace('Path("/jupyter/socse.user63/mom-bpe-private-recovery")',
                                                        f"Path({str(tmp_path)!r})")
             src = src.replace("root.stat().st_uid != os.getuid() or root.stat().st_mode & 0o077", "False")
             exec(compile(src, name, "exec"), {})
     assert invoked == []
+
+
+def test_deployment_verifies_revision_and_every_file(tmp_path, monkeypatch):
+    revision = "a" * 40
+    for name in b.DEPLOYMENT_FILES:
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(name.encode())
+
+    def git(command):
+        if command[-2] == "rev-parse":
+            return revision.encode()
+        return command[-1].split(":", 1)[1].encode()
+
+    monkeypatch.setattr(subprocess, "check_output", git)
+    assert len(b.verify_deployment(tmp_path, revision)["file_sha256"]) == 7
+    with pytest.raises(ValueError, match="commit mismatch"):
+        b.verify_deployment(tmp_path, "b" * 40)
+    path.write_bytes(b"corrupt")
+    with pytest.raises(ValueError, match="file differs"):
+        b.verify_deployment(tmp_path, revision)
+    path.unlink()
+    with pytest.raises(ValueError, match="Missing GitHub"):
+        b.verify_deployment(tmp_path, revision)
+
+
+class HubFixture:
+    def __init__(self, payload, revision="a" * 40, events=()):
+        self.payload = payload
+        self.revision = revision
+        self.events = list(events)
+        self.calls = []
+        self.checked = []
+
+    def repo_info(self, repo, *, repo_type, revision, timeout):
+        self.checked.append((repo, revision))
+        return SimpleNamespace(private=True, sha=self.revision)
+
+    def hf_hub_download(self, repo, filename, *, repo_type, revision, local_dir, force_download):
+        self.calls.append((revision, force_download, local_dir))
+        path = local_dir / filename
+        path.parent.mkdir(parents=True, exist_ok=True)
+        event = self.events.pop(0) if self.events else None
+        if event == "interrupt":
+            path.with_suffix(".incomplete").write_bytes(b"partial")
+            raise KeyboardInterrupt
+        if isinstance(event, BaseException):
+            raise event
+        path.write_bytes(event if event is not None else self.payload)
+        return str(path)
+
+    def create_commit(self, *args, **kwargs):
+        pytest.fail("The restoration path attempted an upload")
+
+
+def hub_inventory():
+    return {"refs/result.json": {"size": 4, "sha256": hashlib.sha256(b"good").hexdigest(),
+                                "source": {"repo": "owner/repo", "revision": "a" * 40, "filename": "result.json"}}}
+
+
+def test_hub_wrong_revision_and_missing_remote_member(tmp_path):
+    inventory = hub_inventory()
+    wrong = HubFixture(b"good", revision="b" * 40)
+    row = b.restore_members(tmp_path, tmp_path / "stage", inventory, wrong)["refs/result.json"]
+    assert row["status"] == "unverified_revision" and not wrong.calls
+    error = type("RemoteEntryNotFoundError", (Exception,), {})()
+    missing = HubFixture(b"good", events=[error])
+    row = b.restore_members(tmp_path, tmp_path / "stage", inventory, missing)["refs/result.json"]
+    assert row["status"] == "download_failed" and len(missing.calls) == 1
+    assert not (tmp_path / "refs/result.json").exists()
+
+
+def test_hub_bad_sha_is_retried_and_never_published(tmp_path):
+    api = HubFixture(b"bad!")
+    row = b.restore_members(tmp_path, tmp_path / "stage", hub_inventory(), api)["refs/result.json"]
+    assert row["status"] == "download_failed"
+    assert [force for _, force, _ in api.calls] == [False, True, True]
+    assert not (tmp_path / "refs/result.json").exists()
+
+
+def test_hub_interrupted_transfer_resumes_in_same_stage_and_reuses_verified_file(tmp_path):
+    api = HubFixture(b"good", events=["interrupt"])
+    with pytest.raises(KeyboardInterrupt):
+        b.restore_members(tmp_path, tmp_path / "stage", hub_inventory(), api)
+    assert not (tmp_path / "refs/result.json").exists()
+    row = b.restore_members(tmp_path, tmp_path / "stage", hub_inventory(), api)["refs/result.json"]
+    assert row["status"] == "restored"
+    assert api.calls[0][2] == api.calls[1][2]
+    offline = HubFixture(b"bad!")
+    row = b.restore_members(tmp_path, tmp_path / "stage", hub_inventory(), offline)["refs/result.json"]
+    assert row["status"] == "reused" and not offline.checked and not offline.calls
+
+
+def test_conflict_preserves_original_and_saves_verified_replacement(tmp_path):
+    path = tmp_path / "refs/result.json"
+    path.parent.mkdir()
+    path.write_bytes(b"bad!")
+    row = b.restore_members(tmp_path, tmp_path / "stage", hub_inventory(), HubFixture(b"good"))["refs/result.json"]
+    assert row["status"] == "conflict_preserved" and path.read_bytes() == b"bad!"
+    assert Path(row["verified_replacement"]).read_bytes() == b"good"
+
+
+def test_unmapped_inputs_and_unauthorized_backup_do_not_contact_hub(tmp_path, monkeypatch):
+    api = HubFixture(b"good")
+    entry = {"size": 4, "sha256": hashlib.sha256(b"good").hexdigest(), "source": None}
+    row = b.restore_members(tmp_path, tmp_path / "stage", {"frozen/cache.bin": entry}, api)["frozen/cache.bin"]
+    assert row["status"] == "missing_local_only" and not api.checked and not api.calls
+    monkeypatch.setattr(b, "hub_client", lambda: pytest.fail("Unapproved backup accessed Hub credentials"))
+    batch = b.Batch(tmp_path, {"queue": []}, {})
+    with pytest.raises(ValueError, match="explicit authorization"):
+        batch.backup_hub("owner/private", "all", False, False)

@@ -14,6 +14,7 @@ import subprocess
 import sys
 import traceback
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from time import time_ns
 from uuid import uuid4
 
@@ -25,6 +26,24 @@ else:
 
 OPERATIONAL = "9b872ffb5a66bdf4d23df58acebbba7e788915d8"
 BATCH_SHA = "d0bfb6b3994cff4ca2c0159718e0a29da91e1f8aa029f5fa3d7169541905a5b7"
+REPOSITORY = "https://github.com/Akshai0007/Thesi_Tokenizer_Pipeline.git"
+REFERENCE_REPO = "Akzhai/mom-bpe-dgx-results-private"
+REFERENCE_REVISION = "60e3d255c7afd86ec568e5a728f98a8c6e433219"
+REFERENCE_SIZES = {
+    ("F-space", "fixed_source_bytes"): (2810, 60692),
+    ("F-space", "fixed_training_tokens"): (3047, 60940),
+    ("M48", "fixed_source_bytes"): (2806, 60676),
+    ("M48", "fixed_training_tokens"): (3043, 60925),
+}
+DEPLOYMENT_FILES = (
+    "experiments/mom_bpe/DGX_BATCH_GUIDE.md",
+    "experiments/mom_bpe/dgx_batch.py",
+    "experiments/mom_bpe/t5_t8_batch_v1.json",
+    "experiments/mom_bpe/t5_t8_dgx.py",
+    "experiments/mom_bpe/t5_t8_inputs_v1.json",
+    "notebooks/mom_bpe_dgx_batch.ipynb",
+    "tests/test_dgx_batch.py",
+)
 BATCH_DIR = "runs/dp/t5-t8-seed17-batch-v1"
 FIRST_DIR = "runs/dp/t5-t8-seed17-fixed-source-v1"
 MODES = ("fixed_source_bytes", "fixed_training_tokens")
@@ -86,6 +105,126 @@ def verify_source(source):
     require(git("rev-parse", "HEAD") == OPERATIONAL
             and not git("status", "--porcelain", "--ignored", "--untracked-files=all"),
             "Expected the clean, dedicated operational checkout")
+
+
+def verify_deployment(source, revision):
+    require(re.fullmatch("[0-9a-f]{40}", revision), "Supply the exact published GitHub commit")
+
+    def git(*args):
+        return subprocess.check_output(["git", "-C", str(source), *args])
+
+    require(git("rev-parse", "HEAD").decode().strip() == revision, "GitHub deployment commit mismatch")
+    hashes = {}
+    for name in DEPLOYMENT_FILES:
+        path = frozen.safe(source, name)
+        require(path.is_file(), f"Missing GitHub deployment file: {name}")
+        blob = git("show", f"{revision}:{name}")
+        digest = hashlib.sha256(blob).hexdigest()
+        require(hashlib.sha256(path.read_bytes()).hexdigest() == digest, f"GitHub deployment file differs: {name}")
+        hashes[name] = digest
+    return {"repository": REPOSITORY, "commit": revision, "file_sha256": hashes}
+
+
+def hub_client(*, optional=False):
+    from huggingface_hub import HfApi, get_token
+
+    token = get_token()
+    if optional and not token:
+        return None
+    require(token, "Authenticate with an approved Hugging Face credential")
+    return HfApi(token=token)
+
+
+def verify_hub_revision(api, repo, revision):
+    require(re.fullmatch("[0-9a-f]{40}", revision), "An immutable Hugging Face revision is required")
+    info = api.repo_info(repo, repo_type="model", revision=revision, timeout=20)
+    require(info.private is True and info.sha == revision, "Hugging Face privacy or revision differs")
+
+
+def artifact_inventory(inputs):
+    from experiments.mom_bpe.dgx_readiness import PINS
+
+    files = {"t5-t8-frozen-runs-v1/" + name: {"size": ref["size"], "sha256": ref["sha256"], "source": None}
+             for name, ref in inputs["files"].items()}
+    for (arm, mode), sizes in REFERENCE_SIZES.items():
+        for leaf, size, digest in zip(("identity.json", "result.json"), sizes, PINS[arm, mode], strict=True):
+            filename = f"seed17/{arm}/{mode}/{leaf}"
+            files["t5-t8-seed17-reference-v1/" + filename] = {
+                "size": size, "sha256": digest,
+                "source": {"repo": REFERENCE_REPO, "revision": REFERENCE_REVISION, "filename": filename},
+            }
+    return files
+
+
+def download_member(api, remote, scratch, expected, *, attempts=3, force=False):
+    from experiments.mom_bpe.dgx_handoff import file_digest
+
+    scratch.mkdir(parents=True, exist_ok=True)
+    for _ in range(attempts):
+        try:
+            path = Path(api.hf_hub_download(remote["repo"], remote["filename"], repo_type="model",
+                                           revision=remote["revision"], local_dir=scratch, force_download=force))
+            target = frozen.safe(scratch, remote["filename"])
+            require(path.resolve() == target and target.is_file(), "Unexpected downloaded file path")
+            if file_digest(target) == expected:
+                return target
+            force = True
+            error = "SHA256OrSizeMismatch"
+        except Exception as exc:
+            error = type(exc).__name__
+            if error in {"RevisionNotFoundError", "EntryNotFoundError", "RemoteEntryNotFoundError",
+                         "RepositoryNotFoundError", "GatedRepoError"}:
+                break
+    raise ValueError(f"Individual artifact download failed ({error})")
+
+
+def restore_members(root, scratch, members, api=None):
+    from experiments.mom_bpe.dgx_handoff import file_digest
+
+    revisions = {}
+    results = {}
+    for name, ref in sorted(members.items()):
+        dest = frozen.safe(root, name)
+        expected = (ref["size"], ref["sha256"])
+        remote = ref["source"]
+        record = {**ref}
+        results[name] = record
+        conflict = dest.exists()
+        if conflict:
+            if dest.is_file() and file_digest(dest) == expected:
+                record["status"] = "reused"
+                continue
+            record["observed"] = file_digest(dest) if dest.is_file() else "not_a_regular_file"
+        if remote is None:
+            record["status"] = "conflicting_local_only" if conflict else "missing_local_only"
+            continue
+        if api is None:
+            record["status"] = "authentication_required"
+            continue
+        pin = (remote["repo"], remote["revision"])
+        if pin not in revisions:
+            try:
+                verify_hub_revision(api, *pin)
+                revisions[pin] = None
+            except Exception as exc:
+                revisions[pin] = type(exc).__name__
+        if revisions[pin]:
+            record.update(status="unverified_revision", error=revisions[pin])
+            continue
+        try:
+            # Hugging Face can resume interrupted transfers in this revision-specific directory.
+            staging = frozen.safe(scratch, "downloads/" + metadata_digest(remote))
+            downloaded = download_member(api, remote, staging, expected)
+            if conflict:
+                recovery = frozen.safe(scratch, f"verified-replacements/{ref['sha256']}/{name}")
+                copy_verified(downloaded, recovery, expected)
+                record.update(status="conflict_preserved", verified_replacement=str(recovery))
+            else:
+                copy_verified(downloaded, dest, expected)
+                record["status"] = "restored"
+        except (OSError, ValueError) as exc:
+            record.update(status="download_failed", error=str(exc))
+    return results
 
 
 def verify_environment():
@@ -182,6 +321,15 @@ class Batch:
             else:
                 self.save_named("restorations", {"manifest_sha256": self.sha, **restored})
         return self.stage("restored-inputs")
+
+    def restore_individual(self, api):
+        inventory = artifact_inventory(self.data)
+        self.stage("artifact-inventory", {"files": inventory})
+        members = restore_members(self.root, self.dir, inventory, api)
+        complete = all(item["status"] in ("reused", "restored") for item in members.values())
+        report = {"manifest_sha256": self.sha, "complete": complete, "members": members}
+        self.save_named("individual-restorations", report)
+        return report
 
     def verify_inputs(self):
         if self.stage_path("verified-inputs").exists():
@@ -610,6 +758,59 @@ class Batch:
                 self.record(job, "BACKED_UP", receipt=digest)
         return {**report, "backup_revision_sha256": digest}
 
+    def backup_hub(self, repo, group, enabled, checkpoints):
+        require(enabled, "Private Hugging Face backup requires explicit authorization")
+        require(repo and re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo),
+                "Supply the separately approved private model repository")
+        from experiments.mom_bpe.dgx_handoff import file_digest
+        from huggingface_hub import CommitOperationAdd
+
+        results = self.verify_finished(group)
+        require(results, "No verified completed jobs to back up")
+        files = {}
+        for job in self.selection(group):
+            result = results.get(job["id"])
+            if result is None:
+                continue
+            out = frozen.safe(self.root, job["output"])
+            names = ["result.json", "identity.json"]
+            if checkpoints:
+                names.append(result["checkpoint"]["path"])
+            for name in names:
+                files[f"seed17/{job['arm']}/{job['mode']}/{name}"] = frozen.safe(out, name)
+        expected = {name: file_digest(path) for name, path in files.items()}
+        require(shutil.disk_usage(self.dir).free > max(size for size, _ in expected.values()) + 32 * 2**20,
+                "Insufficient space for independent backup verification")
+        api = hub_client()
+        try:
+            info = api.repo_info(repo, repo_type="model", timeout=20)
+            require(info.private is True, "Backup repository must be private")
+            revision = info.sha
+            verify_hub_revision(api, repo, revision)
+            existing = set(api.list_repo_files(repo, repo_type="model", revision=revision))
+
+            def compare(name, pin):
+                with TemporaryDirectory(prefix="hub-verify-", dir=self.dir) as tmp:
+                    remote = {"repo": repo, "revision": pin, "filename": name}
+                    download_member(api, remote, Path(tmp), expected[name], force=True)
+
+            for name in set(files) & existing:
+                compare(name, revision)
+            additions = [CommitOperationAdd(path_in_repo=name, path_or_fileobj=str(files[name]))
+                         for name in sorted(set(files) - existing)]
+            if additions:
+                revision = api.create_commit(repo, repo_type="model", parent_commit=revision, operations=additions,
+                                             commit_message="Back up verified T5/T8 experiment outputs").oid
+            verify_hub_revision(api, repo, revision)
+            for name in files:
+                compare(name, revision)
+        except Exception as exc:
+            raise RuntimeError(f"Private backup pending ({type(exc).__name__})") from None
+        report = {"manifest_sha256": self.sha, "repository": repo, "revision": revision, "jobs": sorted(results),
+                  "files": {name: {"size": size, "sha256": digest} for name, (size, digest) in expected.items()}}
+        self.save_named("hub-backup-receipts", report)
+        return report
+
     def report(self):
         from experiments.mom_bpe.dgx_handoff import file_digest
 
@@ -667,6 +868,8 @@ class Batch:
                 "gpu_processes": self.active_user_gpu_processes(),
                 "analysis_receipts": sorted(p.name for p in (self.dir / "development").glob("*.json")),
                 "backups": backups,
+                "hub_backup_receipts": sorted(p.name for p in (self.dir / "hub-backup-receipts").glob("*.json")),
+                "input_restoration_receipts": sorted(p.name for p in (self.dir / "individual-restorations").glob("*.json")),
                 "cleanup": {"authorized": False, "missing_full_backup_receipt": sorted(set(outputs) - backed_up),
                             "review": "Reverify backup coverage and confirm process ownership before seeking removal approval."},
                 "scientific_scope": "Seed-17 development evaluation. Independent held-out and multi-seed T5/T8 evidence remain open."}
@@ -702,11 +905,15 @@ class Batch:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("source", "environment", "restore", "verify", "plan", "ready", "inspect", "smoke",
-                                               "first", "second", "results", "analyze", "backup", "report"))
+    parser.add_argument("action", choices=("source", "environment", "restore", "authenticate", "restore-individual",
+                                           "verify", "plan", "ready", "inspect", "smoke", "first", "second",
+                                           "results", "analyze", "backup", "backup-hub", "report"))
     for path in ("root", "source", "archive", "destination", "manifest"):
         parser.add_argument("--" + path, type=Path, required=path in ("root", "source"))
     parser.add_argument("--manifest-sha")
+    parser.add_argument("--deployment-revision")
+    parser.add_argument("--hub-repo")
+    parser.add_argument("--hub-checkpoints", action="store_true")
     parser.add_argument("--session", default="session-1")
     parser.add_argument("--scope", choices=("first", "second", "all"), default="first")
     parser.add_argument("--backup-kind", choices=("all", *BACKUP_KINDS), default="all")
@@ -740,6 +947,9 @@ def main():
     require(hashlib.sha256((here / "t5_t8_dgx.py").read_bytes()).hexdigest() == manifest["bootstrap_helper_sha256"],
             "Frozen input helper differs")
     inputs = load_pinned(here / "t5_t8_inputs_v1.json", manifest["input_manifest_sha256"])
+    deployment = None
+    if args.deployment_revision:
+        deployment = verify_deployment(here.parents[1], args.deployment_revision)
     root = unlinked_path(args.root)
     require(root.is_dir() and not source.is_relative_to(root / directory), "Use a dedicated source and private root")
     if os.name == "posix":
@@ -750,6 +960,7 @@ def main():
         if args.action in ("first", "second"):
             require(args.enable, "GPU execution is disabled")
             approval = batch.approval(args.session)
+            batch.verify_inputs()
             require(batch.stage("verified-environment")["runtime"] == verify_environment(), "DGX environment changed")
             from experiments.mom_bpe import dgx_resources as gpu
             # Resolve and reject prohibited physical indices before applying a process-local mask.
@@ -762,14 +973,29 @@ def main():
         elif args.action == "smoke":
             require(args.scope in ("first", "all"), "Approve the first pair or the full queue")
             require(args.enable and args.allocated, "GPU smoke requires explicit authorization and institutional allocation")
+            batch.verify_inputs()
             require(batch.stage("verified-environment")["runtime"] == verify_environment(), "DGX environment changed")
             result = batch.smoke(args.session, args.scope, args.uuid, args.shared, args.allocated, args.enable)
         elif args.action == "source":
             result = batch.stage("verified-source", {"commit": OPERATIONAL})
+            if deployment:
+                result = {**result, "deployment": deployment}
+                batch.save_named("verified-deployments", {"manifest_sha256": batch.sha, **deployment})
         elif args.action == "environment":
             result = batch.stage("verified-environment", {"runtime": verify_environment()})
         elif args.action == "restore":
             result = batch.restore(args.archive, args.enable)
+        elif args.action == "authenticate":
+            try:
+                verify_hub_revision(hub_client(), REFERENCE_REPO, REFERENCE_REVISION)
+            except Exception as exc:
+                raise RuntimeError(f"Private Hugging Face reference check failed ({type(exc).__name__})") from None
+            result = {"repository": REFERENCE_REPO, "revision": REFERENCE_REVISION, "private": True}
+        elif args.action == "restore-individual":
+            result = batch.restore_individual(hub_client(optional=True))
+            if not result["complete"]:
+                print(json.dumps(result, indent=2), flush=True)
+                raise ValueError("Input restoration incomplete. See the immutable per-file receipt.")
         elif args.action == "ready":
             result = batch.ready(args.scope)
         elif args.action == "inspect":
@@ -780,6 +1006,8 @@ def main():
         elif args.action == "backup":
             require(args.destination is not None, "Supply the approved backup directory")
             result = batch.backup(args.destination, args.scope, args.enable, args.backup_kind)
+        elif args.action == "backup-hub":
+            result = batch.backup_hub(args.hub_repo, args.scope, args.enable, args.hub_checkpoints)
         else:
             actions = {"verify": batch.verify_inputs, "plan": batch.plan,
                        "analyze": batch.analyze, "report": batch.report}

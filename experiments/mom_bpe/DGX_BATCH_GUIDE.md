@@ -11,39 +11,50 @@ The batch runs two matched pairs at seed 17. The trainer, optimizer, model, toke
 
 Each job uses the 38,799,936-parameter GPT, context 512 and all 186 ordered development documents. Fixed source bytes selects the same 10,355 complete documents under a 50,000,000-byte budget. Fixed training tokens uses the frozen token budget and tokenizer-specific prefix endpoint. The old fixed-source jobs keep their original output paths. The fixed-token jobs use separate subdirectories under the new batch root.
 
-## Stage on DGX
+## GitHub deployment
 
-Extract the source-only deployment archive in an approved private JupyterLab folder. Open `notebooks/mom_bpe_dgx_batch.ipynb` and set the kernel working directory to the extracted `experiments/mom_bpe` directory. The notebook checks the controller, queue manifest, and the two frozen input companions by SHA-256.
+Retrieve `notebooks/mom_bpe_dgx_batch.ipynb` from the exact published deployment commit on `research/mom-bpe-dgx-resources`. Verify the notebook SHA-256 from the publication report before opening it. Set `MOM_BPE_DEPLOY_REVISION` to that full 40-character commit in the kernel environment. Cell 2 retrieves that commit and the separate immutable operational commit directly from GitHub. Cell 3 checks the GitHub revision and byte hashes of all seven deployment files, including the notebook, then records the verified runtime. Keep the verified checkout pristine. The notebook can be edited and run from the separate copy fetched to JupyterLab.
 
-Reuse `/jupyter/socse.user63/mom-bpe-private-recovery`, a user-owned directory with mode 0700. Stage the eight exact historical reference JSONs under `t5-t8-seed17-reference-v1/seed17/{M48,F-space}/{fixed_source_bytes,fixed_training_tokens}/{identity,result}.json`. The authenticated local copy is under `experiments/mom_bpe/runs/dp/postrun-v1/60e3d255c7afd86ec568e5a728f98a8c6e433219/`. The historical checkpoints are referenced by the original JSONs. The comparisons use those JSONs and the frozen data fingerprints.
+Reuse `/jupyter/socse.user63/mom-bpe-private-recovery`, a user-owned directory with mode 0700. The existing isolated Python 3.12.0 environment must contain the pinned scientific dependencies and `huggingface_hub`. Use an approved credential provider, runtime environment injection, or the masked prompt in Cell 4.
+
+## Pinned artifact inventory
+
+| Required files | Trusted origin |
+| --- | --- |
+| Eight seed-17 M48/F-space result and identity JSON files | Private model repo `Akzhai/mom-bpe-dgx-results-private`, revision `60e3d255c7afd86ec568e5a728f98a8c6e433219` |
+| Twenty-five T5/T8 tokenizer, cache, exposure ledger and corpus identity files | Exact original individual files identified by `t5_t8_inputs_v1.json`. The inspected Hugging Face receipts do not contain these hashes. |
+
+The private thesis evidence snapshots in `Akzhai/mltok-storage-test` at `9db79dbd64572bab10c44c7ec8660d8dc103b443` and `78737cb615e81ba24878f6e7ae7ac02ca6d36d52` do not supply the 25 required training files. Reuse already staged originals or arrange approved individual-file staging into `t5-t8-frozen-runs-v1/` following the exact relative paths, sizes and SHA-256 hashes in the frozen manifest. The fixed-training-token plans are recomputed from those frozen caches and checked against the reviewed plan pins.
+
+Cell 5 writes `artifact-inventory.json` and immutable per-attempt restoration receipts under `individual-restorations/` in the batch directory. Each entry includes the local destination, expected size and SHA-256, pinned source if verified, and its status. Verified local files are reused. The eight historical files are placed in the separate `t5-t8-seed17-reference-v1/` tree. Temporary download state is kept under `downloads/` for retry and resume. A conflicting existing file is preserved. If the exact remote member is available, its verified replacement is saved separately and the cell reports the conflict. Resolve the conflict within approved staging storage before resuming. Missing training files without a verified Hub source block training.
+
+## Notebook order
 
 | Cell | Operation |
 | --- | --- |
-| 1 | Verify or recover the exact operational Git checkout. A fresh fetch is staged in a private sibling directory before verification and promotion. |
-| 2 | Verify the existing pinned Python 3.12.0 environment and dependencies. Restore the approved environment if it was removed. |
-| 3 | Optionally restore 25 exact members from Package B into `t5-t8-frozen-runs-v1/`. Reuse that tree if it already verifies. |
-| 4 | Verify SHA-256 for frozen members and all eight historical JSONs. First verification checks both tokenizer fits and the frozen development identity. |
-| 5 | Verify the four exposure plans, including the fixed-token plans. |
-| 6 | Verify CPU readiness and the full-batch private scratch floor. |
-| 7 | Inspect physical GPU UUIDs, memory, utilization, compute processes and scratch. |
-| 8 | Run the approved A100 diagnostic and record the session authorization. |
-| 9 | Run T5 then T8 under fixed source bytes. |
-| 10 | Verify both first-pair results and checkpoints and write the first comparison. |
-| 11 | Run T5 then T8 under fixed training tokens. This requires full-queue approval and the verified first-pair receipt. |
-| 12 | Require all four verified results and final checkpoints. |
-| 13 | Write the per-protocol scientific analysis and paired document comparisons. |
-| 14 | Optionally back up verified artifacts. |
-| 15 | Write the immutable final session report. |
+| 1 | Check the pinned Python environment and Hub client. |
+| 2 | Retrieve the exact deployment and operational commits from GitHub. |
+| 3 | Verify the source commit, notebook and companion hashes. |
+| 4 | Authenticate to the pinned private Hub reference revision. |
+| 5 | Restore individual files and review the per-file receipt. |
+| 6 | Verify all frozen input and historical reference hashes. |
+| 7 | Verify the four exposure plans. |
+| 8 | Check CPU readiness and private scratch. |
+| 9 | Inspect GPU resources and storage. |
+| 10 | Run the approved A100 diagnostic. |
+| 11 | Run T5 then T8 under fixed source bytes. |
+| 12 | Verify both first-pair results and checkpoints and write their comparison. |
+| 13 | Run T5 then T8 under fixed training tokens. |
+| 14 | Require four verified results and final checkpoints. |
+| 15 | Generate the paired scientific analysis. |
+| 16 | Optionally back up verified outputs to a separately approved private Hub repository. |
+| 17 | Write the immutable final session report. |
 
-Package B is the existing 91,141,457-byte archive with SHA-256 `fcc1957a3456774ccbc00c08e18738c7b142250d22150bbbf405206616156364`. Cell 3 is opt-in. Set `restore_approved = True` only when using the verified archive at the configured path. A successful receipt avoids reopening the archive while all selected files exist. If a staged member is missing, rerun Cell 3 against that same archive and then verify inputs. Conflicting bytes block the stage. The fixed-token plans reuse the same 25 members.
+After institutional allocation and explicit execution approval, set a fresh `MOM_BPE_BATCH_SESSION` label. In Cell 10 set `smoke_approved = True` and `allocated = True`, enter the full physical A100 UUID, and keep `scope = "all"` for both pairs. Default admission requires 8192 MiB free, at most 5% utilization and exclusive use. Separate institutional shared-use approval permits the reviewed 5120 MiB and 10% profile. Both profiles reject physical GPU 7 and require verifiable compute-process information. The diagnostic uses zero training updates.
 
-To activate the GPU after institutional allocation and explicit execution approval, set a fresh kernel label such as `%env MOM_BPE_BATCH_SESSION=dgx-batch-001`. In Cell 8, set `smoke_approved = True` and `allocated = True`, enter the approved full physical A100 UUID and select `scope = "all"` for both pairs. The diagnostic uses zero training updates. Default admission is 8192 MiB free, at most 5% utilization and exclusive use. With separate institutional shared-use approval, `shared_approved = True` selects the reviewed 5120 MiB and 10% profile. Both profiles reject physical GPU 7 and require verifiable compute-process information. A failed diagnostic attempt blocks reuse of an earlier approval under that label.
+Enable Cell 11 after the smoke succeeds. Enable Cell 13 separately after Cell 12 verifies both first-pair results. The controller runs one job at a time and stops on a failed check. Resume by rerunning the same training cell on the original GPU and runtime. A later allocation needs a fresh smoke receipt. Scientific comparisons continue to be seed-17 development evidence.
 
-Set `enable_training = True` in Cell 9 after Cell 8 succeeds. Cell 10 must verify and compare both first-pair results before Cell 11 can start. Enable Cell 11 separately while the allocation is still valid. To resume, rerun the same training cell on the original GPU and runtime. Keep the same approval receipt while its allocation remains valid. A later allocation requires a fresh diagnostic. The worker admits the approved device before each job and the pinned trainer checks admission again immediately before training. On a failure the controller stops the queue and retains logs, checkpoints and receipts.
-
-Cell 13 separates tokenization compression and Malayalam orthographic measurements from downstream BPB. It reads tokenizer-only metrics from the frozen validation artifacts and reports canonical bytes per scored prediction alongside the paired language-model results. Per-document rows and 10,000 paired bootstrap draws use the same ordered development documents. The historical checkpoint references come from authenticated result JSONs. Historical GPU peaks and elapsed times are unavailable from those JSONs. This seed-17 evaluation leaves independent held-out quality and training-seed uncertainty open.
-
-In Cell 14 supply the institutionally approved private backup mount and set `backup_approved = True`. Choose `kind = "all"` or a category such as `checkpoints`, `results`, `identities`, `configuration`, `telemetry`, `manifests`, `receipts`, `analysis` or `logs`. The destination is a mounted directory outside the recovery root. Every copied file is reopened and independently hashed at the destination. The content-addressed backup receipt is the exact revision and includes the verified member manifest. A full verified backup marks the available jobs `BACKED_UP`. Category-specific backups have separate receipts. Cell 15 reports verified and pending jobs, metrics, backups, scratch, current-process observations and the requirement for separate cleanup approval. Review backup coverage and ownership before any proposed deletion.
+For Cell 16 supply the approved private model repository and explicitly enable `backup_approved`. The default upload set is verified result and identity JSON files. Final checkpoints require the separate `checkpoint_backup_approved` switch. The stage checks destination privacy, uses a parent-pinned commit, and independently re-downloads and hashes each approved member at the resulting revision. Existing conflicting remote files stop backup. Hub backup receipts live in `hub-backup-receipts/`. Reversible caches and corpus data remain in their approved storage.
 
 ## Recovery and capacity
 
@@ -53,12 +64,14 @@ Allow **8 GiB free for the first pair** or **15 GiB for all four**, plus checkou
 
 An alternative selection or ordering of the reviewed jobs can use `--manifest FILE --manifest-sha SHA256` with the controller CLI. The controller verifies exact membership against the approved job definitions, uses a separate journal namespace and preserves the original job output identities. New tokenizer, model, seed or input identities require reviewed plans and the corresponding adapter. The shipped notebook pins only this four-job queue.
 
-## Offline verification
+## Verification
 
-The clean pinned checkout restored exactly 25 files from Package B, authenticated all eight historical reference JSONs, verified both protocol-specific plans for each arm and rejected unapproved smoke, execution and backup. The local verification receipts are under `runs/dp/t5-t8-batch-verification-v1/`. The four-plan receipt has file SHA-256 `fdc09d63e110ede1fb27a08682e4566826e36e902bd244799aa1bbc9c4f445e2`. The notebook and controller remain local deliverables. DGX storage, checkpoint availability and institutional GPU allocation require on-host confirmation.
-
-The focused Windows CPU suite passed 101 deployment, recovery, resource and integrity tests. It used `CUDA_VISIBLE_DEVICES=-1`, `HF_HUB_OFFLINE=1`, `HF_DATASETS_OFFLINE=1` and `PYTHONDONTWRITEBYTECODE=1`.
+The frozen batch and operational trainer retain their original pins. The deployment notebook loads the seven reviewed source files from an exact GitHub commit and verifies their byte identities. The private Hub inventory separates the eight pinned historical JSONs from the 25 frozen local training artifacts.
 
 ```powershell
-python -m pytest -q -ra -p no:cacheprovider tests/test_dgx_batch.py tests/test_dgx_resources.py tests/test_document_proxy.py tests/test_dgx_handoff.py tests/test_dgx_readiness.py tests/test_notebook.py tests/test_dgx_session_upgrade.py
+$env:CUDA_VISIBLE_DEVICES='-1'
+$env:HF_HUB_OFFLINE='1'
+$env:HF_DATASETS_OFFLINE='1'
+$env:PYTHONDONTWRITEBYTECODE='1'
+python -m pytest -q -ra -p no:cacheprovider
 ```
