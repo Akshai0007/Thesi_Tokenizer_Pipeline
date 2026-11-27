@@ -43,6 +43,7 @@ class MLMinGram(Algorithm):
         self,
         seed_multiplier=1.15,
         guard_milli=1000,
+        akshara_guard_milli=1000,
         picky_threshold_milli=900,
         alphabet_coverage=0.9999,
         shrink_factor=0.75,
@@ -59,6 +60,8 @@ class MLMinGram(Algorithm):
             raise ValueError("seed_multiplier must be >= 1.0")
         if type(guard_milli) is not int or not 0 <= guard_milli <= CONFIDENCE_SCALE:
             raise ValueError("guard_milli must be in 0..1000 thousandths")
+        if type(akshara_guard_milli) is not int or akshara_guard_milli < 0:
+            raise ValueError("akshara_guard_milli must be a non-negative integer")
         if picky_threshold_milli is not None and (
             type(picky_threshold_milli) is not int or not 1 <= picky_threshold_milli <= CONFIDENCE_SCALE
         ):
@@ -78,6 +81,7 @@ class MLMinGram(Algorithm):
 
         self.seed_multiplier = float(seed_multiplier)
         self.guard_milli = guard_milli
+        self.akshara_guard_milli = akshara_guard_milli
         self.picky_threshold_milli = picky_threshold_milli
         self.alphabet_coverage = float(alphabet_coverage)
         self.shrink_factor = float(shrink_factor)
@@ -174,6 +178,7 @@ class MLMinGram(Algorithm):
             em_iters=self.em_iters,
             final_em_iters=self.final_em_iters,
             filter_malayalam_dangling=self.filter_malayalam_dangling,
+            akshara_guard_milli=self.akshara_guard_milli,
         )
 
         occupied = len(scores) + len(ctx.specials) + 256
@@ -197,6 +202,7 @@ class MLMinGram(Algorithm):
             "data_fingerprint": data_fingerprint(ctx.shard_paths),
             "seed_multiplier": self.seed_multiplier,
             "orthographic_guard_milli": self.guard_milli,
+            "akshara_guard_milli": self.akshara_guard_milli,
             "picky_threshold_milli": self.picky_threshold_milli,
             "alphabet_coverage": self.alphabet_coverage,
         }

@@ -18,7 +18,7 @@ from .mom_backend import (
     pretokenizer_split,
     runtime_identity,
 )
-from .orthographic_units import merge_domains
+from .orthographic_units import UNITIZERS, merge_domains
 from .unicode_ml import ML_SET, ZWJ, ZWNJ, is_combining
 from .uniform_prefix import (
     ESC,
@@ -60,6 +60,20 @@ def build_trie(log_probs: dict[str, float]) -> dict:
     return trie
 
 
+def guarded_akshara_positions(piece: str) -> frozenset[int]:
+    """Return character boundary indices strictly inside multi-char Malayalam aksharas."""
+    if not piece or not any(c in ML_SET for c in piece):
+        return frozenset()
+    guarded: list[int] = []
+    position = 0
+    for orth in UNITIZERS["akshara"](piece):
+        span = len(orth)
+        if span > 1 and any(c in ML_SET for c in orth):
+            guarded.extend(range(position + 1, position + span))
+        position += span
+    return frozenset(guarded)
+
+
 def viterbi_segment(
     piece: str,
     log_probs: dict[str, float],
@@ -67,27 +81,74 @@ def viterbi_segment(
     trie: dict | None = None,
     forbidden: str | None = None,
     fallback_cost: float = 20.0,
+    akshara_guard_milli: int = 1000,
+    guarded: frozenset[int] | None = None,
 ) -> tuple[list[str], float]:
     """Decode `piece` with minimum negative log-likelihood and deterministic tie-breaking.
 
     Returns (tokens, total_cost) where `"".join(tokens) == piece`. Any character not
     covered by an active single-character lexical entry falls back as a 1-char surface
     unit whose cost scales with its UTF-8 byte length.
+
+    When `akshara_guard_milli >= 1000`, segmentation prefers paths with zero cuts
+    strictly inside Malayalam aksharas lexicographically over token NLL, falling back
+    to minimum-cut paths only when no akshara-preserving path covers `piece`. When
+    `0 < akshara_guard_milli < 1000`, a penalty proportional to `akshara_guard_milli / 1000.0`
+    is added per guarded internal akshara boundary crossed.
     """
+    if type(akshara_guard_milli) is not int or akshara_guard_milli < 0:
+        raise ValueError("akshara_guard_milli must be a non-negative integer")
     n = len(piece)
     if n == 0:
         return [], 0.0
     if trie is None:
         trie = build_trie(log_probs)
 
+    guarded_pos = (
+        (guarded_akshara_positions(piece) if guarded is None else guarded)
+        if akshara_guard_milli > 0
+        else frozenset()
+    )
+    hard_guard = bool(guarded_pos) and akshara_guard_milli >= 1000
+    soft_penalty = (
+        (akshara_guard_milli / 1000.0) * fallback_cost
+        if guarded_pos and 0 < akshara_guard_milli < 1000
+        else 0.0
+    )
+
     dp = [_INF] * (n + 1)
+    cuts = [n + 1] * (n + 1) if hard_guard else None
     back: list[tuple[int, str] | None] = [None] * (n + 1)
     dp[0] = 0.0
+    if cuts is not None:
+        cuts[0] = 0
 
     for i in range(n):
         base = dp[i]
         if base == _INF:
             continue
+        base_cuts = cuts[i] if cuts is not None else 0
+
+        def _relax(end: int, cand_tok: str, step_cost: float) -> None:
+            is_cut = end in guarded_pos
+            if hard_guard:
+                cand_cuts = base_cuts + (1 if is_cut else 0)
+                cand_cost = base + step_cost
+                prev = back[end]
+                if cand_cuts < cuts[end] or (
+                    cand_cuts == cuts[end]
+                    and (cand_cost < dp[end] or (cand_cost == dp[end] and prev is not None and i < prev[0]))
+                ):
+                    cuts[end] = cand_cuts
+                    dp[end] = cand_cost
+                    back[end] = (i, cand_tok)
+            else:
+                cand = base + step_cost + (soft_penalty if is_cut else 0.0)
+                prev = back[end]
+                if cand < dp[end] or (cand == dp[end] and prev is not None and i < prev[0]):
+                    dp[end] = cand
+                    back[end] = (i, cand_tok)
+
         node = trie
         matched_single = False
         for j in range(i, n):
@@ -101,18 +162,10 @@ def viterbi_segment(
                     continue
                 if j == i:
                     matched_single = True
-                cand = base + tok_cost
-                prev = back[j + 1]
-                if cand < dp[j + 1] or (cand == dp[j + 1] and prev is not None and i < prev[0]):
-                    dp[j + 1] = cand
-                    back[j + 1] = (i, tok)
+                _relax(j + 1, tok, tok_cost)
         if not matched_single:
             ch = piece[i]
-            cand = base + fallback_cost * len(ch.encode("utf-8"))
-            prev = back[i + 1]
-            if cand < dp[i + 1] or (cand == dp[i + 1] and prev is not None and i < prev[0]):
-                dp[i + 1] = cand
-                back[i + 1] = (i, ch)
+            _relax(i + 1, ch, fallback_cost * len(ch.encode("utf-8")))
 
     tokens = []
     pos = n
@@ -124,7 +177,8 @@ def viterbi_segment(
         tokens.append(tok)
         pos = start
     tokens.reverse()
-    return tokens, dp[n]
+    total_cost = dp[n] + (cuts[n] * fallback_cost if cuts is not None else 0.0)
+    return tokens, total_cost
 
 
 def is_malayalam_dangling(token: str) -> bool:
@@ -168,12 +222,22 @@ def _em_step(
     active: set[str],
     log_probs: dict[str, float],
     fallback_cost: float,
+    *,
+    akshara_guard_milli: int = 1000,
+    guarded_map: dict[str, frozenset[int]] | None = None,
 ) -> tuple[Counter, dict[str, float], float]:
     trie = build_trie(log_probs)
     counts: Counter = Counter()
     total_nll = 0.0
     for piece, freq in word_items:
-        tokens, cost = viterbi_segment(piece, log_probs, trie=trie, fallback_cost=fallback_cost)
+        tokens, cost = viterbi_segment(
+            piece,
+            log_probs,
+            trie=trie,
+            fallback_cost=fallback_cost,
+            akshara_guard_milli=akshara_guard_milli,
+            guarded=guarded_map.get(piece) if guarded_map is not None else None,
+        )
         total_nll += freq * cost
         for tok in tokens:
             if tok in active:
@@ -191,12 +255,15 @@ def train_mingram_unigram(
     em_iters: int = 2,
     final_em_iters: int = 2,
     filter_malayalam_dangling: bool = True,
+    akshara_guard_milli: int = 1000,
 ) -> tuple[dict[str, float], dict]:
     """Prune `seed_tokens` down to `target_vocab` via Hard-EM Viterbi Unigram training."""
     if target_vocab < 1:
         raise ValueError("target_vocab must be positive")
     if not 0 < shrink_factor <= 1:
         raise ValueError("shrink_factor must be within (0, 1]")
+    if type(akshara_guard_milli) is not int or akshara_guard_milli < 0:
+        raise ValueError("akshara_guard_milli must be a non-negative integer")
 
     protected_set = set(protected)
     if len(protected_set) > target_vocab:
@@ -216,13 +283,30 @@ def train_mingram_unigram(
 
     active = set(active_list)
     word_items = sorted(word_counts.items(), key=lambda kv: (-kv[1], kv[0]))
+    guarded_map = (
+        {piece: pos for piece, _ in word_items if (pos := guarded_akshara_positions(piece))}
+        if akshara_guard_milli > 0
+        else {}
+    )
+    tok_guarded = (
+        {tok: pos for tok in active if (pos := guarded_akshara_positions(tok))}
+        if akshara_guard_milli > 0
+        else {}
+    )
     log_probs = _initial_log_probs(word_items, active)
     fallback_cost = max(20.0, -min(log_probs.values(), default=-10.0) + 5.0)
 
     counts = Counter()
     total_nll = 0.0
     for _ in range(max(1, em_iters)):
-        counts, log_probs, total_nll = _em_step(word_items, active, log_probs, fallback_cost)
+        counts, log_probs, total_nll = _em_step(
+            word_items,
+            active,
+            log_probs,
+            fallback_cost,
+            akshara_guard_milli=akshara_guard_milli,
+            guarded_map=guarded_map,
+        )
 
     pruning_rounds = 0
     zero_pruned = 0
@@ -263,6 +347,8 @@ def train_mingram_unigram(
                 trie=trie,
                 forbidden=tok,
                 fallback_cost=fallback_cost,
+                akshara_guard_milli=akshara_guard_milli,
+                guarded=tok_guarded.get(tok, frozenset()),
             )
             marginal_loss = cnt * (alt_cost - (-log_probs[tok]))
             scored.append((marginal_loss, cnt, -len(tok), tok))
@@ -276,10 +362,24 @@ def train_mingram_unigram(
             log_probs.pop(tok, None)
 
         for _ in range(max(1, em_iters)):
-            counts, log_probs, total_nll = _em_step(word_items, active, log_probs, fallback_cost)
+            counts, log_probs, total_nll = _em_step(
+                word_items,
+                active,
+                log_probs,
+                fallback_cost,
+                akshara_guard_milli=akshara_guard_milli,
+                guarded_map=guarded_map,
+            )
 
     for _ in range(max(0, final_em_iters)):
-        counts, log_probs, total_nll = _em_step(word_items, active, log_probs, fallback_cost)
+        counts, log_probs, total_nll = _em_step(
+            word_items,
+            active,
+            log_probs,
+            fallback_cost,
+            akshara_guard_milli=akshara_guard_milli,
+            guarded_map=guarded_map,
+        )
 
     # Preserve canonical descending probability order (protected units remain included).
     ordered = sorted(active, key=lambda tok: (-log_probs[tok], -len(tok), tok))
@@ -294,6 +394,7 @@ def train_mingram_unigram(
         "marginal_loss_pruned": loss_pruned,
         "final_em_nll": total_nll,
         "unused_lexical_train": sum(1 for tok in final_scores if counts.get(tok, 0) == 0),
+        "akshara_guard_milli": akshara_guard_milli,
     }
     return final_scores, stats
 
@@ -328,6 +429,10 @@ class MinGramBackend(MOMBackend):
         self._log_probs = {tok: float(val) for tok, val in scores.items()}
         self._trie = build_trie(self._log_probs)
         self._fallback_cost = float(artifact.get("fallback_cost", 20.0))
+        raw_guard = artifact.get("akshara_guard_milli", 1000)
+        if type(raw_guard) is not int or raw_guard < 0:
+            raise ValueError("MinGram artifact akshara_guard_milli must be a non-negative integer")
+        self._akshara_guard_milli = raw_guard
         # Sort deterministically so save() (canonical sort_keys=True) never alters IDs on load().
         vocabulary = sorted(self._log_probs, key=lambda tok: (-self._log_probs[tok], -len(tok), tok))
         self._lexical_ids = {token: i for i, token in enumerate(vocabulary, lexical_start)}
@@ -350,6 +455,7 @@ class MinGramBackend(MOMBackend):
                 self._log_probs,
                 trie=self._trie,
                 fallback_cost=self._fallback_cost,
+                akshara_guard_milli=self._akshara_guard_milli,
             )
             for piece in pieces:
                 end = position + len(piece)
@@ -400,6 +506,7 @@ class UniformPrefixMinGramBackend(MinGramBackend):
                 self._log_probs,
                 trie=self._trie,
                 fallback_cost=self._fallback_cost,
+                akshara_guard_milli=self._akshara_guard_milli,
             )
             for piece in pieces:
                 t_end = t_pos + len(piece)

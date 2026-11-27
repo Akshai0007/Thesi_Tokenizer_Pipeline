@@ -16,6 +16,7 @@ from mltok.lib.mingram_core import (
     ARTIFACT,
     MinGramBackend,
     UniformPrefixMinGramBackend,
+    guarded_akshara_positions,
     is_malayalam_dangling,
     train_mingram_unigram,
     viterbi_segment,
@@ -205,3 +206,103 @@ def test_ml_mingram_end_to_end_both_pretokenizers(tmp_path, pre_spec):
         })
     bpb = canonical_bpb(backend, bpb_rows, lambda _x, y: [math.log(2)] * len(y))
     assert bpb["bpb"] == pytest.approx(bpb["predicted_tokens"] / bpb["canonical_bytes"])
+
+
+def test_viterbi_akshara_guard_modes():
+    assert guarded_akshara_positions("▁കിളികൾ") == frozenset({2, 4})
+    assert guarded_akshara_positions("English 123!") == frozenset()
+
+    # Split pieces have far lower NLL (0.4 total) than intact tokens (3.0..10.0)
+    log_probs = {
+        "▁": math.log(0.9),
+        "ക്": math.log(0.8),
+        "ഷ": math.log(0.8),
+        "ക": math.log(0.8),
+        "്": math.log(0.7),
+        "ക്ഷ": math.log(0.05),
+        "ി": math.log(0.8),
+        "കി": math.log(0.05),
+        "ള": math.log(0.8),
+        "ളി": math.log(0.05),
+        "കൾ": math.log(0.05),
+        "ൻ": math.log(0.8),
+        "റ": math.log(0.8),
+        "ൻ്റ": math.log(0.05),
+    }
+
+    # Unconstrained (akshara_guard_milli=0) takes the higher-prob split inside aksharas
+    assert viterbi_segment("ക്ഷ", log_probs, akshara_guard_milli=0)[0] == ["ക്", "ഷ"]
+    assert viterbi_segment("▁കിളികൾ", log_probs, akshara_guard_milli=0)[0][:3] == ["▁", "ക", "ി"]
+
+    # Hard guard (akshara_guard_milli=1000) preserves intact aksharas despite worse NLL
+    assert viterbi_segment("ക്ഷ", log_probs, akshara_guard_milli=1000)[0] == ["ക്ഷ"]
+    assert viterbi_segment("▁കിളികൾ", log_probs, akshara_guard_milli=1000)[0] == ["▁", "കി", "ളി", "കൾ"]
+    assert viterbi_segment("ൻ്റ", log_probs, akshara_guard_milli=1000)[0] == ["ൻ്റ"]
+
+    # Soft proportional guard interpolates cleanly by akshara_guard_milli / 1000.0
+    small_toks, _ = viterbi_segment("ക്ഷ", log_probs, fallback_cost=20.0, akshara_guard_milli=50)
+    strong_toks, strong_cost = viterbi_segment("ക്ഷ", log_probs, fallback_cost=20.0, akshara_guard_milli=500)
+    assert small_toks == ["ക്", "ഷ"]  # +1.0 penalty still favors split (1.45 < 3.0)
+    assert strong_toks == ["ക്ഷ"]  # +10.0 penalty rejects internal cut
+    assert math.isfinite(strong_cost)
+
+    # Minimal-cut and byte fallback remain lossless when no intact akshara path exists
+    no_intact = {k: v for k, v in log_probs.items() if k != "ക്ഷ"}
+    fallback_toks, _ = viterbi_segment("ക്ഷ", no_intact, akshara_guard_milli=1000)
+    assert fallback_toks == ["ക്", "ഷ"]  # 1 interior cut beats 2 cuts ["ക", "്", "ഷ"]
+    assert "".join(fallback_toks) == "ക്ഷ"
+
+    bare_toks, bare_cost = viterbi_segment("ക്ഷ", {"!": math.log(1.0)}, akshara_guard_milli=1000)
+    assert "".join(bare_toks) == "ക്ഷ"
+    assert math.isfinite(bare_cost)
+
+
+@pytest.mark.parametrize("pre_spec", ["lossless_word_prefix", "leading_space_script_runs"])
+def test_ml_mingram_akshara_guard_zero_breaks_and_lossless_export(tmp_path, pre_spec):
+    phrases = [
+        "വിദ്യാർത്ഥികൾ പുതിയ അക്ഷരം പഠിക്കുന്നു.",
+        "കിളികൾ കേരളം എൻ്റ ൎക്കു് ക്\u200dഷ അക്ഷരം.",
+    ]
+    texts = _corpus_texts() + phrases * 40
+    shard = tmp_path / "train.jsonl"
+    shard.write_text(
+        "\n".join(json.dumps({"text": t}, ensure_ascii=False) for t in texts) + "\n",
+        encoding="utf-8",
+    )
+
+    normalizer = registry.make("normalizer", {"type": "ml_conservative", "terminal_chillu": True})
+    pretokenizer = registry.make("pretokenizer", pre_spec)
+    algo = registry.make(
+        "algorithm",
+        {
+            "type": "ml_mingram",
+            "guard_milli": 1000,
+            "akshara_guard_milli": 1000,
+            "alphabet_coverage": 0.9999,
+            "export_hf_json": True,
+            "hybrid_min_count": 4,
+            "require_full_vocabulary": True,
+        },
+    )
+    out_dir = tmp_path / f"guarded-{pre_spec}"
+    ctx = TrainContext(
+        vocab=1600,
+        specials=DEFAULT_SPECIALS,
+        normalizer=normalizer,
+        pretokenizer=pretokenizer,
+        out_dir=out_dir,
+        word_counts=None,
+        shard_paths=[str(shard)],
+        log=lambda *_: None,
+    )
+    backend, info = algo.train(ctx)
+    assert info["akshara_guard_milli"] == 1000
+    assert backend.artifact["akshara_guard_milli"] == 1000
+    assert info["hf_export"]["hf_export_lossless_verified"] is True
+
+    eval_docs = [(p, "probe") for p in phrases]
+    surface = registry.make("metric", "mom_surface").compute(backend, eval_docs)
+    assert surface["mom_canonical_equal"] == len(eval_docs)
+    assert surface["mom_grammar_breaks"] == 0
+    assert surface["mom_akshara_breaks"] == 0
+    assert registry.make("metric", "roundtrip").compute(backend, eval_docs)["roundtrip_ok"] == 1.0
